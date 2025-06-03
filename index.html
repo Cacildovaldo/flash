@@ -82,7 +82,7 @@
             </div>
         </div>
         
-        <button id="saveConfig">Salvar Configuração</button>
+        <button id="saveConfig" disabled>Salvar Configuração</button>
         <div id="configStatus" class="status"></div>
     </div>
     
@@ -127,338 +127,338 @@
     <script>
         // ABI do contrato
         const arbitrageAbi = [
-  {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "profit",
-        "type": "uint256"
-      }
-    ],
-    "name": "OperationExecuted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "maxLoan",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "minProfit",
-        "type": "uint256"
-      }
-    ],
-    "name": "ConfigUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amountIn",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
-      }
-    ],
-    "name": "SwapExecuted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "baseSlippage",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "buyMultiplier",
-        "type": "uint256"
-      }
-    ],
-    "name": "SlippageUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "FundsRescued",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "AAVE_POOL",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "QUICKSWAP_ROUTER",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "WMATIC",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "baseSlippage",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "buySlippageMultiplier",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      }
-    ],
-    "name": "getBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "maxLoanAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "minProfit",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      }
-    ],
-    "name": "rescueTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_targetToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_maxLoanAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_minProfit",
-        "type": "uint256"
-      }
-    ],
-    "name": "setConfig",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_baseSlippage",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_buyMultiplier",
-        "type": "uint256"
-      }
-    ],
-    "name": "setSlippage",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "startArbitrage",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "targetToken",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
-  }
-];
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "profit",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "OperationExecuted",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "maxLoan",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "minProfit",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ConfigUpdated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amountIn",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amountOut",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "SwapExecuted",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "baseSlippage",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "buyMultiplier",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "SlippageUpdated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "FundsRescued",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "AAVE_POOL",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "QUICKSWAP_ROUTER",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "WMATIC",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "baseSlippage",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "buySlippageMultiplier",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    }
+                ],
+                "name": "getBalance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "maxLoanAmount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "minProfit",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    }
+                ],
+                "name": "rescueTokens",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_targetToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_maxLoanAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_minProfit",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setConfig",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_baseSlippage",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_buyMultiplier",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setSlippage",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "startArbitrage",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "targetToken",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            }
+        ];
         
         // Endereços na Polygon
         const AAVE_POOL = "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
@@ -475,7 +475,8 @@
         const loadContractBtn = document.getElementById('loadContract');
         const saveConfigBtn = document.getElementById('saveConfig');
         const startArbitrageBtn = document.getElementById('startArbitrage');
-        const statusDiv = document.getElementById('operationStatus');
+        const walletStatusDiv = document.getElementById('walletStatus');
+        const operationStatusDiv = document.getElementById('operationStatus');
         const configStatusDiv = document.getElementById('configStatus');
         
         // Inicialização
@@ -485,6 +486,10 @@
             saveConfigBtn.addEventListener('click', saveConfig);
             startArbitrageBtn.addEventListener('click', startArbitrage);
             
+            // Atualizar exibição de slippage quando valores mudam
+            document.getElementById('baseSlippage').addEventListener('change', updateSlippageDisplay);
+            document.getElementById('buyMultiplier').addEventListener('change', updateSlippageDisplay);
+            
             initPriceChart();
             updateSlippageDisplay();
         });
@@ -492,47 +497,92 @@
         async function connectWallet() {
             if (window.ethereum) {
                 try {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    // Solicitar conexão da carteira
+                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     web3 = new Web3(window.ethereum);
-                    accounts = await web3.eth.getAccounts();
                     
-                    updateStatus(`Conectado: ${shortAddress(accounts[0])}`, 'success', statusDiv);
+                    // Verificar rede Polygon
+                    const chainId = await web3.eth.getChainId();
+                    if (chainId !== 137) { // Polygon Mainnet
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: '0x89' }], // 0x89 = 137 (Polygon)
+                            });
+                        } catch (error) {
+                            updateStatus("Por favor, conecte-se à rede Polygon", 'error', walletStatusDiv);
+                            return;
+                        }
+                    }
+                    
+                    // Atualizar UI
+                    updateStatus(`Conectado: ${shortAddress(accounts[0])}`, 'success', walletStatusDiv);
                     connectBtn.textContent = `Conectado: ${shortAddress(accounts[0])}`;
                     
+                    // Monitorar mudanças de conta
+                    window.ethereum.on('accountsChanged', (newAccounts) => {
+                        accounts = newAccounts;
+                        connectBtn.textContent = `Conectado: ${shortAddress(accounts[0])}`;
+                        updateStatus(`Conta alterada: ${shortAddress(accounts[0])}`, 'info', walletStatusDiv);
+                    });
+                    
+                    // Monitorar mudanças de rede
+                    window.ethereum.on('chainChanged', () => {
+                        window.location.reload();
+                    });
+                    
                 } catch (error) {
-                    updateStatus("Erro ao conectar: " + error.message, 'error', statusDiv);
+                    updateStatus("Erro ao conectar: " + error.message, 'error', walletStatusDiv);
                 }
             } else {
-                updateStatus("MetaMask não instalado!", 'error', statusDiv);
+                updateStatus("MetaMask não instalado!", 'error', walletStatusDiv);
             }
         }
         
         async function loadContract() {
-            const contractAddress = document.getElementById('contractAddress').value;
+            const contractAddress = document.getElementById('contractAddress').value.trim();
+            
+            // Verificações iniciais
+            if (!web3) {
+                updateStatus("Conecte sua carteira primeiro", 'error', operationStatusDiv);
+                return;
+            }
+            
             if (!web3.utils.isAddress(contractAddress)) {
-                updateStatus("Endereço do contrato inválido", 'error', statusDiv);
+                updateStatus("Endereço do contrato inválido", 'error', operationStatusDiv);
                 return;
             }
             
             try {
+                // Verificar se o contrato existe
+                const code = await web3.eth.getCode(contractAddress);
+                if (code === '0x') {
+                    updateStatus("Nenhum contrato encontrado neste endereço", 'error', operationStatusDiv);
+                    return;
+                }
+                
+                // Instanciar contrato
                 arbitrageContract = new web3.eth.Contract(arbitrageAbi, contractAddress);
                 
                 // Verificar ownership
                 const owner = await arbitrageContract.methods.owner().call();
-                if (owner.toLowerCase() === accounts[0].toLowerCase()) {
-                    updateStatus("Contrato carregado com sucesso", 'success', statusDiv);
-                    startArbitrageBtn.disabled = false;
-                    saveConfigBtn.disabled = false;
-                    
-                    // Carregar configurações existentes
-                    await loadContractSettings();
-                    await updateBalances();
-                    
-                } else {
-                    updateStatus("Você não é o dono deste contrato", 'error', statusDiv);
+                if (owner.toLowerCase() !== accounts[0].toLowerCase()) {
+                    updateStatus("Você não é o dono deste contrato", 'error', operationStatusDiv);
+                    return;
                 }
+                
+                // Atualizar UI
+                updateStatus("Contrato carregado com sucesso", 'success', operationStatusDiv);
+                startArbitrageBtn.disabled = false;
+                saveConfigBtn.disabled = false;
+                
+                // Carregar configurações existentes
+                await loadContractSettings();
+                await updateBalances();
+                
             } catch (error) {
-                updateStatus("Erro ao carregar contrato: " + error.message, 'error', statusDiv);
+                console.error("Erro detalhado:", error);
+                updateStatus("Erro ao carregar contrato: " + error.message, 'error', operationStatusDiv);
             }
         }
         
@@ -552,6 +602,7 @@
                     arbitrageContract.methods.buySlippageMultiplier().call()
                 ]);
                 
+                // Atualizar campos do formulário
                 document.getElementById('tokenAddress').value = targetToken;
                 document.getElementById('maxLoan').value = web3.utils.fromWei(maxLoan, 'ether');
                 document.getElementById('minProfit').value = web3.utils.fromWei(minProfit, 'ether');
@@ -562,25 +613,33 @@
                 
             } catch (error) {
                 console.error("Erro ao carregar configurações:", error);
+                updateStatus("Erro ao carregar configurações", 'error', operationStatusDiv);
             }
         }
         
         function updateSlippageDisplay() {
-            const base = parseFloat(document.getElementById('baseSlippage').value);
-            const multiplier = parseFloat(document.getElementById('buyMultiplier').value);
+            const base = parseFloat(document.getElementById('baseSlippage').value) || 0.5;
+            const multiplier = parseFloat(document.getElementById('buyMultiplier').value) || 2;
             
             document.getElementById('currentSlippage').textContent = `${base}%`;
             document.getElementById('currentMultiplier').textContent = `${multiplier}x`;
         }
         
         async function saveConfig() {
+            // Verificar se o contrato foi carregado
+            if (!arbitrageContract) {
+                updateStatus("Carregue o contrato primeiro", 'error', configStatusDiv);
+                return;
+            }
+            
             try {
-                const tokenAddress = document.getElementById('tokenAddress').value;
+                const tokenAddress = document.getElementById('tokenAddress').value.trim();
                 const maxLoan = document.getElementById('maxLoan').value;
                 const minProfit = document.getElementById('minProfit').value;
                 const baseSlippage = parseFloat(document.getElementById('baseSlippage').value) * 100;
                 const buyMultiplier = parseFloat(document.getElementById('buyMultiplier').value);
                 
+                // Validações
                 if (!web3.utils.isAddress(tokenAddress)) {
                     throw new Error("Endereço do token inválido");
                 }
@@ -590,6 +649,7 @@
                 
                 updateStatus("Salvando configuração...", 'info', configStatusDiv);
                 
+                // Enviar transações
                 await arbitrageContract.methods.setConfig(
                     tokenAddress,
                     web3.utils.toWei(maxLoan, 'ether'),
@@ -606,6 +666,7 @@
                 updateSlippageDisplay();
                 
             } catch (error) {
+                console.error("Erro detalhado:", error);
                 updateStatus("Erro ao salvar: " + error.message, 'error', configStatusDiv);
             }
         }
@@ -617,34 +678,35 @@
                     throw new Error("Insira um valor válido");
                 }
                 
-                updateStatus("Iniciando arbitragem...", 'info', statusDiv);
+                updateStatus("Iniciando arbitragem...", 'info', operationStatusDiv);
                 
                 await arbitrageContract.methods.startArbitrage(
                     web3.utils.toWei(amount, 'ether')
                 ).send({ from: accounts[0] });
                 
-                updateStatus("Arbitragem concluída com sucesso!", 'success', statusDiv);
+                updateStatus("Arbitragem concluída com sucesso!", 'success', operationStatusDiv);
                 await updateBalances();
                 
                 // Atualizar histórico de preços
                 updatePriceChart();
                 
             } catch (error) {
-                updateStatus("Erro na arbitragem: " + error.message, 'error', statusDiv);
+                console.error("Erro detalhado:", error);
+                updateStatus("Erro na arbitragem: " + error.message, 'error', operationStatusDiv);
             }
         }
         
         async function updateBalances() {
-            if (!arbitrageContract) return;
+            if (!arbitrageContract || !web3) return;
             
             try {
                 const contractAddress = arbitrageContract.options.address;
-                const tokenAddress = document.getElementById('tokenAddress').value;
+                const tokenAddress = document.getElementById('tokenAddress').value.trim();
                 
                 const [wmaticBalance, tokenBalance] = await Promise.all([
-                    getTokenBalance(WMATIC, contractAddress),
+                    arbitrageContract.methods.getBalance(WMATIC).call(),
                     tokenAddress && web3.utils.isAddress(tokenAddress) ? 
-                        getTokenBalance(tokenAddress, contractAddress) : 
+                        arbitrageContract.methods.getBalance(tokenAddress).call() : 
                         Promise.resolve("0")
                 ]);
                 
@@ -653,18 +715,8 @@
                 
             } catch (error) {
                 console.error("Erro ao atualizar saldos:", error);
+                updateStatus("Erro ao atualizar saldos", 'error', operationStatusDiv);
             }
-        }
-        
-        async function getTokenBalance(tokenAddress, holderAddress) {
-            return web3.eth.call({
-                to: tokenAddress,
-                data: web3.eth.abi.encodeFunctionCall({
-                    name: 'balanceOf',
-                    type: 'function',
-                    inputs: [{ type: 'address', name: 'account' }]
-                }, [holderAddress])
-            });
         }
         
         function initPriceChart() {
