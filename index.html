@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Arbitragem Real com Flash Loans</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .card { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        button { padding: 10px 15px; background: #8247e5; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:disabled { background: #cccccc; }
+        input, select { padding: 8px; border-radius: 4px; border: 1px solid #ddd; width: 300px; }
+        .status { margin: 15px 0; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #e2e3e5; color: #383d41; }
+        .flex { display: flex; justify-content: space-between; }
+        #priceChart { max-height: 300px; margin-top: 20px; }
+        .token-info { display: flex; gap: 20px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <h1>Arbitragem Real com Flash Loans - Polygon</h1>
+    
+    <div class="card">
+        <h2>Conexão</h2>
+        <button id="connectWallet">Conectar Carteira</button>
+        <div id="walletStatus" class="status info">Não conectado</div>
+    </div>
+    
+    <div class="card">
+        <h2>Configuração do Contrato</h2>
+        <div>
+            <label for="contractAddress">Endereço do Contrato:</label>
+            <input type="text" id="contractAddress" placeholder="0x7bFA9650A738B7Fb5e9112E80Ea4E0F164819604">
+            <button id="loadContract">Carregar Contrato</button>
+        </div>
+        
+        <div class="token-info">
+            <div>
+                <label for="tokenAddress">Token para Arbitragem:</label>
+                <input type="text" id="tokenAddress" placeholder="0x...">
+            </div>
+            <div>
+                <label for="maxLoan">Máximo Empréstimo (MATIC):</label>
+                <input type="number" id="maxLoan" placeholder="1000">
+            </div>
+        </div>
+        
+        <div class="token-info">
+            <div>
+                <label for="minProfit">Lucro Mínimo (MATIC):</label>
+                <input type="number" id="minProfit" step="0.01" placeholder="0.1">
+            </div>
+            <div>
+                <label for="slippage">Slippage (%):</label>
+                <input type="number" id="slippage" value="0.5" step="0.1" min="0.1" max="5">
+            </div>
+        </div>
+        
+        <button id="saveConfig">Salvar Configuração</button>
+    </div>
+    
+    <div class="card">
+        <h2>Operação</h2>
+        <div>
+            <label for="loanAmount">Valor do Empréstimo (MATIC):</label>
+            <input type="number" id="loanAmount" placeholder="500">
+            <button id="startArbitrage" disabled>Iniciar Arbitragem</button>
+        </div>
+        
+        <div id="operationStatus" class="status info">Aguardando configuração...</div>
+        
+        <div class="flex">
+            <div>
+                <h3>Saldo Contrato:</h3>
+                <p>WMATIC: <span id="wmaticBalance">0</span></p>
+                <p>Token: <span id="tokenBalance">0</span></p>
+            </div>
+            <div>
+                <h3>Última Operação:</h3>
+                <p>Lucro: <span id="lastProfit">0</span> MATIC</p>
+                <p>Status: <span id="lastStatus">Nenhuma</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2>Informações do Token</h2>
+        <canvas id="priceChart"></canvas>
+        <div id="tokenDetails"></div>
+    </div>
+
+    <script>
+        // ABI do contrato
+        const arbitrageAbi = [
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "receiverAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "asset",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "params",
+				"type": "bytes"
+			},
+			{
+				"internalType": "uint16",
+				"name": "referralCode",
+				"type": "uint16"
+			}
+		],
+		"name": "flashLoanSimple",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];
+        
+        // Endereços na Polygon
+        const AAVE_POOL = "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
+        const QUICKSWAP_ROUTER = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff";
+        const WMATIC = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
+        
+        let web3;
+        let accounts = [];
+        let arbitrageContract;
+        let priceChart;
+        
+        // Elementos da interface
+        const connectBtn = document.getElementById('connectWallet');
+        const loadContractBtn = document.getElementById('loadContract');
+        const saveConfigBtn = document.getElementById('saveConfig');
+        const startArbitrageBtn = document.getElementById('startArbitrage');
+        const statusDiv = document.getElementById('operationStatus');
+        
+        // Inicialização
+        window.addEventListener('load', async () => {
+            connectBtn.addEventListener('click', connectWallet);
+            loadContractBtn.addEventListener('click', loadContract);
+            saveConfigBtn.addEventListener('click', saveConfig);
+            startArbitrageBtn.addEventListener('click', startArbitrage);
+            
+            initPriceChart();
+        });
+        
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    web3 = new Web3(window.ethereum);
+                    accounts = await web3.eth.getAccounts();
+                    
+                    updateStatus(`Conectado: ${shortAddress(accounts[0])}`, 'success');
+                    connectBtn.textContent = `Conectado: ${shortAddress(accounts[0])}`;
+                    
+                } catch (error) {
+                    updateStatus("Erro ao conectar: " + error.message, 'error');
+                }
+            } else {
+                updateStatus("MetaMask não instalado!", 'error');
+            }
+        }
+        
+        async function loadContract() {
+            const contractAddress = document.getElementById('contractAddress').value;
+            if (!web3.utils.isAddress(contractAddress)) {
+                updateStatus("Endereço do contrato inválido", 'error');
+                return;
+            }
+            
+            try {
+                arbitrageContract = new web3.eth.Contract(arbitrageAbi, contractAddress);
+                
+                // Verificar ownership
+                const owner = await arbitrageContract.methods.owner().call();
+                if (owner.toLowerCase() === accounts[0].toLowerCase()) {
+                    updateStatus("Contrato carregado com sucesso", 'success');
+                    startArbitrageBtn.disabled = false;
+                    saveConfigBtn.disabled = false;
+                    
+                    // Carregar configurações existentes
+                    await loadContractSettings();
+                    await updateBalances();
+                    
+                } else {
+                    updateStatus("Você não é o dono deste contrato", 'error');
+                }
+            } catch (error) {
+                updateStatus("Erro ao carregar contrato: " + error.message, 'error');
+            }
+        }
+        
+        async function loadContractSettings() {
+            try {
+                const targetToken = await arbitrageContract.methods.targetToken().call();
+                const maxLoan = await arbitrageContract.methods.maxLoanAmount().call();
+                const minProfit = await arbitrageContract.methods.minProfit().call();
+                const slippage = await arbitrageContract.methods.slippage().call();
+                
+                document.getElementById('tokenAddress').value = targetToken;
+                document.getElementById('maxLoan').value = web3.utils.fromWei(maxLoan, 'ether');
+                document.getElementById('minProfit').value = web3.utils.fromWei(minProfit, 'ether');
+                document.getElementById('slippage').value = slippage / 100;
+                
+            } catch (error) {
+                console.error("Erro ao carregar configurações:", error);
+            }
+        }
+        
+        async function saveConfig() {
+            try {
+                const tokenAddress = document.getElementById('tokenAddress').value;
+                const maxLoan = document.getElementById('maxLoan').value;
+                const minProfit = document.getElementById('minProfit').value;
+                const slippage = parseFloat(document.getElementById('slippage').value) * 100;
+                
+                if (!web3.utils.isAddress(tokenAddress)) {
+                    throw new Error("Endereço do token inválido");
+                }
+                
+                updateStatus("Salvando configuração...", 'info');
+                
+                await arbitrageContract.methods.setConfig(
+                    tokenAddress,
+                    web3.utils.toWei(maxLoan, 'ether'),
+                    web3.utils.toWei(minProfit, 'ether')
+                ).send({ from: accounts[0] });
+                
+                await arbitrageContract.methods.setSlippage(
+                    Math.round(slippage)
+                ).send({ from: accounts[0] });
+                
+                updateStatus("Configuração salva com sucesso!", 'success');
+                await updateBalances();
+                
+            } catch (error) {
+                updateStatus("Erro ao salvar: " + error.message, 'error');
+            }
+        }
+        
+        async function startArbitrage() {
+            try {
+                const amount = document.getElementById('loanAmount').value;
+                if (!amount || amount <= 0) {
+                    throw new Error("Insira um valor válido");
+                }
+                
+                updateStatus("Iniciando arbitragem...", 'info');
+                
+                await arbitrageContract.methods.startArbitrage(
+                    web3.utils.toWei(amount, 'ether')
+                ).send({ from: accounts[0] });
+                
+                updateStatus("Arbitragem concluída com sucesso!", 'success');
+                await updateBalances();
+                
+            } catch (error) {
+                updateStatus("Erro na arbitragem: " + error.message, 'error');
+            }
+        }
+        
+        async function updateBalances() {
+            if (!arbitrageContract) return;
+            
+            try {
+                const wmaticBalance = await web3.eth.call({
+                    to: WMATIC,
+                    data: web3.eth.abi.encodeFunctionCall({
+                        name: 'balanceOf',
+                        type: 'function',
+                        inputs: [{ type: 'address', name: 'account' }]
+                    }, [arbitrageContract.options.address])
+                });
+                
+                const tokenAddress = document.getElementById('tokenAddress').value;
+                let tokenBalance = "0";
+                
+                if (web3.utils.isAddress(tokenAddress) && tokenAddress !== "0x0000000000000000000000000000000000000000") {
+                    tokenBalance = await web3.eth.call({
+                        to: tokenAddress,
+                        data: web3.eth.abi.encodeFunctionCall({
+                            name: 'balanceOf',
+                            type: 'function',
+                            inputs: [{ type: 'address', name: 'account' }]
+                        }, [arbitrageContract.options.address])
+                    });
+                }
+                
+                document.getElementById('wmaticBalance').textContent = web3.utils.fromWei(wmaticBalance, 'ether');
+                document.getElementById('tokenBalance').textContent = web3.utils.fromWei(tokenBalance, 'ether');
+                
+            } catch (error) {
+                console.error("Erro ao atualizar saldos:", error);
+            }
+        }
+        
+        function initPriceChart() {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array(24).fill('').map((_, i) => `${i}h`),
+                    datasets: [{
+                        label: 'Preço do Token (MATIC)',
+                        data: Array(24).fill(0).map((_, i) => (Math.random() * 0.1 + 0.95 - (i / 100))),
+                        borderColor: '#8247e5',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        function shortAddress(address) {
+            return address ? `${address.substring(0, 6)}...${address.substring(38)}` : '';
+        }
+        
+        function updateStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+    </script>
+</body>
+</html>
