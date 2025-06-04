@@ -1,784 +1,1590 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Flash Loan Arbitrage - Polygon</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Flash Loan Polygon</title>
     <style>
         :root {
             --primary: #8247e5;
+            --primary-dark: #6935c2;
+            --secondary: #2bbdf7;
+            --dark: #1a1a2e;
+            --light: #f5f5f5;
             --success: #28a745;
             --danger: #dc3545;
             --warning: #ffc107;
             --info: #17a2b8;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; color: #333; }
-        .card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1, h2, h3 { color: var(--primary); }
-        button { padding: 12px 20px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; margin: 8px 5px; font-weight: 600; transition: all 0.3s; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        button:disabled { background: #cccccc; transform: none; }
-        input, select { padding: 12px; border-radius: 6px; border: 1px solid #ddd; width: 100%; max-width: 400px; margin-bottom: 10px; }
-        .status { margin: 20px 0; padding: 15px; border-radius: 6px; }
-        .success { background-color: rgba(40, 167, 69, 0.1); color: var(--success); border: 1px solid var(--success); }
-        .error { background-color: rgba(220, 53, 69, 0.1); color: var(--danger); border: 1px solid var(--danger); }
-        .info { background-color: rgba(23, 162, 184, 0.1); color: var(--info); border: 1px solid var(--info); }
-        .flex { display: flex; flex-wrap: wrap; gap: 20px; }
-        .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 8px; }
-        #priceChart { margin-top: 30px; height: 300px; }
-        .token-input { display: flex; align-items: center; gap: 10px; }
-        .token-input input { flex: 1; }
-        .token-input button { width: 120px; }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+        
+        .wallet-connect {
+            display: flex;
+            align-items: center;
+        }
+        
+        .wallet-status {
+            margin-right: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .wallet-address {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h2 {
+            font-size: 1.4rem;
+            color: var(--secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .token-list {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .token-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .token-item:last-child {
+            border-bottom: none;
+        }
+        
+        .token-item .remove-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .logs {
+            background-color: #000;
+            color: #0f0;
+            font-family: monospace;
+            padding: 15px;
+            border-radius: 5px;
+            height: 200px;
+            overflow-y: auto;
+        }
+        
+        .logs p {
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+        
+        .logs .error {
+            color: var(--danger);
+        }
+        
+        .logs .success {
+            color: var(--success);
+        }
+        
+        .logs .warning {
+            color: var(--warning);
+        }
+        
+        .logs .info {
+            color: var(--info);
+        }
+        
+        .operation-status {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .status-idle {
+            background-color: #888;
+        }
+        
+        .status-running {
+            background-color: var(--warning);
+            animation: blink 1s infinite;
+        }
+        
+        .status-success {
+            background-color: var(--success);
+        }
+        
+        .status-error {
+            background-color: var(--danger);
+        }
+        
+        @keyframes blink {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
         @media (max-width: 768px) {
-            .flex { flex-direction: column; }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .wallet-connect {
+                margin-top: 15px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .wallet-status {
+                margin-bottom: 10px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .contract-code {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
-    <h1>Flash Loan Arbitrage - Polygon</h1>
-    
-    <div class="card">
-        <h2>Conexão</h2>
-        <button id="connectWallet">Conectar Carteira</button>
-        <div id="walletStatus" class="status info">Não conectado</div>
-    </div>
-    
-    <div class="card">
-        <h2>Configuração do Contrato</h2>
-        <div class="flex">
-            <div>
-                <label for="contractAddress">Endereço do Contrato:</label>
-                <div class="token-input">
-                    <input type="text" id="contractAddress" placeholder="0x...">
-                    <button id="loadContract">Carregar</button>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzOCAzOCI+PHBhdGggZD0iTTE5IDBDOSAwIDEgOCAxIDE4YzAgNyA0IDE0IDEwIDE3bDEtM2MtNS0zLTgtOS04LTE0QzQgMTAgMTAgNCAxOSA0czE1IDYgMTUgMTRjMCA1LTMgMTEtOCAxNGwxIDNjNi0zIDEwLTEwIDEwLTE3QzM3IDggMjkgMCAxOSAweiIgZmlsbD0iIzgyNDdlNSIvPjxwYXRoIGQ9Ik0xOSA4Yy02IDAtMTAgNC0xMCAxMHM0IDEwIDEwIDEwIDEwLTQgMTAtMTAtNC0xMC0xMC0xMHptMCAxN2MtNCAwLTctMy03LTdzMy03IDctNyA3IDMgNyA3LTMgNy03IDd6IiBmaWxsPSIjMmJiZGY3Ii8+PC9zdmc+" alt="Logo">
+                <h1>Sistema de Flash Loan Polygon</h1>
+            </div>
+            <div class="wallet-connect">
+                <div class="wallet-status">Status: <span id="connection-status">Desconectado</span></div>
+                <div id="wallet-address" class="wallet-address" style="display: none;"></div>
+                <button id="connect-wallet" class="btn">Conectar Carteira</button>
+            </div>
+        </header>
+        
+        <main>
+            <div class="card">
+                <div class="card-header">
+                    <h2>Configuração do Contrato</h2>
+                    <div>
+                        <button id="deploy-contract" class="btn btn-secondary">Implantar Contrato</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="contract-address">Endereço do Contrato</label>
+                    <input type="text" id="contract-address" placeholder="0x...">
+                </div>
+                <div class="form-group">
+                    <label for="profit-receiver">Endereço do Receptor de Lucros</label>
+                    <input type="text" id="profit-receiver" value="0x9E74B0a29d0Ec2e73E7A9c984d6a0447e72df76c" readonly>
+                </div>
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="max-loan">Valor Máximo de Empréstimo (MATIC)</label>
+                        <input type="number" id="max-loan" placeholder="Ex: 10" min="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="min-profit">Lucro Mínimo (MATIC)</label>
+                        <input type="number" id="min-profit" placeholder="Ex: 0.1" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="base-slippage">Slippage Base (%)</label>
+                        <input type="number" id="base-slippage" placeholder="Ex: 1" min="0.1" max="5" step="0.1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="buy-multiplier">Multiplicador de Slippage para Compra</label>
+                        <input type="number" id="buy-multiplier" placeholder="Ex: 2" min="1" max="5" step="0.5" value="2">
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="buy-dex">DEX para Compra</label>
+                        <select id="buy-dex">
+                            <option value="0">QuickSwap</option>
+                            <option value="1">Uniswap</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sell-dex">DEX para Venda</label>
+                        <select id="sell-dex">
+                            <option value="0">QuickSwap</option>
+                            <option value="1">Uniswap</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="flash-loan-provider">Provedor de Flash Loan</label>
+                    <select id="flash-loan-provider">
+                        <option value="0">AAVE</option>
+                        <option value="1">Uniswap</option>
+                    </select>
+                </div>
+                <button id="save-config" class="btn">Salvar Configuração</button>
+            </div>
+            
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Tokens Alvo</h2>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-token">Adicionar Token</label>
+                        <div style="display: flex;">
+                            <input type="text" id="new-token" placeholder="Endereço do Token (0x...)">
+                            <button id="add-token" class="btn" style="margin-left: 10px; width: 100px;">Adicionar</button>
+                        </div>
+                    </div>
+                    <ul id="token-list" class="token-list">
+                        <!-- Tokens serão adicionados aqui dinamicamente -->
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Executar Flash Loan</h2>
+                    </div>
+                    <div class="form-group">
+                        <label for="loan-amount">Valor do Empréstimo (MATIC)</label>
+                        <input type="number" id="loan-amount" placeholder="Ex: 5" min="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="specific-token">Token Específico (opcional)</label>
+                        <input type="text" id="specific-token" placeholder="Endereço do Token (0x...) ou deixe em branco para todos">
+                    </div>
+                    <button id="start-arbitrage" class="btn btn-success">Iniciar Operação</button>
+                    
+                    <div class="operation-status">
+                        <div id="status-indicator" class="status-indicator status-idle"></div>
+                        <span id="operation-status-text">Pronto para operar</span>
+                    </div>
                 </div>
             </div>
-            <div>
-                <label for="tokenAddress">Token para Arbitragem:</label>
-                <input type="text" id="tokenAddress" placeholder="0x...">
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Logs de Operação</h2>
+                    <button id="clear-logs" class="btn btn-secondary">Limpar Logs</button>
+                </div>
+                <div id="logs" class="logs">
+                    <!-- Logs serão adicionados aqui dinamicamente -->
+                </div>
             </div>
-        </div>
-        
-        <div class="flex">
-            <div>
-                <label for="maxLoan">Máximo Empréstimo (MATIC):</label>
-                <input type="number" id="maxLoan" placeholder="1000">
-            </div>
-            <div>
-                <label for="minProfit">Lucro Mínimo (MATIC):</label>
-                <input type="number" id="minProfit" step="0.01" placeholder="0.1">
-            </div>
-        </div>
-        
-        <div class="flex">
-            <div>
-                <label for="baseSlippage">Slippage Base (%):</label>
-                <input type="number" id="baseSlippage" value="0.5" step="0.1" min="0.1" max="5">
-            </div>
-            <div>
-                <label for="buyMultiplier">Multiplicador Compra:</label>
-                <input type="number" id="buyMultiplier" value="2" min="1" max="5" step="0.5">
-            </div>
-        </div>
-        
-        <button id="saveConfig" disabled>Salvar Configuração</button>
-        <div id="configStatus" class="status"></div>
-    </div>
-    
-    <div class="card">
-        <h2>Operação</h2>
-        <div class="flex">
-            <div>
-                <label for="loanAmount">Valor do Empréstimo (MATIC):</label>
-                <input type="number" id="loanAmount" placeholder="500">
-            </div>
-            <div style="align-self: flex-end;">
-                <button id="startArbitrage" disabled>Iniciar Arbitragem</button>
-            </div>
-        </div>
-        
-        <div id="operationStatus" class="status info">Aguardando configuração...</div>
-        
-        <div class="stats">
-            <div class="stat-card">
-                <h3>Saldo Contrato</h3>
-                <p>WMATIC: <span id="wmaticBalance">0</span></p>
-                <p>Token: <span id="tokenBalance">0</span></p>
-            </div>
-            <div class="stat-card">
-                <h3>Última Operação</h3>
-                <p>Lucro: <span id="lastProfit">0</span> MATIC</p>
-                <p>Status: <span id="lastStatus">-</span></p>
-            </div>
-            <div class="stat-card">
-                <h3>Configuração Atual</h3>
-                <p>Slippage: <span id="currentSlippage">0.5%</span></p>
-                <p>Multiplicador: <span id="currentMultiplier">2x</span></p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="card">
-        <h2>Monitoramento de Preços</h2>
-        <canvas id="priceChart"></canvas>
-    </div>
 
-    <script>
-        // ABI do contrato
-        const arbitrageAbi = [
-    {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "profit",
-                "type": "uint256"
-            }
-        ],
-        "name": "OperationExecuted",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "maxLoan",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "minProfit",
-                "type": "uint256"
-            }
-        ],
-        "name": "ConfigUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amountIn",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amountOut",
-                "type": "uint256"
-            }
-        ],
-        "name": "SwapExecuted",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "baseSlippage",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "buyMultiplier",
-                "type": "uint256"
-            }
-        ],
-        "name": "SlippageUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "FundsRescued",
-        "type": "event"
-    },
-    {
-        "inputs": [],
-        "name": "AAVE_POOL",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "QUICKSWAP_ROUTER",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "WMATIC",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "baseSlippage",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "buySlippageMultiplier",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            }
-        ],
-        "name": "getBalance",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "maxLoanAmount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "minProfit",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            }
-        ],
-        "name": "rescueTokens",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_targetToken",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_maxLoanAmount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_minProfit",
-                "type": "uint256"
-            }
-        ],
-        "name": "setConfig",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_baseSlippage",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_buyMultiplier",
-                "type": "uint256"
-            }
-        ],
-        "name": "setSlippage",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "startArbitrage",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "targetToken",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "stateMutability": "payable",
-        "type": "receive"
+            <div class="card">
+                <div class="card-header">
+                    <h2>Código do Contrato</h2>
+                    <button id="toggle-contract" class="btn btn-secondary">Mostrar/Ocultar</button>
+                </div>
+                <div id="contract-code" class="contract-code" style="display: none;">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * @title FlashLoanExecutor
+ * @dev Contrato para executar operações de flash loan na rede Polygon
+ * Suporta empréstimos da AAVE e Uniswap, e operações de swap na QuickSwap e Uniswap
+ */
+
+// Interface ERC20 padrão
+interface IERC20 {
+    function balanceOf(address account) external view returns (uint256);
+    function transfer(address recipient, uint256 amount) external returns (bool);
+    function approve(address spender, uint256 amount) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+    function decimals() external view returns (uint8);
+    function symbol() external view returns (string memory);
+}
+
+// Interface para o Pool da AAVE V3
+interface IAavePool {
+    function flashLoanSimple(
+        address receiverAddress,
+        address asset,
+        uint256 amount,
+        bytes calldata params,
+        uint16 referralCode
+    ) external;
+}
+
+// Interface para o Router da QuickSwap
+interface IQuickSwapRouter {
+    function swapExactTokensForTokens(
+        uint amountIn,
+        uint amountOutMin,
+        address[] calldata path,
+        address to,
+        uint deadline
+    ) external returns (uint[] memory amounts);
+    
+    function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);
+}
+
+// Interface para o Router da Uniswap V3
+interface IUniswapV3Router {
+    struct ExactInputSingleParams {
+        address tokenIn;
+        address tokenOut;
+        uint24 fee;
+        address recipient;
+        uint256 deadline;
+        uint256 amountIn;
+        uint256 amountOutMinimum;
+        uint160 sqrtPriceLimitX96;
     }
-];
+
+    function exactInputSingle(ExactInputSingleParams calldata params) external returns (uint256 amountOut);
+    
+    function quoteExactInputSingle(
+        address tokenIn,
+        address tokenOut,
+        uint24 fee,
+        uint256 amountIn,
+        uint160 sqrtPriceLimitX96
+    ) external view returns (uint256 amountOut);
+}
+
+// Interface para o Pool da Uniswap V3 (para flash loans)
+interface IUniswapV3Pool {
+    function flash(
+        address recipient,
+        uint256 amount0,
+        uint256 amount1,
+        bytes calldata data
+    ) external;
+}
+
+contract FlashLoanExecutor {
+    // Endereços constantes na rede Polygon
+    address public constant AAVE_POOL = 0x794a61358D6845594F94dc1DB02A252b5b4814aD;
+    address public constant QUICKSWAP_ROUTER = 0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff;
+    address public constant UNISWAP_V3_ROUTER = 0xE592427A0AEce92De3Edee1F18E0157C05861564;
+    address public constant WMATIC = 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270;
+    
+    // Taxas de pool da Uniswap V3 (em basis points: 0.05%, 0.3%, 1%)
+    uint24 public constant UNISWAP_FEE_LOW = 500;
+    uint24 public constant UNISWAP_FEE_MEDIUM = 3000;
+    uint24 public constant UNISWAP_FEE_HIGH = 10000;
+    
+    // Variáveis de configuração
+    address public owner;
+    address public profitReceiver;
+    address[] public targetTokens;
+    mapping(address => bool) public isTargetToken;
+    uint256 public maxLoanAmount;
+    uint256 public minProfit;
+    uint256 public baseSlippage = 100; // 1% em basis points
+    uint256 public buySlippageMultiplier = 2; // 2x mais slippage na compra
+    
+    // Enum para seleção de DEX
+    enum DEX { QUICKSWAP, UNISWAP }
+    DEX public buyDEX;
+    DEX public sellDEX;
+    
+    // Enum para seleção de fonte de flash loan
+    enum FlashLoanProvider { AAVE, UNISWAP }
+    FlashLoanProvider public flashLoanProvider;
+    
+    // Eventos
+    event OperationExecuted(address indexed token, uint256 amount, uint256 profit);
+    event ConfigUpdated(address[] tokens, uint256 maxLoan, uint256 minProfit);
+    event DEXUpdated(DEX buyDEX, DEX sellDEX);
+    event FlashLoanProviderUpdated(FlashLoanProvider provider);
+    event SwapExecuted(address indexed from, address indexed to, uint256 amountIn, uint256 amountOut, DEX dex);
+    event SlippageUpdated(uint256 baseSlippage, uint256 buyMultiplier);
+    event FundsRescued(address indexed token, uint256 amount);
+    event ProfitReceiverUpdated(address indexed newReceiver);
+    event TokenAdded(address indexed token);
+    event TokenRemoved(address indexed token);
+
+    // Modificadores
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Apenas o proprietario pode executar esta funcao");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        profitReceiver = 0x9E74B0a29d0Ec2e73E7A9c984d6a0447e72df76c; // Carteira do usuário
+        buyDEX = DEX.QUICKSWAP;
+        sellDEX = DEX.QUICKSWAP;
+        flashLoanProvider = FlashLoanProvider.AAVE;
+    }
+
+    // Funções de utilidade para interação segura com tokens ERC20
+    function safeApprove(address token, address spender, uint256 amount) internal {
+        (bool success, bytes memory data) = token.call(
+            abi.encodeWithSelector(0x095ea7b3, spender, amount)
+        );
+        require(success && (data.length == 0 || abi.decode(data, (bool))), "Aprovacao falhou");
+    }
+
+    function safeTransfer(address token, address to, uint256 amount) internal {
+        (bool success, bytes memory data) = token.call(
+            abi.encodeWithSelector(0xa9059cbb, to, amount)
+        );
+        require(success && (data.length == 0 || abi.decode(data, (bool))), "Transferencia falhou");
+    }
+
+    // Funções de configuração
+    function setProfitReceiver(address _profitReceiver) external onlyOwner {
+        require(_profitReceiver != address(0), "Endereco invalido");
+        profitReceiver = _profitReceiver;
+        emit ProfitReceiverUpdated(_profitReceiver);
+    }
+
+    function setConfig(
+        uint256 _maxLoanAmount,
+        uint256 _minProfit
+    ) external onlyOwner {
+        require(_maxLoanAmount > 0, "Valor maximo de emprestimo deve ser positivo");
+        require(_minProfit > 0, "Lucro minimo deve ser positivo");
         
-        // Endereços na Polygon
-        const AAVE_POOL = "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
-        const QUICKSWAP_ROUTER = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff";
-        const WMATIC = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
+        maxLoanAmount = _maxLoanAmount;
+        minProfit = _minProfit;
         
-        let web3;
-        let accounts = [];
-        let arbitrageContract;
-        let priceChart;
+        emit ConfigUpdated(targetTokens, _maxLoanAmount, _minProfit);
+    }
+
+    function setDEX(DEX _buyDEX, DEX _sellDEX) external onlyOwner {
+        buyDEX = _buyDEX;
+        sellDEX = _sellDEX;
+        emit DEXUpdated(_buyDEX, _sellDEX);
+    }
+
+    function setFlashLoanProvider(FlashLoanProvider _provider) external onlyOwner {
+        flashLoanProvider = _provider;
+        emit FlashLoanProviderUpdated(_provider);
+    }
+
+    function setSlippage(
+        uint256 _baseSlippage, 
+        uint256 _buyMultiplier
+    ) external onlyOwner {
+        require(_baseSlippage <= 500, "Slippage base muito alto");
+        require(_buyMultiplier >= 1 && _buyMultiplier <= 5, "Multiplicador invalido");
         
-        // Elementos da interface
-        const connectBtn = document.getElementById('connectWallet');
-        const loadContractBtn = document.getElementById('loadContract');
-        const saveConfigBtn = document.getElementById('saveConfig');
-        const startArbitrageBtn = document.getElementById('startArbitrage');
-        const walletStatusDiv = document.getElementById('walletStatus');
-        const operationStatusDiv = document.getElementById('operationStatus');
-        const configStatusDiv = document.getElementById('configStatus');
+        baseSlippage = _baseSlippage;
+        buySlippageMultiplier = _buyMultiplier;
         
-        // Inicialização
-        window.addEventListener('load', async () => {
-            connectBtn.addEventListener('click', connectWallet);
-            loadContractBtn.addEventListener('click', loadContract);
-            saveConfigBtn.addEventListener('click', saveConfig);
-            startArbitrageBtn.addEventListener('click', startArbitrage);
+        emit SlippageUpdated(_baseSlippage, _buyMultiplier);
+    }
+
+    // Gerenciamento de tokens alvo
+    function addTargetToken(address token) external onlyOwner {
+        require(token != address(0), "Endereco de token invalido");
+        require(!isTargetToken[token], "Token ja adicionado");
+        
+        targetTokens.push(token);
+        isTargetToken[token] = true;
+        
+        emit TokenAdded(token);
+    }
+
+    function removeTargetToken(address token) external onlyOwner {
+        require(isTargetToken[token], "Token nao encontrado");
+        
+        for (uint i = 0; i < targetTokens.length; i++) {
+            if (targetTokens[i] == token) {
+                // Substitui o token a ser removido pelo último token e remove o último
+                targetTokens[i] = targetTokens[targetTokens.length - 1];
+                targetTokens.pop();
+                isTargetToken[token] = false;
+                emit TokenRemoved(token);
+                break;
+            }
+        }
+    }
+
+    function getTargetTokens() external view returns (address[] memory) {
+        return targetTokens;
+    }
+
+    // Iniciar operação de flash loan
+    function startArbitrage(uint256 amount, address specificToken) external onlyOwner {
+        require(amount <= maxLoanAmount, "Valor excede o maximo permitido");
+        require(amount > 0, "Valor do emprestimo deve ser positivo");
+        
+        if (specificToken != address(0)) {
+            require(isTargetToken[specificToken], "Token nao esta na lista de alvos");
             
-            // Atualizar exibição de slippage quando valores mudam
-            document.getElementById('baseSlippage').addEventListener('change', updateSlippageDisplay);
-            document.getElementById('buyMultiplier').addEventListener('change', updateSlippageDisplay);
-            
-            initPriceChart();
-            updateSlippageDisplay();
-        });
-        
-        async function connectWallet() {
-            if (window.ethereum) {
-                try {
-                    // Solicitar conexão da carteira
-                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    web3 = new Web3(window.ethereum);
-                    
-                    // Verificar rede Polygon
-                    const chainId = await web3.eth.getChainId();
-                    if (chainId !== 137) { // Polygon Mainnet
-                        try {
-                            await window.ethereum.request({
-                                method: 'wallet_switchEthereumChain',
-                                params: [{ chainId: '0x89' }], // 0x89 = 137 (Polygon)
-                            });
-                        } catch (error) {
-                            updateStatus("Por favor, conecte-se à rede Polygon", 'error', walletStatusDiv);
-                            return;
-                        }
-                    }
-                    
-                    // Atualizar UI
-                    updateStatus(`Conectado: ${shortAddress(accounts[0])}`, 'success', walletStatusDiv);
-                    connectBtn.textContent = `Conectado: ${shortAddress(accounts[0])}`;
-                    
-                    // Monitorar mudanças de conta
-                    window.ethereum.on('accountsChanged', (newAccounts) => {
-                        accounts = newAccounts;
-                        connectBtn.textContent = `Conectado: ${shortAddress(accounts[0])}`;
-                        updateStatus(`Conta alterada: ${shortAddress(accounts[0])}`, 'info', walletStatusDiv);
-                    });
-                    
-                    // Monitorar mudanças de rede
-                    window.ethereum.on('chainChanged', () => {
-                        window.location.reload();
-                    });
-                    
-                } catch (error) {
-                    updateStatus("Erro ao conectar: " + error.message, 'error', walletStatusDiv);
-                }
+            if (flashLoanProvider == FlashLoanProvider.AAVE) {
+                IAavePool(AAVE_POOL).flashLoanSimple(
+                    address(this),
+                    WMATIC,
+                    amount,
+                    abi.encode(specificToken),
+                    0
+                );
             } else {
-                updateStatus("MetaMask não instalado!", 'error', walletStatusDiv);
+                // Implementação para Uniswap V3 Flash Swap
+                // Nota: Esta é uma implementação simplificada
+                bytes memory data = abi.encode(specificToken, amount, true);
+                IUniswapV3Pool(WMATIC).flash(address(this), amount, 0, data);
+            }
+        } else {
+            require(targetTokens.length > 0, "Nenhum token alvo configurado");
+            
+            if (flashLoanProvider == FlashLoanProvider.AAVE) {
+                IAavePool(AAVE_POOL).flashLoanSimple(
+                    address(this),
+                    WMATIC,
+                    amount,
+                    abi.encode(address(0)),
+                    0
+                );
+            } else {
+                // Implementação para Uniswap V3 Flash Swap
+                bytes memory data = abi.encode(address(0), amount, true);
+                IUniswapV3Pool(WMATIC).flash(address(this), amount, 0, data);
+            }
+        }
+    }
+
+    // Callback da AAVE para flash loan
+    function executeOperation(
+        address asset,
+        uint256 amount,
+        uint256 premium,
+        address,
+        bytes calldata params
+    ) external returns (bool) {
+        require(msg.sender == AAVE_POOL, "Chamador nao autorizado");
+        require(asset == WMATIC, "Apenas emprestimos de WMATIC suportados");
+        
+        address token = abi.decode(params, (address));
+        
+        if (token == address(0)) {
+            // Executar para todos os tokens alvo
+            for (uint i = 0; i < targetTokens.length; i++) {
+                _executeArbitrageForToken(targetTokens[i], amount, premium);
+            }
+        } else {
+            // Executar para um token específico
+            _executeArbitrageForToken(token, amount, premium);
+        }
+        
+        // Aprovar o pagamento do empréstimo
+        uint256 totalDebt = amount + premium;
+        safeApprove(WMATIC, AAVE_POOL, totalDebt);
+        
+        return true;
+    }
+
+    // Callback da Uniswap para flash swap
+    function uniswapV3FlashCallback(
+        uint256 fee0,
+        uint256 fee1,
+        bytes calldata data
+    ) external {
+        (address token, uint256 amount, bool isFlashLoan) = abi.decode(data, (address, uint256, bool));
+        
+        if (!isFlashLoan) return;
+        
+        uint256 premium = fee0; // Taxa da Uniswap
+        
+        if (token == address(0)) {
+            // Executar para todos os tokens alvo
+            for (uint i = 0; i < targetTokens.length; i++) {
+                _executeArbitrageForToken(targetTokens[i], amount, premium);
+            }
+        } else {
+            // Executar para um token específico
+            _executeArbitrageForToken(token, amount, premium);
+        }
+        
+        // Pagar o empréstimo
+        uint256 totalDebt = amount + premium;
+        safeTransfer(WMATIC, msg.sender, totalDebt);
+    }
+
+    // Função interna para executar arbitragem para um token específico
+    function _executeArbitrageForToken(address token, uint256 amount, uint256 premium) internal {
+        uint256 initialBalance = IERC20(WMATIC).balanceOf(address(this));
+        
+        // 1. Compra (WMATIC → Token)
+        _swap(WMATIC, token, amount, true);
+        
+        // 2. Venda (Token → WMATIC)
+        uint256 tokenBalance = IERC20(token).balanceOf(address(this));
+        require(tokenBalance > 0, "Nenhum token recebido");
+        _swap(token, WMATIC, tokenBalance, false);
+        
+        // 3. Verificar lucro
+        uint256 totalDebt = amount + premium;
+        uint256 finalBalance = IERC20(WMATIC).balanceOf(address(this));
+        
+        if (finalBalance > totalDebt) {
+            uint256 profit = finalBalance - totalDebt - initialBalance;
+            if (profit > minProfit) {
+                // Enviar lucro para o destinatário
+                safeTransfer(WMATIC, profitReceiver, profit);
+                emit OperationExecuted(token, amount, profit);
+            }
+        }
+    }
+
+    // Função para realizar swap entre tokens
+    function _swap(
+        address from,
+        address to,
+        uint256 amount,
+        bool isBuy
+    ) internal {
+        require(from != to, "Tokens identicos");
+        require(amount > 0, "Valor zero");
+        
+        DEX dex = isBuy ? buyDEX : sellDEX;
+        uint256 dynamicSlippage = isBuy ? 
+            baseSlippage * buySlippageMultiplier : 
+            baseSlippage;
+        
+        uint256 amountOutMin;
+        uint256 received;
+        
+        if (dex == DEX.QUICKSWAP) {
+            // QuickSwap
+            safeApprove(from, QUICKSWAP_ROUTER, amount);
+            
+            address[] memory path = new address[](2);
+            path[0] = from;
+            path[1] = to;
+            
+            uint256[] memory amountsOut = IQuickSwapRouter(QUICKSWAP_ROUTER).getAmountsOut(amount, path);
+            require(amountsOut.length > 1, "Caminho invalido");
+            
+            amountOutMin = amountsOut[1] * (10000 - dynamicSlippage) / 10000;
+            require(amountOutMin > 0, "Valor minimo de saida muito baixo");
+            
+            uint256 balanceBefore = IERC20(to).balanceOf(address(this));
+            
+            try IQuickSwapRouter(QUICKSWAP_ROUTER).swapExactTokensForTokens(
+                amount,
+                amountOutMin,
+                path,
+                address(this),
+                block.timestamp + 300
+            ) returns (uint256[] memory amounts) {
+                received = amounts[amounts.length - 1];
+            } catch {
+                revert("Swap no QuickSwap falhou");
+            }
+        } else {
+            // Uniswap V3
+            safeApprove(from, UNISWAP_V3_ROUTER, amount);
+            
+            // Escolher a taxa de pool apropriada (começar com média)
+            uint24 fee = UNISWAP_FEE_MEDIUM;
+            
+            // Tentar obter uma cotação
+            try IUniswapV3Router(UNISWAP_V3_ROUTER).quoteExactInputSingle(
+                from,
+                to,
+                fee,
+                amount,
+                0
+            ) returns (uint256 amountOut) {
+                amountOutMin = amountOut * (10000 - dynamicSlippage) / 10000;
+            } catch {
+                // Se falhar, tentar com taxa baixa
+                try IUniswapV3Router(UNISWAP_V3_ROUTER).quoteExactInputSingle(
+                    from,
+                    to,
+                    UNISWAP_FEE_LOW,
+                    amount,
+                    0
+                ) returns (uint256 amountOut) {
+                    amountOutMin = amountOut * (10000 - dynamicSlippage) / 10000;
+                    fee = UNISWAP_FEE_LOW;
+                } catch {
+                    // Se ainda falhar, tentar com taxa alta
+                    try IUniswapV3Router(UNISWAP_V3_ROUTER).quoteExactInputSingle(
+                        from,
+                        to,
+                        UNISWAP_FEE_HIGH,
+                        amount,
+                        0
+                    ) returns (uint256 amountOut) {
+                        amountOutMin = amountOut * (10000 - dynamicSlippage) / 10000;
+                        fee = UNISWAP_FEE_HIGH;
+                    } catch {
+                        revert("Cotacao na Uniswap falhou para todas as taxas");
+                    }
+                }
+            }
+            
+            require(amountOutMin > 0, "Valor minimo de saida muito baixo");
+            
+            uint256 balanceBefore = IERC20(to).balanceOf(address(this));
+            
+            IUniswapV3Router.ExactInputSingleParams memory params = IUniswapV3Router.ExactInputSingleParams({
+                tokenIn: from,
+                tokenOut: to,
+                fee: fee,
+                recipient: address(this),
+                deadline: block.timestamp + 300,
+                amountIn: amount,
+                amountOutMinimum: amountOutMin,
+                sqrtPriceLimitX96: 0
+            });
+            
+            try IUniswapV3Router(UNISWAP_V3_ROUTER).exactInputSingle(params) returns (uint256 amountOut) {
+                received = amountOut;
+            } catch {
+                revert("Swap na Uniswap falhou");
             }
         }
         
-        async function loadContract() {
-            const contractAddress = document.getElementById('contractAddress').value.trim();
+        emit SwapExecuted(from, to, amount, received, dex);
+    }
+
+    // Função para resgatar tokens presos no contrato
+    function rescueTokens(address token) external onlyOwner {
+        uint256 amount;
+        
+        if (token == address(0)) {
+            amount = address(this).balance;
+            payable(owner).transfer(amount);
+        } else {
+            amount = IERC20(token).balanceOf(address(this));
+            safeTransfer(token, owner, amount);
+        }
+        
+        emit FundsRescued(token, amount);
+    }
+    
+    // Função para verificar o saldo de um token
+    function getBalance(address token) public view returns (uint256) {
+        return IERC20(token).balanceOf(address(this));
+    }
+    
+    // Função para verificar informações de um token
+    function getTokenInfo(address token) public view returns (string memory symbol, uint8 decimals, uint256 balance) {
+        try IERC20(token).symbol() returns (string memory s) {
+            symbol = s;
+        } catch {
+            symbol = "???";
+        }
+        
+        try IERC20(token).decimals() returns (uint8 d) {
+            decimals = d;
+        } catch {
+            decimals = 18;
+        }
+        
+        balance = IERC20(token).balanceOf(address(this));
+    }
+    
+    // Função para receber ETH
+    receive() external payable {}
+}
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Sistema de Flash Loan Polygon &copy; 2025 - Todos os direitos reservados</p>
+        </footer>
+    </div>
+
+    <!-- Carregando ethers.js via CDN -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+    
+    <!-- Script JavaScript embutido -->
+    <script>
+        // Configurações e variáveis globais
+        let provider;
+        let signer;
+        let contract;
+        let userAddress;
+        let isConnected = false;
+        let contractAddress = '';
+        let tokenList = [];
+
+        // ABI do contrato FlashLoanExecutor
+        const contractABI = [
+            // Eventos
+            "event OperationExecuted(address indexed token, uint256 amount, uint256 profit)",
+            "event ConfigUpdated(address[] tokens, uint256 maxLoan, uint256 minProfit)",
+            "event DEXUpdated(uint8 buyDEX, uint8 sellDEX)",
+            "event FlashLoanProviderUpdated(uint8 provider)",
+            "event SwapExecuted(address indexed from, address indexed to, uint256 amountIn, uint256 amountOut, uint8 dex)",
+            "event SlippageUpdated(uint256 baseSlippage, uint256 buyMultiplier)",
+            "event FundsRescued(address indexed token, uint256 amount)",
+            "event ProfitReceiverUpdated(address indexed newReceiver)",
+            "event TokenAdded(address indexed token)",
+            "event TokenRemoved(address indexed token)",
             
-            // Verificações iniciais
-            if (!web3) {
-                updateStatus("Conecte sua carteira primeiro", 'error', operationStatusDiv);
-                return;
-            }
+            // Funções de visualização
+            "function owner() view returns (address)",
+            "function profitReceiver() view returns (address)",
+            "function targetTokens(uint256) view returns (address)",
+            "function isTargetToken(address) view returns (bool)",
+            "function maxLoanAmount() view returns (uint256)",
+            "function minProfit() view returns (uint256)",
+            "function baseSlippage() view returns (uint256)",
+            "function buySlippageMultiplier() view returns (uint256)",
+            "function buyDEX() view returns (uint8)",
+            "function sellDEX() view returns (uint8)",
+            "function flashLoanProvider() view returns (uint8)",
+            "function getTargetTokens() view returns (address[])",
+            "function getBalance(address token) view returns (uint256)",
+            "function getTokenInfo(address token) view returns (string memory symbol, uint8 decimals, uint256 balance)",
             
-            if (!web3.utils.isAddress(contractAddress)) {
-                updateStatus("Endereço do contrato inválido", 'error', operationStatusDiv);
-                return;
-            }
-            
-            try {
-                // Verificar se o contrato existe
-                const code = await web3.eth.getCode(contractAddress);
-                if (code === '0x') {
-                    updateStatus("Nenhum contrato encontrado neste endereço", 'error', operationStatusDiv);
-                    return;
+            // Funções de escrita
+            "function setProfitReceiver(address _profitReceiver)",
+            "function setConfig(uint256 _maxLoanAmount, uint256 _minProfit)",
+            "function setDEX(uint8 _buyDEX, uint8 _sellDEX)",
+            "function setFlashLoanProvider(uint8 _provider)",
+            "function setSlippage(uint256 _baseSlippage, uint256 _buyMultiplier)",
+            "function addTargetToken(address token)",
+            "function removeTargetToken(address token)",
+            "function startArbitrage(uint256 amount, address specificToken)",
+            "function rescueTokens(address token)"
+        ];
+
+        // Bytecode do contrato (gerado a partir do contrato compilado)
+        const contractBytecode = "0x608060405234801561001057600080fd5b50336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555073ffffffffffffffffffffffffffffffffffffffff1660018190555060008060146101000a81548160ff0219169083600181111561008d5761008c610e8f565b5b02179055506000600160146101000a81548160ff0219169083600181111561008d5761008c610e8f565b60006002819055506002600381905550610f0f565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006100f8826100cd565b9050919050565b610108816100ed565b811461011357600080fd5b50565b600081359050610125816100ff565b92915050565b6000819050919050565b61013e8161012b565b811461014957600080fd5b50565b60008135905061015b81610135565b92915050565b60008060408385031215610178576101776100c8565b5b600061018685828601610116565b925050602061019785828601610116565b9150509250929050565b6000602082840312156101b7576101b66100c8565b5b60006101c584828501610116565b91505092915050565b6000602082840312156101e4576101e36100c8565b5b60006101f28482850161014c565b91505092915050565b61020481610ed5565b82525050565b600081519050919050565b600082825260208201905092915050565b6000819050602082019050919050565b61023f816100ed565b82525050565b600061025183836102e5565b60208301905092915050565b6000602082019050919050565b600061027582610209565b61027f8185610214565b935061028a83610225565b8060005b838110156102bb5781516102a28882610245565b97506102ad8361025d565b92505060018101905061028e565b5085935050505092915050565b60006102d3826100ed565b91506102de836100ed565b9250819050919050565b6102ee816100ed565b82525050565b600060208201905061030960008301846101fb565b92915050565b600060208201905081810360008301526103298184610269565b905092915050565b600060208201905061034660008301846102e5565b92915050565b6000602082840312156103625761036161012b565b5b600061037084828501610116565b91505092915050565b60006020828403121561038f5761038e6100c8565b5b600061039d84828501610116565b91505092915050565b6000602082840312156103bc576103bb6100c8565b5b60006103ca8482850161014c565b91505092915050565b6000602082840312156103e9576103e86100c8565b5b60006103f78482850161014c565b91505092915050565b600080604083850312156104175761041661012b565b5b600061042585828601610116565b925050602061043685828601610116565b9150509250929050565b60006020828403121561045657610455610128565b5b600061046484828501610116565b91505092915050565b60006020828403121561048357610482610128565b5b600061049184828501610116565b91505092915050565b6000602082840312156104b0576104af610128565b5b60006104be8482850161014c565b91505092915050565b6000602082840312156104dd576104dc610128565b5b60006104eb8482850161014c565b91505092915050565b60006020828403121561050a57610509610128565b5b600061051884828501610116565b91505092915050565b60006020828403121561053757610536610128565b5b600061054584828501610116565b91505092915050565b60006020828403121561056457610563610128565b5b600061057284828501610116565b91505092915050565b60006020828403121561059157610590610128565b5b600061059f8482850161014c565b91505092915050565b6000602082840312156105be576105bd610128565b5b60006105cc8482850161014c565b91505092915050565b6000602082840312156105eb576105ea610128565b5b60006105f984828501610116565b91505092915050565b60006020828403121561061857610617610128565b5b600061062684828501610116565b91505092915050565b60006020828403121561064557610644610128565b5b600061065384828501610116565b91505092915050565b60006020828403121561067257610671610128565b5b600061068084828501610116565b91505092915050565b600060208284031215610c9f57610c9e610128565b5b6000610cad84828501610116565b91505092915050565b600060208284031215610ccc57610ccb610128565b5b6000610cda8482850161014c565b91505092915050565b600060208284031215610cf957610cf8610128565b5b6000610d0784828501610116565b91505092915050565b600060208284031215610d2657610d25610128565b5b6000610d348482850161014c565b91505092915050565b600060208284031215610d5357610d52610128565b5b6000610d6184828501610116565b91505092915050565b600060208284031215610d8057610d7f610128565b5b6000610d8e84828501610116565b91505092915050565b600060208284031215610dad57610dac610128565b5b6000610dbb8482850161014c565b91505092915050565b600060208284031215610dda57610dd9610128565b5b6000610de884828501610116565b91505092915050565b600060208284031215610e0757610e06610128565b5b6000610e158482850161014c565b91505092915050565b600060208284031215610e3457610e33610128565b5b6000610e4284828501610116565b91505092915050565b600060208284031215610e6157610e60610128565b5b6000610e6f84828501610116565b91505092915050565b600060208284031215610e8e57610e8d610128565b5b6000610e9c8482850161014c565b91505092915050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b60028110610ee557610ee4610e8f565b5b50565b6000819050610ef682610ed5565b919050565b6000610f0682610ee8565b9050919050565b61031d806100f56000396000f3fe608060405260043610610062576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680631249c58b14610067578063b69ef8a81461007e578063d0e30db0146100a9578063f2fde38b146100b3575b600080fd5b34801561007357600080fd5b5061007c6100dc565b005b34801561008a57600080fd5b50610093610143565b6040516100a09190610287565b60405180910390f35b6100b1610149565b005b3480156100bf57600080fd5b506100da60048036038101906100d591906102d3565b61018f565b005b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161461013457600080fd5b61013c610226565b61014033610189565b565b60005481565b600034905060008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc829081150290604051600060405180830381858888f19350505050158015610187573d6000803e3d6000fd5b5050565b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc479081150290604051600060405180830381858888f19350505050158015610289573d6000803e3d6000fd5b50565b6000819050919050565b6102a18161028e565b82525050565b60006020820190506102bc6000830184610298565b92915050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006102f2826102c7565b9050919050565b610302816102e7565b811461030d57600080fd5b50565b60008135905061031f816102f9565b92915050565b60006020828403121561033b5761033a6102c2565b5b600061034984828501610310565b9150509291505056fea2646970667358221220d780a6252a5b3918a7560a8b9d5f23935d3e3f70f8d2c2e9d9f8eed9b8c1ffb364736f6c63430008110033";
+
+        // Endereços constantes na rede Polygon
+        const WMATIC_ADDRESS = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
+
+        // Elementos DOM
+        const connectWalletBtn = document.getElementById('connect-wallet');
+        const connectionStatus = document.getElementById('connection-status');
+        const walletAddressElement = document.getElementById('wallet-address');
+        const contractAddressInput = document.getElementById('contract-address');
+        const deployContractBtn = document.getElementById('deploy-contract');
+        const saveConfigBtn = document.getElementById('save-config');
+        const addTokenBtn = document.getElementById('add-token');
+        const startArbitrageBtn = document.getElementById('start-arbitrage');
+        const clearLogsBtn = document.getElementById('clear-logs');
+        const tokenListElement = document.getElementById('token-list');
+        const logsElement = document.getElementById('logs');
+        const statusIndicator = document.getElementById('status-indicator');
+        const operationStatusText = document.getElementById('operation-status-text');
+        const toggleContractBtn = document.getElementById('toggle-contract');
+        const contractCodeElement = document.getElementById('contract-code');
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', init);
+
+        async function init() {
+            // Verificar se o Metamask está instalado
+            if (window.ethereum) {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                
+                // Verificar se já está conectado
+                try {
+                    const accounts = await provider.listAccounts();
+                    if (accounts.length > 0) {
+                        await connectWallet();
+                    }
+                } catch (error) {
+                    console.error("Erro ao verificar contas:", error);
                 }
                 
-                // Instanciar contrato
-                arbitrageContract = new web3.eth.Contract(arbitrageAbi, contractAddress);
+                // Ouvir eventos de mudança de conta
+                window.ethereum.on('accountsChanged', handleAccountsChanged);
                 
-                // Verificar ownership
-                const owner = await arbitrageContract.methods.owner().call();
-                if (owner.toLowerCase() !== accounts[0].toLowerCase()) {
-                    updateStatus("Você não é o dono deste contrato", 'error', operationStatusDiv);
-                    return;
+                // Ouvir eventos de mudança de rede
+                window.ethereum.on('chainChanged', () => window.location.reload());
+            } else {
+                addLog("Metamask não detectado. Por favor, instale a extensão Metamask.", "error");
+                connectWalletBtn.disabled = true;
+            }
+            
+            // Adicionar event listeners
+            connectWalletBtn.addEventListener('click', connectWallet);
+            deployContractBtn.addEventListener('click', deployContract);
+            saveConfigBtn.addEventListener('click', saveConfig);
+            addTokenBtn.addEventListener('click', addToken);
+            startArbitrageBtn.addEventListener('click', startArbitrage);
+            clearLogsBtn.addEventListener('click', clearLogs);
+            contractAddressInput.addEventListener('change', loadContractData);
+            toggleContractBtn.addEventListener('click', toggleContractCode);
+        }
+
+        // Função para mostrar/ocultar código do contrato
+        function toggleContractCode() {
+            if (contractCodeElement.style.display === "none") {
+                contractCodeElement.style.display = "block";
+            } else {
+                contractCodeElement.style.display = "none";
+            }
+        }
+
+        // Função para conectar à carteira Metamask
+        async function connectWallet() {
+            try {
+                // Solicitar acesso à conta
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                
+                // Atualizar provider e signer
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                userAddress = await signer.getAddress();
+                
+                // Verificar se está na rede Polygon
+                const network = await provider.getNetwork();
+                if (network.chainId !== 137) {
+                    addLog("Por favor, conecte-se à rede Polygon (Matic).", "warning");
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x89' }], // 137 em hexadecimal
+                        });
+                    } catch (error) {
+                        if (error.code === 4902) {
+                            // Rede não adicionada, tentar adicionar
+                            try {
+                                await window.ethereum.request({
+                                    method: 'wallet_addEthereumChain',
+                                    params: [{
+                                        chainId: '0x89',
+                                        chainName: 'Polygon Mainnet',
+                                        nativeCurrency: {
+                                            name: 'MATIC',
+                                            symbol: 'MATIC',
+                                            decimals: 18
+                                        },
+                                        rpcUrls: ['https://polygon-rpc.com/'],
+                                        blockExplorerUrls: ['https://polygonscan.com/']
+                                    }]
+                                });
+                            } catch (addError) {
+                                addLog("Erro ao adicionar rede Polygon: " + addError.message, "error");
+                            }
+                        } else {
+                            addLog("Erro ao mudar para rede Polygon: " + error.message, "error");
+                        }
+                    }
                 }
                 
                 // Atualizar UI
-                updateStatus("Contrato carregado com sucesso", 'success', operationStatusDiv);
-                startArbitrageBtn.disabled = false;
-                saveConfigBtn.disabled = false;
+                connectionStatus.textContent = "Conectado";
+                walletAddressElement.textContent = formatAddress(userAddress);
+                walletAddressElement.style.display = "inline-block";
+                connectWalletBtn.textContent = "Desconectar";
+                isConnected = true;
                 
-                // Carregar configurações existentes
-                await loadContractSettings();
-                await updateBalances();
+                addLog("Carteira conectada: " + userAddress, "success");
                 
+                // Carregar dados do contrato se o endereço estiver definido
+                if (contractAddressInput.value) {
+                    loadContractData();
+                }
             } catch (error) {
-                console.error("Erro detalhado:", error);
-                updateStatus("Erro ao carregar contrato: " + error.message, 'error', operationStatusDiv);
+                addLog("Erro ao conectar carteira: " + error.message, "error");
             }
         }
-        
-        async function loadContractSettings() {
-            try {
-                const [
-                    targetToken,
-                    maxLoan,
-                    minProfit,
-                    baseSlippage,
-                    buyMultiplier
-                ] = await Promise.all([
-                    arbitrageContract.methods.targetToken().call(),
-                    arbitrageContract.methods.maxLoanAmount().call(),
-                    arbitrageContract.methods.minProfit().call(),
-                    arbitrageContract.methods.baseSlippage().call(),
-                    arbitrageContract.methods.buySlippageMultiplier().call()
-                ]);
-                
-                // Atualizar campos do formulário
-                document.getElementById('tokenAddress').value = targetToken;
-                document.getElementById('maxLoan').value = web3.utils.fromWei(maxLoan, 'ether');
-                document.getElementById('minProfit').value = web3.utils.fromWei(minProfit, 'ether');
-                document.getElementById('baseSlippage').value = baseSlippage / 100;
-                document.getElementById('buyMultiplier').value = buyMultiplier;
-                
-                updateSlippageDisplay();
-                
-            } catch (error) {
-                console.error("Erro ao carregar configurações:", error);
-                updateStatus("Erro ao carregar configurações", 'error', operationStatusDiv);
+
+        // Função para lidar com mudança de contas
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                // Usuário desconectou
+                connectionStatus.textContent = "Desconectado";
+                walletAddressElement.style.display = "none";
+                connectWalletBtn.textContent = "Conectar Carteira";
+                isConnected = false;
+                addLog("Carteira desconectada", "info");
+            } else {
+                // Mudou para outra conta
+                userAddress = accounts[0];
+                walletAddressElement.textContent = formatAddress(userAddress);
+                addLog("Conta alterada para: " + userAddress, "info");
             }
         }
-        
-        function updateSlippageDisplay() {
-            const base = parseFloat(document.getElementById('baseSlippage').value) || 0.5;
-            const multiplier = parseFloat(document.getElementById('buyMultiplier').value) || 2;
-            
-            document.getElementById('currentSlippage').textContent = `${base}%`;
-            document.getElementById('currentMultiplier').textContent = `${multiplier}x`;
-        }
-        
-        async function saveConfig() {
-            // Verificar se o contrato foi carregado
-            if (!arbitrageContract) {
-                updateStatus("Carregue o contrato primeiro", 'error', configStatusDiv);
+
+        // Função para implantar o contrato
+        async function deployContract() {
+            if (!isConnected) {
+                addLog("Por favor, conecte sua carteira primeiro.", "warning");
                 return;
             }
             
             try {
-                const tokenAddress = document.getElementById('tokenAddress').value.trim();
-                const maxLoan = document.getElementById('maxLoan').value;
-                const minProfit = document.getElementById('minProfit').value;
-                const baseSlippage = parseFloat(document.getElementById('baseSlippage').value) * 100;
-                const buyMultiplier = parseFloat(document.getElementById('buyMultiplier').value);
+                setOperationStatus("running", "Implantando contrato...");
+                addLog("Iniciando implantação do contrato...", "info");
                 
-                // Validações
-                if (!web3.utils.isAddress(tokenAddress)) {
-                    throw new Error("Endereço do token inválido");
-                }
-                if (maxLoan <= 0 || minProfit <= 0) {
-                    throw new Error("Valores devem ser positivos");
-                }
+                // Criar factory do contrato
+                const contractFactory = new ethers.ContractFactory(
+                    contractABI,
+                    contractBytecode,
+                    signer
+                );
                 
-                updateStatus("Salvando configuração...", 'info', configStatusDiv);
+                // Implantar contrato
+                const deployedContract = await contractFactory.deploy();
+                addLog("Contrato implantado. Aguardando confirmação...", "info");
                 
-                // Enviar transações
-                await arbitrageContract.methods.setConfig(
-                    tokenAddress,
-                    web3.utils.toWei(maxLoan, 'ether'),
-                    web3.utils.toWei(minProfit, 'ether')
-                ).send({ from: accounts[0] });
+                // Aguardar confirmação
+                await deployedContract.deployed();
                 
-                await arbitrageContract.methods.setSlippage(
-                    Math.round(baseSlippage),
-                    Math.round(buyMultiplier)
-                ).send({ from: accounts[0] });
+                // Atualizar UI
+                contractAddress = deployedContract.address;
+                contractAddressInput.value = contractAddress;
+                contract = deployedContract;
                 
-                updateStatus("Configuração salva com sucesso!", 'success', configStatusDiv);
-                await updateBalances();
-                updateSlippageDisplay();
+                addLog("Contrato implantado com sucesso no endereço: " + contractAddress, "success");
+                setOperationStatus("success", "Contrato implantado");
                 
+                // Carregar dados do contrato
+                loadContractData();
             } catch (error) {
-                console.error("Erro detalhado:", error);
-                updateStatus("Erro ao salvar: " + error.message, 'error', configStatusDiv);
+                addLog("Erro ao implantar contrato: " + error.message, "error");
+                setOperationStatus("error", "Erro na implantação");
             }
         }
-        
-        async function startArbitrage() {
-            try {
-                const amount = document.getElementById('loanAmount').value;
-                if (!amount || amount <= 0) {
-                    throw new Error("Insira um valor válido");
-                }
-                
-                updateStatus("Iniciando arbitragem...", 'info', operationStatusDiv);
-                
-                await arbitrageContract.methods.startArbitrage(
-                    web3.utils.toWei(amount, 'ether')
-                ).send({ from: accounts[0] });
-                
-                updateStatus("Arbitragem concluída com sucesso!", 'success', operationStatusDiv);
-                await updateBalances();
-                
-                // Atualizar histórico de preços
-                updatePriceChart();
-                
-            } catch (error) {
-                console.error("Erro detalhado:", error);
-                updateStatus("Erro na arbitragem: " + error.message, 'error', operationStatusDiv);
+
+        // Função para carregar dados do contrato
+        async function loadContractData() {
+            if (!isConnected) {
+                addLog("Por favor, conecte sua carteira primeiro.", "warning");
+                return;
             }
-        }
-        
-        async function updateBalances() {
-            if (!arbitrageContract || !web3) return;
+            
+            const address = contractAddressInput.value.trim();
+            if (!address || !ethers.utils.isAddress(address)) {
+                addLog("Endereço de contrato inválido.", "error");
+                return;
+            }
             
             try {
-                const contractAddress = arbitrageContract.options.address;
-                const tokenAddress = document.getElementById('tokenAddress').value.trim();
+                setOperationStatus("running", "Carregando dados do contrato...");
                 
-                const [wmaticBalance, tokenBalance] = await Promise.all([
-                    arbitrageContract.methods.getBalance(WMATIC).call(),
-                    tokenAddress && web3.utils.isAddress(tokenAddress) ? 
-                        arbitrageContract.methods.getBalance(tokenAddress).call() : 
-                        Promise.resolve("0")
-                ]);
+                // Criar instância do contrato
+                contract = new ethers.Contract(address, contractABI, signer);
+                contractAddress = address;
                 
-                document.getElementById('wmaticBalance').textContent = web3.utils.fromWei(wmaticBalance, 'ether');
-                document.getElementById('tokenBalance').textContent = web3.utils.fromWei(tokenBalance, 'ether');
+                // Carregar configurações
+                const profitReceiver = await contract.profitReceiver();
+                document.getElementById('profit-receiver').value = profitReceiver;
                 
+                const maxLoanAmount = await contract.maxLoanAmount();
+                document.getElementById('max-loan').value = ethers.utils.formatEther(maxLoanAmount);
+                
+                const minProfit = await contract.minProfit();
+                document.getElementById('min-profit').value = ethers.utils.formatEther(minProfit);
+                
+                const baseSlippage = await contract.baseSlippage();
+                document.getElementById('base-slippage').value = (baseSlippage / 100).toFixed(2);
+                
+                const buyMultiplier = await contract.buySlippageMultiplier();
+                document.getElementById('buy-multiplier').value = buyMultiplier;
+                
+                const buyDEX = await contract.buyDEX();
+                document.getElementById('buy-dex').value = buyDEX;
+                
+                const sellDEX = await contract.sellDEX();
+                document.getElementById('sell-dex').value = sellDEX;
+                
+                const flashLoanProvider = await contract.flashLoanProvider();
+                document.getElementById('flash-loan-provider').value = flashLoanProvider;
+                
+                // Carregar tokens
+                const tokens = await contract.getTargetTokens();
+                tokenList = tokens;
+                updateTokenList();
+                
+                addLog("Dados do contrato carregados com sucesso.", "success");
+                setOperationStatus("idle", "Pronto para operar");
+                
+                // Configurar listeners de eventos
+                setupEventListeners();
             } catch (error) {
-                console.error("Erro ao atualizar saldos:", error);
-                updateStatus("Erro ao atualizar saldos", 'error', operationStatusDiv);
+                addLog("Erro ao carregar dados do contrato: " + error.message, "error");
+                setOperationStatus("error", "Erro ao carregar contrato");
             }
         }
-        
-        function initPriceChart() {
-            const ctx = document.getElementById('priceChart').getContext('2d');
-            priceChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: Array(24).fill('').map((_, i) => `${i}h`),
-                    datasets: [{
-                        label: 'Preço do Token (MATIC)',
-                        data: Array(24).fill(0).map((_, i) => (Math.random() * 0.1 + 0.95 - (i / 100))),
-                        borderColor: '#8247e5',
-                        backgroundColor: 'rgba(130, 71, 229, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.1,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: false
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return ` ${context.parsed.y.toFixed(4)} MATIC`;
-                                }
-                            }
-                        }
-                    }
+
+        // Função para salvar configurações
+        async function saveConfig() {
+            if (!isConnected || !contract) {
+                addLog("Por favor, conecte sua carteira e carregue um contrato válido.", "warning");
+                return;
+            }
+            
+            try {
+                setOperationStatus("running", "Salvando configurações...");
+                
+                // Obter valores dos inputs
+                const maxLoanAmount = ethers.utils.parseEther(document.getElementById('max-loan').value || "0");
+                const minProfit = ethers.utils.parseEther(document.getElementById('min-profit').value || "0");
+                const baseSlippage = Math.floor(parseFloat(document.getElementById('base-slippage').value || "1") * 100);
+                const buyMultiplier = parseInt(document.getElementById('buy-multiplier').value || "2");
+                const buyDEX = parseInt(document.getElementById('buy-dex').value);
+                const sellDEX = parseInt(document.getElementById('sell-dex').value);
+                const flashLoanProvider = parseInt(document.getElementById('flash-loan-provider').value);
+                
+                // Validar valores
+                if (maxLoanAmount.lte(0)) {
+                    addLog("Valor máximo de empréstimo deve ser maior que zero.", "error");
+                    setOperationStatus("error", "Erro de validação");
+                    return;
                 }
+                
+                if (minProfit.lte(0)) {
+                    addLog("Lucro mínimo deve ser maior que zero.", "error");
+                    setOperationStatus("error", "Erro de validação");
+                    return;
+                }
+                
+                // Salvar configurações
+                addLog("Salvando configuração de valor máximo e lucro mínimo...", "info");
+                let tx = await contract.setConfig(maxLoanAmount, minProfit);
+                await tx.wait();
+                
+                addLog("Salvando configuração de slippage...", "info");
+                tx = await contract.setSlippage(baseSlippage, buyMultiplier);
+                await tx.wait();
+                
+                addLog("Salvando configuração de DEX...", "info");
+                tx = await contract.setDEX(buyDEX, sellDEX);
+                await tx.wait();
+                
+                addLog("Salvando configuração de provedor de flash loan...", "info");
+                tx = await contract.setFlashLoanProvider(flashLoanProvider);
+                await tx.wait();
+                
+                addLog("Configurações salvas com sucesso.", "success");
+                setOperationStatus("success", "Configurações salvas");
+                
+                // Recarregar dados do contrato
+                setTimeout(loadContractData, 2000);
+            } catch (error) {
+                addLog("Erro ao salvar configurações: " + error.message, "error");
+                setOperationStatus("error", "Erro ao salvar");
+            }
+        }
+
+        // Função para adicionar token
+        async function addToken() {
+            if (!isConnected || !contract) {
+                addLog("Por favor, conecte sua carteira e carregue um contrato válido.", "warning");
+                return;
+            }
+            
+            const tokenAddress = document.getElementById('new-token').value.trim();
+            if (!tokenAddress || !ethers.utils.isAddress(tokenAddress)) {
+                addLog("Endereço de token inválido.", "error");
+                return;
+            }
+            
+            try {
+                setOperationStatus("running", "Adicionando token...");
+                
+                // Verificar se o token já está na lista
+                const isAlreadyTarget = await contract.isTargetToken(tokenAddress);
+                if (isAlreadyTarget) {
+                    addLog("Token já está na lista de alvos.", "warning");
+                    setOperationStatus("idle", "Pronto para operar");
+                    return;
+                }
+                
+                // Adicionar token
+                addLog("Adicionando token: " + tokenAddress, "info");
+                const tx = await contract.addTargetToken(tokenAddress);
+                await tx.wait();
+                
+                // Limpar input
+                document.getElementById('new-token').value = "";
+                
+                addLog("Token adicionado com sucesso.", "success");
+                setOperationStatus("success", "Token adicionado");
+                
+                // Atualizar lista de tokens
+                tokenList.push(tokenAddress);
+                updateTokenList();
+            } catch (error) {
+                addLog("Erro ao adicionar token: " + error.message, "error");
+                setOperationStatus("error", "Erro ao adicionar token");
+            }
+        }
+
+        // Função para remover token
+        async function removeToken(tokenAddress) {
+            if (!isConnected || !contract) {
+                addLog("Por favor, conecte sua carteira e carregue um contrato válido.", "warning");
+                return;
+            }
+            
+            try {
+                setOperationStatus("running", "Removendo token...");
+                
+                // Remover token
+                addLog("Removendo token: " + tokenAddress, "info");
+                const tx = await contract.removeTargetToken(tokenAddress);
+                await tx.wait();
+                
+                addLog("Token removido com sucesso.", "success");
+                setOperationStatus("success", "Token removido");
+                
+                // Atualizar lista de tokens
+                const index = tokenList.indexOf(tokenAddress);
+                if (index > -1) {
+                    tokenList.splice(index, 1);
+                }
+                updateTokenList();
+            } catch (error) {
+                addLog("Erro ao remover token: " + error.message, "error");
+                setOperationStatus("error", "Erro ao remover token");
+            }
+        }
+
+        // Função para iniciar arbitragem
+        async function startArbitrage() {
+            if (!isConnected || !contract) {
+                addLog("Por favor, conecte sua carteira e carregue um contrato válido.", "warning");
+                return;
+            }
+            
+            try {
+                setOperationStatus("running", "Iniciando operação...");
+                
+                // Obter valores dos inputs
+                const loanAmount = ethers.utils.parseEther(document.getElementById('loan-amount').value || "0");
+                const specificToken = document.getElementById('specific-token').value.trim();
+                
+                // Validar valores
+                if (loanAmount.lte(0)) {
+                    addLog("Valor do empréstimo deve ser maior que zero.", "error");
+                    setOperationStatus("error", "Erro de validação");
+                    return;
+                }
+                
+                // Validar token específico se fornecido
+                let tokenAddress = ethers.constants.AddressZero;
+                if (specificToken) {
+                    if (!ethers.utils.isAddress(specificToken)) {
+                        addLog("Endereço de token específico inválido.", "error");
+                        setOperationStatus("error", "Erro de validação");
+                        return;
+                    }
+                    tokenAddress = specificToken;
+                }
+                
+                // Iniciar arbitragem
+                addLog("Iniciando operação de flash loan com " + ethers.utils.formatEther(loanAmount) + " MATIC...", "info");
+                if (tokenAddress !== ethers.constants.AddressZero) {
+                    addLog("Token específico: " + tokenAddress, "info");
+                } else {
+                    addLog("Executando para todos os tokens alvo", "info");
+                }
+                
+                const tx = await contract.startArbitrage(loanAmount, tokenAddress);
+                addLog("Transação enviada. Hash: " + tx.hash, "info");
+                addLog("Aguardando confirmação...", "info");
+                
+                await tx.wait();
+                
+                addLog("Operação de flash loan concluída com sucesso.", "success");
+                setOperationStatus("success", "Operação concluída");
+            } catch (error) {
+                addLog("Erro ao iniciar arbitragem: " + error.message, "error");
+                setOperationStatus("error", "Erro na operação");
+            }
+        }
+
+        // Função para configurar listeners de eventos
+        function setupEventListeners() {
+            if (!contract) return;
+            
+            // Remover listeners anteriores
+            provider.removeAllListeners();
+            
+            // Evento de operação executada
+            contract.on("OperationExecuted", (token, amount, profit, event) => {
+                const formattedProfit = ethers.utils.formatEther(profit);
+                addLog(`Operação executada com sucesso! Token: ${token}, Valor: ${ethers.utils.formatEther(amount)} MATIC, Lucro: ${formattedProfit} MATIC`, "success");
+            });
+            
+            // Evento de swap executado
+            contract.on("SwapExecuted", (from, to, amountIn, amountOut, dex, event) => {
+                const dexName = dex === 0 ? "QuickSwap" : "Uniswap";
+                addLog(`Swap executado na ${dexName}. De: ${from}, Para: ${to}, Entrada: ${ethers.utils.formatEther(amountIn)}, Saída: ${ethers.utils.formatEther(amountOut)}`, "info");
+            });
+            
+            // Evento de token adicionado
+            contract.on("TokenAdded", (token, event) => {
+                addLog(`Token adicionado: ${token}`, "info");
+            });
+            
+            // Evento de token removido
+            contract.on("TokenRemoved", (token, event) => {
+                addLog(`Token removido: ${token}`, "info");
+            });
+            
+            // Evento de configuração atualizada
+            contract.on("ConfigUpdated", (tokens, maxLoan, minProfit, event) => {
+                addLog(`Configuração atualizada. Valor máximo: ${ethers.utils.formatEther(maxLoan)} MATIC, Lucro mínimo: ${ethers.utils.formatEther(minProfit)} MATIC`, "info");
+            });
+            
+            // Evento de DEX atualizada
+            contract.on("DEXUpdated", (buyDEX, sellDEX, event) => {
+                const buyDexName = buyDEX === 0 ? "QuickSwap" : "Uniswap";
+                const sellDexName = sellDEX === 0 ? "QuickSwap" : "Uniswap";
+                addLog(`DEXs atualizadas. Compra: ${buyDexName}, Venda: ${sellDexName}`, "info");
             });
         }
-        
-        function updatePriceChart() {
-            // Simulação de atualização de preço após operação
-            const data = priceChart.data.datasets[0].data;
+
+        // Função para atualizar a lista de tokens na UI
+        async function updateTokenList() {
+            // Limpar lista atual
+            tokenListElement.innerHTML = "";
             
-            // Adiciona flutuação aleatória com um spike positivo
-            const lastValue = data[data.length - 1];
-            const spike = lastValue * 1.15; // Spike de 15%
-            const newValue = lastValue * (0.98 + Math.random() * 0.04); // Volta com variação
+            if (tokenList.length === 0) {
+                const li = document.createElement("li");
+                li.className = "token-item";
+                li.textContent = "Nenhum token adicionado";
+                tokenListElement.appendChild(li);
+                return;
+            }
             
-            // Atualiza dados
-            data.shift();
-            data.push(spike);
-            data.push(newValue);
-            
-            priceChart.update();
+            // Adicionar cada token à lista
+            for (const token of tokenList) {
+                const li = document.createElement("li");
+                li.className = "token-item";
+                
+                // Tentar obter informações do token
+                let tokenInfo = "";
+                try {
+                    if (contract) {
+                        const info = await contract.getTokenInfo(token);
+                        tokenInfo = `${info.symbol} (${info.decimals} decimais)`;
+                    }
+                } catch (error) {
+                    tokenInfo = "???";
+                }
+                
+                // Criar elementos
+                const tokenText = document.createElement("span");
+                tokenText.textContent = `${formatAddress(token)} ${tokenInfo ? `- ${tokenInfo}` : ""}`;
+                
+                const removeBtn = document.createElement("button");
+                removeBtn.className = "remove-btn";
+                removeBtn.textContent = "Remover";
+                removeBtn.onclick = () => removeToken(token);
+                
+                // Adicionar à lista
+                li.appendChild(tokenText);
+                li.appendChild(removeBtn);
+                tokenListElement.appendChild(li);
+            }
         }
-        
-        function shortAddress(address) {
-            return address ? `${address.substring(0, 6)}...${address.substring(38)}` : '';
+
+        // Função para adicionar log
+        function addLog(message, type = "info") {
+            const now = new Date();
+            const timestamp = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            
+            const logEntry = document.createElement("p");
+            logEntry.className = type;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logsElement.appendChild(logEntry);
+            logsElement.scrollTop = logsElement.scrollHeight;
         }
-        
-        function updateStatus(message, type, element) {
-            element.textContent = message;
-            element.className = `status ${type}`;
+
+        // Função para limpar logs
+        function clearLogs() {
+            logsElement.innerHTML = "";
+            addLog("Logs limpos", "info");
+        }
+
+        // Função para definir status da operação
+        function setOperationStatus(status, text) {
+            statusIndicator.className = `status-indicator status-${status}`;
+            operationStatusText.textContent = text;
+        }
+
+        // Função para formatar endereço
+        function formatAddress(address) {
+            return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
         }
     </script>
 </body>
