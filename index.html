@@ -79,7 +79,6 @@
   ];
 
   let provider, signer, contract;
-
   const log = msg => {
     const logs = document.getElementById("logs");
     logs.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
@@ -108,7 +107,6 @@
     const token = document.getElementById("tokenAddress").value;
     const amount = document.getElementById("amount").value;
     if (!contractAddr || !token || !amount) return alert("Preencha todos os campos.");
-
     if (!signer) {
       return alert("Conecte a carteira primeiro.");
     }
@@ -117,20 +115,33 @@
     const parsedAmount = ethers.utils.parseEther(amount);
 
     try {
-      log("Adicionando token alvo...");
-      const tx1 = await contract.addTargetToken(token);
-      await tx1.wait();
-      log("Token adicionado.");
+        // Check if token is already a target token
+        log("Verificando tokens alvo existentes...");
+        const targetTokens = await contract.getTargetTokens();
+        const tokenAlreadyAdded = targetTokens.includes(token);
 
-      log("Executando arbitragem...");
-      const tx2 = await contract.startArbitrage(parsedAmount, token, {
-        gasLimit: ethers.utils.hexlify(1500000)
-      });
-      log("Transação enviada: " + tx2.hash);
-      await tx2.wait();
-      log("Flash Loan executado.");
+        if (!tokenAlreadyAdded) {
+            log("Adicionando token alvo...");
+            const tx1 = await contract.addTargetToken(token);
+            await tx1.wait();
+            log("Token adicionado.");
+        } else {
+            log("Token já é um token alvo. Pulando a adição.");
+        }
+        
+        log("Executando arbitragem...");
+        // Increase gasLimit significantly or remove it to let Ethers.js estimate
+        // A value like 5,000,000 to 10,000,000 might be more appropriate for complex swaps
+        const tx2 = await contract.startArbitrage(parsedAmount, token, {
+            gasLimit: ethers.utils.hexlify(5000000) // Increased gas limit. Consider dynamic estimation.
+        });
+        log("Transação enviada: " + tx2.hash);
+        await tx2.wait();
+        log("Flash Loan executado.");
     } catch (e) {
       log("Erro: " + e.message);
+      // More specific error handling could be added here to differentiate between
+      // token addition errors and arbitrage execution errors.
     }
   };
 </script>
