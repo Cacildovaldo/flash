@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Flash Loan Executor</title>
   <style>
     body {
@@ -69,7 +69,7 @@
   <div class="log" id="logs"></div>
 </div>
 
-<script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>
   const abi = [
     "function startArbitrage(uint256 amount, address specificToken) external",
@@ -87,15 +87,19 @@
   };
 
   document.getElementById("connect").onclick = async () => {
-    if (window.ethereum) {
-      provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      signer = provider.getSigner();
-      const address = await signer.getAddress();
-      document.getElementById("wallet").textContent = "Carteira: " + address;
-      log("Carteira conectada: " + address);
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        const address = await signer.getAddress();
+        document.getElementById("wallet").textContent = "Carteira: " + address;
+        log("Carteira conectada: " + address);
+      } catch (err) {
+        log("Erro ao conectar carteira: " + err.message);
+      }
     } else {
-      alert("MetaMask não encontrada.");
+      alert("MetaMask não encontrada. Instale a extensão no navegador.");
     }
   };
 
@@ -104,6 +108,10 @@
     const token = document.getElementById("tokenAddress").value;
     const amount = document.getElementById("amount").value;
     if (!contractAddr || !token || !amount) return alert("Preencha todos os campos.");
+
+    if (!signer) {
+      return alert("Conecte a carteira primeiro.");
+    }
 
     contract = new ethers.Contract(contractAddr, abi, signer);
     const parsedAmount = ethers.utils.parseEther(amount);
