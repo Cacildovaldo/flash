@@ -18,15 +18,19 @@
       padding: 30px;
     }
     h1 {
-      color: #00c896;}
+      color: #00c896;
+    }
     input, select, button {
       padding: 10px;
       margin: 5px 0;
       border-radius: 5px;
       border: none;
+      color: #333; /* Cor do texto para inputs e selects */
     }
     input, select {
       width: 100%;
+      background-color: #333; /* Fundo escuro para inputs e selects */
+      color: #eee; /* Texto claro */
     }
     button {
       background-color: #00c896;
@@ -44,6 +48,11 @@
       margin-top: 20px;
       height: 200px;
       overflow-y: scroll;
+      border: 1px solid #00c896;
+    }
+    label {
+      margin-top: 10px;
+      display: block;
     }
   </style>
 </head>
@@ -54,14 +63,31 @@
   <div id="wallet">Carteira: não conectada</div>
 
   <h2>Parâmetros</h2>
-  <label>Endereço do contrato:</label>
+  <label for="contractAddress">Endereço do contrato:</label>
   <input type="text" id="contractAddress" placeholder="0x...">
 
-  <label>Endereço do Token Alvo:</label>
+  <label for="tokenAddress">Endereço do Token Alvo:</label>
   <input type="text" id="tokenAddress" placeholder="0x...">
 
-  <label>Valor do empréstimo (MATIC):</label>
+  <label for="amount">Valor do empréstimo (MATIC):</label>
   <input type="number" id="amount" placeholder="Ex: 5">
+
+  <label for="flashLoanProvider">Provedor de Flash Loan:</label>
+  <select id="flashLoanProvider">
+    <option value="AAVE">AAVE</option>
+    </select>
+
+  <label for="buyDEX">DEX de Compra:</label>
+  <select id="buyDEX">
+    <option value="QUICKSWAP">QuickSwap</option>
+    <option value="UNISWAP">Uniswap V3</option>
+  </select>
+
+  <label for="sellDEX">DEX de Venda:</label>
+  <select id="sellDEX">
+    <option value="QUICKSWAP">QuickSwap</option>
+    <option value="UNISWAP">Uniswap V3</option>
+  </select>
 
   <button id="executar">Executar Arbitragem</button>
 
@@ -70,10 +96,13 @@
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>
+  // ABI do contrato - Mantenha-a atualizada com seu contrato
   const abi = [
     "function startArbitrage(uint256 amount, address specificToken) external",
     "function addTargetToken(address token) external",
     "function getTargetTokens() view returns (address[])",
+    "function setFlashLoanProvider(uint8 _provider) external", // Adicionado para controle via UI
+    "function setDEX(uint8 _buyDEX, uint8 _sellDEX) external", // Adicionado para controle via UI
     "event OperationExecuted(address indexed token, uint256 amount, uint256 profit)"
   ];
 
@@ -87,25 +116,16 @@
   document.getElementById("connect").onclick = async () => {
     if (typeof window.ethereum !== 'undefined') {
       try {
-        // Solicita acesso às contas da MetaMask
         await window.ethereum.request({ method: 'eth_requestAccounts' });
-        
-        // Cria um provedor web3 usando a MetaMask
         provider = new ethers.providers.Web3Provider(window.ethereum);
-        
-        // Obtém o signer (a conta conectada)
         signer = provider.getSigner();
-        
-        // Obtém o endereço da conta conectada e atualiza a interface
         const address = await signer.getAddress();
         document.getElementById("wallet").textContent = "Carteira: " + address;
         log("Carteira conectada: " + address);
       } catch (err) {
-        // Captura e loga erros durante a conexão (ex: usuário negou a conexão)
         log("Erro ao conectar carteira: " + err.message);
       }
     } else {
-      // Alerta se a MetaMask não for detectada
       alert("MetaMask não encontrada. Instale a extensão no navegador.");
     }
   };
@@ -114,6 +134,10 @@
     const contractAddr = document.getElementById("contractAddress").value;
     const token = document.getElementById("tokenAddress").value;
     const amount = document.getElementById("amount").value;
+    const selectedFlashLoanProvider = document.getElementById("flashLoanProvider").value;
+    const selectedBuyDEX = document.getElementById("buyDEX").value;
+    const selectedSellDEX = document.getElementById("sellDEX").value;
+
     if (!contractAddr || !token || !amount) {
       return alert("Preencha todos os campos.");
     }
@@ -125,9 +149,24 @@
     const parsedAmount = ethers.utils.parseEther(amount);
 
     try {
+        log("Configurando provedor de Flash Loan e DEXs...");
+        // Mapear string para enum (0=QUICKSWAP, 1=UNISWAP para DEX; 0=AAVE, 1=UNISWAP para FlashLoanProvider)
+        const flashLoanProviderEnum = selectedFlashLoanProvider === "AAVE" ? 0 : 1;
+        const buyDEXEnum = selectedBuyDEX === "QUICKSWAP" ? 0 : 1;
+        const sellDEXEnum = selectedSellDEX === "QUICKSWAP" ? 0 : 1;
+
+        // Chamar setFlashLoanProvider e setDEX. Estas chamadas também podem falhar se as permissões estiverem erradas
+        // ou se o contrato estiver em um estado inesperado.
+        const txProvider = await contract.setFlashLoanProvider(flashLoanProviderEnum);
+        await txProvider.wait();
+        log(`Provedor de Flash Loan definido para: ${selectedFlashLoanProvider}`);
+
+        const txDEX = await contract.setDEX(buyDEXEnum, sellDEXEnum);
+        await txDEX.wait();
+        log(`DEXs de compra/venda definidas para: ${selectedBuyDEX}/${selectedSellDEX}`);
+
         log("Verificando se o token já é alvo...");
         const targetTokens = await contract.getTargetTokens();
-        // Converte os endereços para minúsculas para uma comparação robusta
         const tokenAlreadyAdded = targetTokens.map(addr => addr.toLowerCase()).includes(token.toLowerCase());
 
         if (!tokenAlreadyAdded) {
@@ -139,14 +178,36 @@
             log("Token já está na lista de alvos. Pulando adição.");
         }
         
+        log("Simulando arbitragem para estimar gás e verificar reversões...");
+        // Usar callStatic para simular a transação e obter a mensagem de erro em caso de reversão
+        try {
+            await contract.callStatic.startArbitrage(parsedAmount, token);
+            log("Simulação bem-sucedida. A transação deve ser executada.");
+        } catch (simError) {
+            log(`**SIMULAÇÃO FALHOU: ${simError.message || simError}**`);
+            log("A transação será revertida. Por favor, verifique os parâmetros e a liquidez.");
+            return; // Impede o envio da transação real se a simulação falhar
+        }
+
+        log("Estimando o gás para a transação real...");
+        const estimatedGas = await contract.estimateGas.startArbitrage(parsedAmount, token);
+        log(`Gás estimado: ${estimatedGas.toString()}`);
         log("Executando arbitragem...");
-        // Deixar Ethers.js estimar o gasLimit automaticamente é a melhor prática
-        const tx2 = await contract.startArbitrage(parsedAmount, token);
+        
+        // Enviar a transação real. Agora a MetaMask terá uma estimativa de gás válida (se a simulação passou).
+        const tx2 = await contract.startArbitrage(parsedAmount, token, {
+            gasLimit: estimatedGas.mul(120).div(100) // Adiciona uma margem de 20%
+        }); 
+        
         log("Transação enviada: " + tx2.hash);
         await tx2.wait();
         log("Flash Loan executado com sucesso.");
     } catch (e) {
-      log("Erro na operação: " + e.message);
+      log("Erro na operação (MetaMask ou Contrato): " + e.message);
+      if (e.code === 'UNPREDICTABLE_GAS_LIMIT' || e.code === -32603) {
+          log("Erro de gás imprevisível. Isso geralmente significa que a transação falharia na blockchain.");
+          log("Verifique se o valor do empréstimo não excede o limite, se há liquidez suficiente ou se o contrato está configurado corretamente.");
+      }
     }
   };
 </script>
