@@ -18,8 +18,7 @@
       padding: 30px;
     }
     h1 {
-      color: #00c896;
-    }
+      color: #00c896;}
     input, select, button {
       padding: 10px;
       margin: 5px 0;
@@ -88,16 +87,25 @@
   document.getElementById("connect").onclick = async () => {
     if (typeof window.ethereum !== 'undefined') {
       try {
+        // Solicita acesso às contas da MetaMask
         await window.ethereum.request({ method: 'eth_requestAccounts' });
+        
+        // Cria um provedor web3 usando a MetaMask
         provider = new ethers.providers.Web3Provider(window.ethereum);
+        
+        // Obtém o signer (a conta conectada)
         signer = provider.getSigner();
+        
+        // Obtém o endereço da conta conectada e atualiza a interface
         const address = await signer.getAddress();
         document.getElementById("wallet").textContent = "Carteira: " + address;
         log("Carteira conectada: " + address);
       } catch (err) {
+        // Captura e loga erros durante a conexão (ex: usuário negou a conexão)
         log("Erro ao conectar carteira: " + err.message);
       }
     } else {
+      // Alerta se a MetaMask não for detectada
       alert("MetaMask não encontrada. Instale a extensão no navegador.");
     }
   };
@@ -118,12 +126,13 @@
 
     try {
         log("Verificando se o token já é alvo...");
-        const targetTokens = await contract.getTargetTokens(); [cite: 66]
-        const tokenAlreadyAdded = targetTokens.includes(token);
+        const targetTokens = await contract.getTargetTokens();
+        // Converte os endereços para minúsculas para uma comparação robusta
+        const tokenAlreadyAdded = targetTokens.map(addr => addr.toLowerCase()).includes(token.toLowerCase());
 
         if (!tokenAlreadyAdded) {
             log("Adicionando token alvo...");
-            const tx1 = await contract.addTargetToken(token); [cite: 63]
+            const tx1 = await contract.addTargetToken(token);
             await tx1.wait();
             log("Token adicionado.");
         } else {
@@ -131,16 +140,13 @@
         }
         
         log("Executando arbitragem...");
-        // Removido o gasLimit fixo para que Ethers.js e MetaMask possam estimar automaticamente.
-        // Isso é crucial para operações de flash loan que podem ter custos de gás variáveis.
-        const tx2 = await contract.startArbitrage(parsedAmount, token); [cite: 67]
+        // Deixar Ethers.js estimar o gasLimit automaticamente é a melhor prática
+        const tx2 = await contract.startArbitrage(parsedAmount, token);
         log("Transação enviada: " + tx2.hash);
         await tx2.wait();
         log("Flash Loan executado com sucesso.");
     } catch (e) {
       log("Erro na operação: " + e.message);
-      // Analisar e.message pode dar mais detalhes sobre o erro específico,
-      // como uma reversão de contrato ou falha na estimativa de gás.
     }
   };
 </script>
