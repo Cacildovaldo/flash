@@ -123,7 +123,9 @@
       log("Token adicionado.");
 
       log("Executando arbitragem...");
-      const tx2 = await contract.startArbitrage(parsedAmount, token);
+      const tx2 = await contract.startArbitrage(parsedAmount, token, {
+        gasLimit: ethers.utils.hexlify(1500000)
+      });
       log("Transação enviada: " + tx2.hash);
       await tx2.wait();
       log("Flash Loan executado.");
