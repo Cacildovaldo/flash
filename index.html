@@ -89,6 +89,12 @@
     <option value="UNISWAP">Uniswap V3</option>
   </select>
 
+  <label for="baseSlippage">Slippage Base (em basis points, ex: 100 para 1%):</label>
+  <input type="number" id="baseSlippage" value="100" placeholder="Ex: 100">
+
+  <label for="buySlippageMultiplier">Multiplicador de Slippage na Compra (Ex: 2 para 2x o slippage base):</label>
+  <input type="number" id="buySlippageMultiplier" value="2" placeholder="Ex: 2">
+
   <button id="executar">Executar Arbitragem</button>
 
   <div class="log" id="logs"></div>
@@ -101,8 +107,9 @@
     "function startArbitrage(uint256 amount, address specificToken) external",
     "function addTargetToken(address token) external",
     "function getTargetTokens() view returns (address[])",
-    "function setFlashLoanProvider(uint8 _provider) external", // Adicionado para controle via UI
-    "function setDEX(uint8 _buyDEX, uint8 _sellDEX) external", // Adicionado para controle via UI
+    "function setFlashLoanProvider(uint8 _provider) external",
+    "function setDEX(uint8 _buyDEX, uint8 _sellDEX) external",
+    "function setSlippage(uint256 _baseSlippage, uint256 _buyMultiplier) external", // Adicionado ABI para setSlippage
     "event OperationExecuted(address indexed token, uint256 amount, uint256 profit)"
   ];
 
@@ -137,8 +144,10 @@
     const selectedFlashLoanProvider = document.getElementById("flashLoanProvider").value;
     const selectedBuyDEX = document.getElementById("buyDEX").value;
     const selectedSellDEX = document.getElementById("sellDEX").value;
+    const baseSlippage = document.getElementById("baseSlippage").value;
+    const buySlippageMultiplier = document.getElementById("buySlippageMultiplier").value;
 
-    if (!contractAddr || !token || !amount) {
+    if (!contractAddr || !token || !amount || !baseSlippage || !buySlippageMultiplier) {
       return alert("Preencha todos os campos.");
     }
     if (!signer) {
@@ -149,21 +158,25 @@
     const parsedAmount = ethers.utils.parseEther(amount);
 
     try {
-        log("Configurando provedor de Flash Loan e DEXs...");
-        // Mapear string para enum (0=QUICKSWAP, 1=UNISWAP para DEX; 0=AAVE, 1=UNISWAP para FlashLoanProvider)
-        const flashLoanProviderEnum = selectedFlashLoanProvider === "AAVE" ? 0 : 1;
-        const buyDEXEnum = selectedBuyDEX === "QUICKSWAP" ? 0 : 1;
-        const sellDEXEnum = selectedSellDEX === "QUICKSWAP" ? 0 : 1;
+        log("Configurando provedor de Flash Loan, DEXs e Slippage...");
+        const flashLoanProviderEnum = selectedFlashLoanProvider === "AAVE" ? 0 : 1; // 0=AAVE, 1=UNISWAP
+        const buyDEXEnum = selectedBuyDEX === "QUICKSWAP" ? 0 : 1; // 0=QUICKSWAP, 1=UNISWAP
+        const sellDEXEnum = selectedSellDEX === "QUICKSWAP" ? 0 : 1; // 0=QUICKSWAP, 1=UNISWAP
 
-        // Chamar setFlashLoanProvider e setDEX. Estas chamadas também podem falhar se as permissões estiverem erradas
-        // ou se o contrato estiver em um estado inesperado.
+        // Chamar setFlashLoanProvider (se for o owner)
         const txProvider = await contract.setFlashLoanProvider(flashLoanProviderEnum);
         await txProvider.wait();
         log(`Provedor de Flash Loan definido para: ${selectedFlashLoanProvider}`);
 
+        // Chamar setDEX (se for o owner)
         const txDEX = await contract.setDEX(buyDEXEnum, sellDEXEnum);
         await txDEX.wait();
         log(`DEXs de compra/venda definidas para: ${selectedBuyDEX}/${selectedSellDEX}`);
+
+        // Chamar setSlippage (se for o owner)
+        const txSlippage = await contract.setSlippage(baseSlippage, buySlippageMultiplier);
+        await txSlippage.wait();
+        log(`Slippage definido: Base=${baseSlippage}, Multiplicador Compra=${buySlippageMultiplier}`);
 
         log("Verificando se o token já é alvo...");
         const targetTokens = await contract.getTargetTokens();
@@ -178,25 +191,30 @@
             log("Token já está na lista de alvos. Pulando adição.");
         }
         
-        log("Simulando arbitragem para estimar gás e verificar reversões...");
-        // Usar callStatic para simular a transação e obter a mensagem de erro em caso de reversão
+        log("Simulando arbitragem para obter a mensagem de erro exata...");
         try {
             await contract.callStatic.startArbitrage(parsedAmount, token);
             log("Simulação bem-sucedida. A transação deve ser executada.");
         } catch (simError) {
-            log(`**SIMULAÇÃO FALHOU: ${simError.message || simError}**`);
-            log("A transação será revertida. Por favor, verifique os parâmetros e a liquidez.");
+            let errorMessage = "Erro desconhecido na simulação.";
+            if (simError.data && simError.data.message) {
+                errorMessage = simError.data.message; // Mensagem de erro de revert de solidity
+            } else if (simError.message) {
+                errorMessage = simError.message; // Mensagem genérica da ethers.js
+            }
+            log(`**SIMULAÇÃO FALHOU: ${errorMessage}**`);
+            log("Por favor, verifique os parâmetros, slippage e liquidez. A transação real NÃO será enviada.");
             return; // Impede o envio da transação real se a simulação falhar
         }
 
         log("Estimando o gás para a transação real...");
         const estimatedGas = await contract.estimateGas.startArbitrage(parsedAmount, token);
         log(`Gás estimado: ${estimatedGas.toString()}`);
-        log("Executando arbitragem...");
+        log("Executando arbitragem real...");
         
-        // Enviar a transação real. Agora a MetaMask terá uma estimativa de gás válida (se a simulação passou).
+        // Enviar a transação real com uma margem de gás
         const tx2 = await contract.startArbitrage(parsedAmount, token, {
-            gasLimit: estimatedGas.mul(120).div(100) // Adiciona uma margem de 20%
+            gasLimit: estimatedGas.mul(150).div(100) // Aumentando a margem para 50%
         }); 
         
         log("Transação enviada: " + tx2.hash);
@@ -206,7 +224,7 @@
       log("Erro na operação (MetaMask ou Contrato): " + e.message);
       if (e.code === 'UNPREDICTABLE_GAS_LIMIT' || e.code === -32603) {
           log("Erro de gás imprevisível. Isso geralmente significa que a transação falharia na blockchain.");
-          log("Verifique se o valor do empréstimo não excede o limite, se há liquidez suficiente ou se o contrato está configurado corretamente.");
+          log("Verifique se o valor do empréstimo não excede o limite, se há liquidez suficiente ou se o contrato está configurado corretamente (slippage, minProfit).");
       }
     }
   };
