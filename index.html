@@ -1,242 +1,257 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Flash Loan Executor</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #111;
-      color: #eee;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 30px;
-    }
-    h1 {
-      color: #00c896;
-    }
-    input, select, button {
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 5px;
-      border: none;
-      color: #333; /* Cor do texto para inputs e selects */
-    }
-    input, select {
-      width: 100%;
-      background-color: #333; /* Fundo escuro para inputs e selects */
-      color: #eee; /* Texto claro */
-    }
-    button {
-      background-color: #00c896;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #00b386;
-    }
-    .log {
-      background: #000;
-      color: #0f0;
-      padding: 15px;
-      font-family: monospace;
-      margin-top: 20px;
-      height: 200px;
-      overflow-y: scroll;
-      border: 1px solid #00c896;
-    }
-    label {
-      margin-top: 10px;
-      display: block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Price Man Study</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .section { margin-bottom: 30px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
+        button { padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        input, select { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        .result { margin-top: 10px; padding: 10px; background-color: #f5f5f5; border-radius: 4px; }
+    </style>
 </head>
 <body>
-<div class="container">
-  <h1>Flash Loan Arbitragem</h1>
-  <button id="connect">Conectar à MetaMask</button>
-  <div id="wallet">Carteira: não conectada</div>
+    <h1>Token Price Man Study Interface</h1>
+    
+    <div class="section">
+        <h2>Token Operations</h2>
+        <div>
+            <label>Token Contract Address:</label>
+            <input type="text" id="tokenAddress" placeholder="0x...">
+        </div>
+        <div>
+            <label>Function:</label>
+            <select id="tokenFunction">
+                <option value="balanceOf">Check Balance</option>
+                <option value="transfer">Transfer Tokens</option>
+                <option value="studyMint">Study Mint (Creator Only)</option>
+            </select>
+        </div>
+        <div id="tokenParams"></div>
+        <button onclick="executeTokenFunction()">Execute</button>
+        <div class="result" id="tokenResult"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Uniswap Pair Operations</h2>
+        <div>
+            <label>Pair Contract Address:</label>
+            <input type="text" id="pairAddress" placeholder="0x...">
+        </div>
+        <div>
+            <label>Function:</label>
+            <select id="pairFunction">
+                <option value="getReserves">Get Reserves</option>
+                <option value="swap">Execute Swap</option>
+                <option value="sync">Sync Reserves</option>
+            </select>
+        </div>
+        <div id="pairParams"></div>
+        <button onclick="executePairFunction()">Execute</button>
+        <div class="result" id="pairResult"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Price Manipulation Scenario</h2>
+        <p>This demonstrates how large swaps can affect token prices:</p>
+        <button onclick="runManipulationScenario()">Run Simulation</button>
+        <div class="result" id="scenarioResult"></div>
+    </div>
 
-  <h2>Parâmetros</h2>
-  <label for="contractAddress">Endereço do contrato:</label>
-  <input type="text" id="contractAddress" placeholder="0x...">
-
-  <label for="tokenAddress">Endereço do Token Alvo:</label>
-  <input type="text" id="tokenAddress" placeholder="0x...">
-
-  <label for="amount">Valor do empréstimo (MATIC):</label>
-  <input type="number" id="amount" placeholder="Ex: 5">
-
-  <label for="flashLoanProvider">Provedor de Flash Loan:</label>
-  <select id="flashLoanProvider">
-    <option value="AAVE">AAVE</option>
-    </select>
-
-  <label for="buyDEX">DEX de Compra:</label>
-  <select id="buyDEX">
-    <option value="QUICKSWAP">QuickSwap</option>
-    <option value="UNISWAP">Uniswap V3</option>
-  </select>
-
-  <label for="sellDEX">DEX de Venda:</label>
-  <select id="sellDEX">
-    <option value="QUICKSWAP">QuickSwap</option>
-    <option value="UNISWAP">Uniswap V3</option>
-  </select>
-
-  <label for="baseSlippage">Slippage Base (em basis points, ex: 100 para 1%):</label>
-  <input type="number" id="baseSlippage" value="100" placeholder="Ex: 100">
-
-  <label for="buySlippageMultiplier">Multiplicador de Slippage na Compra (Ex: 2 para 2x o slippage base):</label>
-  <input type="number" id="buySlippageMultiplier" value="2" placeholder="Ex: 2">
-
-  <button id="executar">Executar Arbitragem</button>
-
-  <div class="log" id="logs"></div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-<script>
-  // ABI do contrato - Mantenha-a atualizada com seu contrato
-  const abi = [
-    "function startArbitrage(uint256 amount, address specificToken) external",
-    "function addTargetToken(address token) external",
-    "function getTargetTokens() view returns (address[])",
-    "function setFlashLoanProvider(uint8 _provider) external",
-    "function setDEX(uint8 _buyDEX, uint8 _sellDEX) external",
-    "function setSlippage(uint256 _baseSlippage, uint256 _buyMultiplier) external", // Adicionado ABI para setSlippage
-    "event OperationExecuted(address indexed token, uint256 amount, uint256 profit)",
-    "event DebugInfo(uint256 initialBalanceWMATIC, uint256 finalBalanceWMATIC, uint256 grossProfit, uint256 totalDebt, uint256 netProfit)"
-  ];
-
-  let provider, signer, contract;
-  const log = msg => {
-    const logs = document.getElementById("logs");
-    logs.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
-    logs.scrollTop = logs.scrollHeight;
-  };
-
-  document.getElementById("connect").onclick = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        signer = provider.getSigner();
-        const address = await signer.getAddress();
-        document.getElementById("wallet").textContent = "Carteira: " + address;
-        log("Carteira conectada: " + address);
-      } catch (err) {
-        log("Erro ao conectar carteira: " + err.message);
-      }
-    } else {
-      alert("MetaMask não encontrada. Instale a extensão no navegador.");
-    }
-  };
-
-  document.getElementById("executar").onclick = async () => {
-    const contractAddr = document.getElementById("contractAddress").value;
-    const token = document.getElementById("tokenAddress").value;
-    const amount = document.getElementById("amount").value;
-    const selectedFlashLoanProvider = document.getElementById("flashLoanProvider").value;
-    const selectedBuyDEX = document.getElementById("buyDEX").value;
-    const selectedSellDEX = document.getElementById("sellDEX").value;
-    const baseSlippage = document.getElementById("baseSlippage").value;
-    const buySlippageMultiplier = document.getElementById("buySlippageMultiplier").value;
-
-    if (!contractAddr || !token || !amount || !baseSlippage || !buySlippageMultiplier) {
-      return alert("Preencha todos os campos.");
-    }
-    if (!signer) {
-      return alert("Conecte a carteira primeiro.");
-    }
-
-    contract = new ethers.Contract(contractAddr, abi, signer);
-    const parsedAmount = ethers.utils.parseEther(amount);
-
-    try {
-        log("Configurando provedor de Flash Loan, DEXs e Slippage...");
-        const flashLoanProviderEnum = selectedFlashLoanProvider === "AAVE" ? 0 : 1; // 0=AAVE, 1=UNISWAP
-        const buyDEXEnum = selectedBuyDEX === "QUICKSWAP" ? 0 : 1; // 0=QUICKSWAP, 1=UNISWAP
-        const sellDEXEnum = selectedSellDEX === "QUICKSWAP" ? 0 : 1; // 0=QUICKSWAP, 1=UNISWAP
-
-        // Chamar setFlashLoanProvider (se for o owner)
-        const txProvider = await contract.setFlashLoanProvider(flashLoanProviderEnum);
-        await txProvider.wait();
-        log(`Provedor de Flash Loan definido para: ${selectedFlashLoanProvider}`);
-
-        // Chamar setDEX (se for o owner)
-        const txDEX = await contract.setDEX(buyDEXEnum, sellDEXEnum);
-        await txDEX.wait();
-        log(`DEXs de compra/venda definidas para: ${selectedBuyDEX}/${selectedSellDEX}`);
-
-        // Chamar setSlippage (se for o owner)
-        const txSlippage = await contract.setSlippage(baseSlippage, buySlippageMultiplier);
-        await txSlippage.wait();
-        log(`Slippage definido: Base=${baseSlippage}, Multiplicador Compra=${buySlippageMultiplier}`);
-
-        log("Verificando se o token já é alvo...");
-        const targetTokens = await contract.getTargetTokens();
-        const tokenAlreadyAdded = targetTokens.map(addr => addr.toLowerCase()).includes(token.toLowerCase());
-
-        if (!tokenAlreadyAdded) {
-            log("Adicionando token alvo...");
-            const tx1 = await contract.addTargetToken(token);
-            await tx1.wait();
-            log("Token adicionado.");
-        } else {
-            log("Token já está na lista de alvos. Pulando adição.");
-        }
+    <script>
+        let web3;
+        let accounts = [];
         
-        log("Simulando arbitragem para obter a mensagem de erro exata...");
-        try {
-            await contract.callStatic.startArbitrage(parsedAmount, token);
-            log("Simulação bem-sucedida. A transação deve ser executada.");
-        } catch (simError) {
-            let errorMessage = "Erro desconhecido na simulação.";
-            if (simError.data && simError.data.message) {
-                errorMessage = simError.data.message; // Mensagem de erro de revert de solidity
-            } else if (simError.message) {
-                errorMessage = simError.message; // Mensagem genérica da ethers.js
+        // Initialize Web3
+        async function initWeb3() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                try {
+                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    console.log("Connected:", accounts[0]);
+                } catch (error) {
+                    console.error("User denied account access");
+                }
+            } else {
+                alert("Please install MetaMask!");
             }
-            log(`**SIMULAÇÃO FALHOU: ${errorMessage}**`);
-            log("Por favor, verifique os parâmetros, slippage e liquidez. A transação real NÃO será enviada.");
-            return; // Impede o envio da transação real se a simulação falhar
         }
-
-        log("Estimando o gás para a transação real...");
-        const estimatedGas = await contract.estimateGas.startArbitrage(parsedAmount, token);
-        log(`Gás estimado: ${estimatedGas.toString()}`);
-        log("Executando arbitragem real...");
         
-        // Enviar a transação real com uma margem de gás
-        const tx2 = await contract.startArbitrage(parsedAmount, token, {
-            gasLimit: estimatedGas.mul(150).div(100) // Aumentando a margem para 50%
-        }); 
+        // Token Contract ABI
+        const tokenABI = [
+            {"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_symbol","type":"string"},{"internalType":"uint8","name":"_decimals","type":"uint8"},{"internalType":"uint256","name":"initialSupply","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},
+            {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"studyMint","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}
+        ];
         
-        log("Transação enviada: " + tx2.hash);
-        await tx2.wait();
-        log("Flash Loan executado com sucesso.");
-
-        contract.on("DebugInfo", (initialBalanceWMATIC, finalBalanceWMATIC, grossProfit, totalDebt, netProfit) => {
-            log(`[DEBUG] Saldo Inicial WMATIC: ${ethers.utils.formatEther(initialBalanceWMATIC)}`);
-            log(`[DEBUG] Saldo Final WMATIC: ${ethers.utils.formatEther(finalBalanceWMATIC)}`);
-            log(`[DEBUG] Lucro Bruto: ${ethers.utils.formatEther(grossProfit)}`);
-            log(`[DEBUG] Dívida Total (Empréstimo + Prêmio): ${ethers.utils.formatEther(totalDebt)}`);
-            log(`[DEBUG] Lucro Líquido: ${ethers.utils.formatEther(netProfit)}`);
-        });
-    } catch (e) {
-      log("Erro na operação (MetaMask ou Contrato): " + e.message);
-      if (e.code === 'UNPREDICTABLE_GAS_LIMIT' || e.code === -32603) {
-          log("Erro de gás imprevisível. Isso geralmente significa que a transação falharia na blockchain.");
-          log("Verifique se o valor do empréstimo não excede o limite, se há liquidez suficiente ou se o contrato está configurado corretamente (slippage, minProfit).");
-      }
-    }
-  };
-</script>
+        // Pair Contract ABI
+        const pairABI = [
+            {"inputs":[{"internalType":"address","name":"_token0","type":"address"},{"internalType":"address","name":"_token1","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount0In","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount1In","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount0Out","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount1Out","type":"uint256"},{"indexed":true,"internalType":"address","name":"to","type":"address"}],"name":"Swap","type":"event"},
+            {"inputs":[],"name":"getReserves","outputs":[{"internalType":"uint112","name":"_reserve0","type":"uint112"},{"internalType":"uint112","name":"_reserve1","type":"uint112"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"amount0Out","type":"uint256"},{"internalType":"uint256","name":"amount1Out","type":"uint256"},{"internalType":"address","name":"to","type":"address"}],"name":"swap","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"sync","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+        ];
+        
+        // Initialize on load
+        window.onload = function() {
+            initWeb3();
+            setupFunctionSelectors();
+        };
+        
+        // Setup parameter fields based on selected function
+        function setupFunctionSelectors() {
+            document.getElementById('tokenFunction').addEventListener('change', function() {
+                const paramsDiv = document.getElementById('tokenParams');
+                paramsDiv.innerHTML = '';
+                
+                switch(this.value) {
+                    case 'balanceOf':
+                        paramsDiv.innerHTML = '<label>Account Address:</label><input type="text" id="balanceOfAccount" placeholder="0x...">';
+                        break;
+                    case 'transfer':
+                        paramsDiv.innerHTML = `
+                            <label>To Address:</label><input type="text" id="transferTo" placeholder="0x...">
+                            <label>Amount:</label><input type="number" id="transferAmount" placeholder="100">`;
+                        break;
+                    case 'studyMint':
+                        paramsDiv.innerHTML = `
+                            <label>To Address:</label><input type="text" id="mintTo" placeholder="0x...">
+                            <label>Amount:</label><input type="number" id="mintAmount" placeholder="100">`;
+                        break;
+                }
+            });
+            
+            document.getElementById('pairFunction').addEventListener('change', function() {
+                const paramsDiv = document.getElementById('pairParams');
+                paramsDiv.innerHTML = '';
+                
+                switch(this.value) {
+                    case 'swap':
+                        paramsDiv.innerHTML = `
+                            <label>Token0 Out Amount:</label><input type="number" id="amount0Out" placeholder="0">
+                            <label>Token1 Out Amount:</label><input type="number" id="amount1Out" placeholder="0">
+                            <label>To Address:</label><input type="text" id="swapTo" placeholder="0x...">`;
+                        break;
+                }
+            });
+        }
+        
+        // Execute token function
+        async function executeTokenFunction() {
+            const tokenAddress = document.getElementById('tokenAddress').value;
+            if (!tokenAddress) {
+                alert("Please enter token contract address");
+                return;
+            }
+            
+            const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
+            const func = document.getElementById('tokenFunction').value;
+            let result;
+            
+            try {
+                switch(func) {
+                    case 'balanceOf':
+                        const account = document.getElementById('balanceOfAccount').value;
+                        result = await tokenContract.methods.balanceOf(account).call();
+                        break;
+                    case 'transfer':
+                        const to = document.getElementById('transferTo').value;
+                        const amount = document.getElementById('transferAmount').value;
+                        result = await tokenContract.methods.transfer(to, amount).send({ from: accounts[0] });
+                        break;
+                    case 'studyMint':
+                        const mintTo = document.getElementById('mintTo').value;
+                        const mintAmount = document.getElementById('mintAmount').value;
+                        result = await tokenContract.methods.studyMint(mintTo, mintAmount).send({ from: accounts[0] });
+                        break;
+                }
+                
+                document.getElementById('tokenResult').innerHTML = `<strong>Result:</strong> ${JSON.stringify(result, null, 2)}`;
+            } catch (error) {
+                document.getElementById('tokenResult').innerHTML = `<strong>Error:</strong> ${error.message}`;
+            }
+        }
+        
+        // Execute pair function
+        async function executePairFunction() {
+            const pairAddress = document.getElementById('pairAddress').value;
+            if (!pairAddress) {
+                alert("Please enter pair contract address");
+                return;
+            }
+            
+            const pairContract = new web3.eth.Contract(pairABI, pairAddress);
+            const func = document.getElementById('pairFunction').value;
+            let result;
+            
+            try {
+                switch(func) {
+                    case 'getReserves':
+                        result = await pairContract.methods.getReserves().call();
+                        break;
+                    case 'swap':
+                        const amount0Out = document.getElementById('amount0Out').value || '0';
+                        const amount1Out = document.getElementById('amount1Out').value || '0';
+                        const to = document.getElementById('swapTo').value || accounts[0];
+                        result = await pairContract.methods.swap(amount0Out, amount1Out, to).send({ from: accounts[0] });
+                        break;
+                    case 'sync':
+                        result = await pairContract.methods.sync().send({ from: accounts[0] });
+                        break;
+                }
+                
+                document.getElementById('pairResult').innerHTML = `<strong>Result:</strong> ${JSON.stringify(result, null, 2)}`;
+            } catch (error) {
+                document.getElementById('pairResult').innerHTML = `<strong>Error:</strong> ${error.message}`;
+            }
+        }
+        
+        // Run a price manipulation scenario
+        async function runManipulationScenario() {
+            const resultDiv = document.getElementById('scenarioResult');
+            resultDiv.innerHTML = "Running simulation...";
+            
+            try {
+                // This is a simulation - in a real implementation you would interact with actual contracts
+                const steps = [
+                    "1. Creator mints a large amount of tokens to themselves",
+                    "2. Creator adds initial liquidity to the pair (small amount)",
+                    "3. Creator performs a series of large buys to inflate the price",
+                    "4. Price appears to rise rapidly, attracting other buyers",
+                    "5. Creator sells all tokens at the inflated price",
+                    "6. Price crashes, leaving other investors with losses"
+                ];
+                
+                let output = "<h3>Price Manipulation Scenario Steps:</h3><ol>";
+                for (const step of steps) {
+                    output += `<li>${step}</li>`;
+                    // Simulate delay between steps
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                output += "</ol><p>This demonstrates how large holders can manipulate prices in decentralized exchanges.</p>";
+                
+                resultDiv.innerHTML = output;
+            } catch (error) {
+                resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+            }
+        }
+    </script>
 </body>
 </html>
