@@ -110,7 +110,8 @@
     "function setFlashLoanProvider(uint8 _provider) external",
     "function setDEX(uint8 _buyDEX, uint8 _sellDEX) external",
     "function setSlippage(uint256 _baseSlippage, uint256 _buyMultiplier) external", // Adicionado ABI para setSlippage
-    "event OperationExecuted(address indexed token, uint256 amount, uint256 profit)"
+    "event OperationExecuted(address indexed token, uint256 amount, uint256 profit)",
+    "event DebugInfo(uint256 initialBalanceWMATIC, uint256 finalBalanceWMATIC, uint256 grossProfit, uint256 totalDebt, uint256 netProfit)"
   ];
 
   let provider, signer, contract;
@@ -220,6 +221,14 @@
         log("Transação enviada: " + tx2.hash);
         await tx2.wait();
         log("Flash Loan executado com sucesso.");
+
+        contract.on("DebugInfo", (initialBalanceWMATIC, finalBalanceWMATIC, grossProfit, totalDebt, netProfit) => {
+            log(`[DEBUG] Saldo Inicial WMATIC: ${ethers.utils.formatEther(initialBalanceWMATIC)}`);
+            log(`[DEBUG] Saldo Final WMATIC: ${ethers.utils.formatEther(finalBalanceWMATIC)}`);
+            log(`[DEBUG] Lucro Bruto: ${ethers.utils.formatEther(grossProfit)}`);
+            log(`[DEBUG] Dívida Total (Empréstimo + Prêmio): ${ethers.utils.formatEther(totalDebt)}`);
+            log(`[DEBUG] Lucro Líquido: ${ethers.utils.formatEther(netProfit)}`);
+        });
     } catch (e) {
       log("Erro na operação (MetaMask ou Contrato): " + e.message);
       if (e.code === 'UNPREDICTABLE_GAS_LIMIT' || e.code === -32603) {
