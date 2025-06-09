@@ -3,253 +3,1320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Token Price Man Study</title>
+    <title>Token Gorilla - Manipulação de Preços</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .section { margin-bottom: 30px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
-        button { padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        input, select { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-        .result { margin-top: 10px; padding: 10px; background-color: #f5f5f5; border-radius: 4px; }
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .panel { background: #f5f5f5; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .panel h2 { margin-top: 0; }
+        button { background: #4CAF50; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #45a049; }
+        button:disabled { background: #cccccc; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 4px; }
+        .flex { display: flex; gap: 20px; }
+        .flex > div { flex: 1; }
+        .chart-container { position: relative; height: 300px; margin-bottom: 20px; }
+        .hidden { display: none; }
+        #transactionStatus { margin-top: 10px; padding: 10px; border-radius: 4px; }
+        .success { background: #dff0d8; color: #3c763d; }
+        .error { background: #f2dede; color: #a94442; }
+        .info { background: #d9edf7; color: #31708f; }
     </style>
 </head>
 <body>
-    <h1>Token Price Man Study Interface</h1>
+    <h1>Token Gorilla - Teste de Manipulação de Preços</h1>
     
-    <div class="section">
-        <h2>Token Operations</h2>
-        <div>
-            <label>Token Contract Address:</label>
-            <input type="text" id="tokenAddress" placeholder="0x...">
+    <div class="panel">
+        <h2>Conexão com a Carteira</h2>
+        <button id="connectWallet">Conectar MetaMask</button>
+        <div id="walletStatus">Não conectado</div>
+        <div id="networkStatus"></div>
+        <div id="accountInfo" class="hidden">
+            <p>Endereço: <span id="accountAddress"></span></p>
+            <p>Saldo ETH: <span id="ethBalance"></span></p>
         </div>
-        <div>
-            <label>Function:</label>
-            <select id="tokenFunction">
-                <option value="balanceOf">Check Balance</option>
-                <option value="transfer">Transfer Tokens</option>
-                <option value="studyMint">Study Mint (Creator Only)</option>
-            </select>
-        </div>
-        <div id="tokenParams"></div>
-        <button onclick="executeTokenFunction()">Execute</button>
-        <div class="result" id="tokenResult"></div>
-    </div>
-    
-    <div class="section">
-        <h2>Uniswap Pair Operations</h2>
-        <div>
-            <label>Pair Contract Address:</label>
-            <input type="text" id="pairAddress" placeholder="0x...">
-        </div>
-        <div>
-            <label>Function:</label>
-            <select id="pairFunction">
-                <option value="getReserves">Get Reserves</option>
-                <option value="swap">Execute Swap</option>
-                <option value="sync">Sync Reserves</option>
-            </select>
-        </div>
-        <div id="pairParams"></div>
-        <button onclick="executePairFunction()">Execute</button>
-        <div class="result" id="pairResult"></div>
-    </div>
-    
-    <div class="section">
-        <h2>Price Manipulation Scenario</h2>
-        <p>This demonstrates how large swaps can affect token prices:</p>
-        <button onclick="runManipulationScenario()">Run Simulation</button>
-        <div class="result" id="scenarioResult"></div>
     </div>
 
+    <div class="flex">
+        <div class="panel">
+            <h2>Contrato Token Gorilla</h2>
+            <div>
+                <label>Endereço do Contrato:</label>
+                <input type="text" id="tokenAddress" placeholder="0x...">
+            </div>
+            <div>
+                <label>Ação:</label>
+                <select id="tokenAction">
+                    <option value="balanceOf">Consultar Saldo</option>
+                    <option value="transfer">Transferir Tokens</option>
+                    <option value="mint">Mint Tokens (Owner)</option>
+                    <option value="isOwner">Verificar Privilégios</option>
+                </select>
+            </div>
+            <div id="tokenParams"></div>
+            <button id="executeTokenAction">Executar</button>
+            <div id="tokenResult"></div>
+        </div>
+
+        <div class="panel">
+            <h2>Contrato Uniswap V2 Pair</h2>
+            <div>
+                <label>Endereço do Contrato:</label>
+                <input type="text" id="pairAddress" placeholder="0x...">
+            </div>
+            <div>
+                <label>Ação:</label>
+                <select id="pairAction">
+                    <option value="getReserves">Consultar Reservas</option>
+                    <option value="swap">Realizar Swap</option>
+                    <option value="addLiquidity">Adicionar Liquidez</option>
+                    <option value="removeLiquidity">Remover Liquidez</option>
+                </select>
+            </div>
+            <div id="pairParams"></div>
+            <button id="executePairAction">Executar</button>
+            <div id="pairResult"></div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Gráfico de Preços</h2>
+        <div class="chart-container">
+            <canvas id="priceChart"></canvas>
+        </div>
+        <button id="updateChart">Atualizar Gráfico</button>
+    </div>
+
+    <div class="panel">
+        <h2>Cenário de Manipulação</h2>
+        <p>Execute um cenário completo de manipulação de preços:</p>
+        <button id="runPumpDump">Executar Pump & Dump</button>
+        <div id="scenarioLogs"></div>
+    </div>
+
+    <div id="transactionStatus" class="hidden"></div>
+
     <script>
+        // Configuração inicial
         let web3;
         let accounts = [];
+        let priceChart;
+        let tokenContract;
+        let pairContract;
         
-        // Initialize Web3
+        // ABIs
+        const tokenABI = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "name_",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "symbol_",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "maxSupply_",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "supply_",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Approval",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "previousOwner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipTransferred",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Transfer",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    }
+                ],
+                "name": "allowance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "approve",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "account",
+                        "type": "address"
+                    }
+                ],
+                "name": "balanceOf",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [
+                    {
+                        "internalType": "uint8",
+                        "name": "",
+                        "type": "uint8"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "a",
+                        "type": "address"
+                    }
+                ],
+                "name": "isOwner",
+                "outputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "",
+                        "type": "bytes32"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "_maxSupply",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "mint",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "name",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transferFrom",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        const pairABI = [
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount0",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount1",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Mint",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount0",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount1",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    }
+                ],
+                "name": "Burn",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount0In",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount1In",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount0Out",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount1Out",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    }
+                ],
+                "name": "Swap",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint112",
+                        "name": "reserve0",
+                        "type": "uint112"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint112",
+                        "name": "reserve1",
+                        "type": "uint112"
+                    }
+                ],
+                "name": "Sync",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "balanceOf",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    }
+                ],
+                "name": "burn",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount0",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount1",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "factory",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getReserves",
+                "outputs": [
+                    {
+                        "internalType": "uint112",
+                        "name": "_reserve0",
+                        "type": "uint112"
+                    },
+                    {
+                        "internalType": "uint112",
+                        "name": "_reserve1",
+                        "type": "uint112"
+                    },
+                    {
+                        "internalType": "uint32",
+                        "name": "_blockTimestampLast",
+                        "type": "uint32"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_token0",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "_token1",
+                        "type": "address"
+                    }
+                ],
+                "name": "initialize",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "kLast",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    }
+                ],
+                "name": "mint",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "liquidity",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "MINIMUM_LIQUIDITY",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "price0CumulativeLast",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "price1CumulativeLast",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    }
+                ],
+                "name": "skim",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount0Out",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount1Out",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "swap",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "sync",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "token0",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "token1",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        // Inicialização
+        window.addEventListener("load", async () => {
+            await initWeb3();
+            setupUI();
+            initChart();
+        });
+
         async function initWeb3() {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
                 try {
-                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    console.log("Connected:", accounts[0]);
+                    accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+                    updateWalletStatus();
+                    
+                    window.ethereum.on("accountsChanged", (newAccounts) => {
+                        accounts = newAccounts;
+                        updateWalletStatus();
+                    });
+                    
+                    window.ethereum.on("chainChanged", () => {
+                        window.location.reload();
+                    });
                 } catch (error) {
-                    console.error("User denied account access");
+                    console.error("User denied account access", error);
                 }
             } else {
-                alert("Please install MetaMask!");
+                alert("Por favor instale o MetaMask!");
             }
         }
-        
-        // Token Contract ABI
-        const tokenABI = [
-            {"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_symbol","type":"string"},{"internalType":"uint8","name":"_decimals","type":"uint8"},{"internalType":"uint256","name":"initialSupply","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},
-            {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"studyMint","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}
-        ];
-        
-        // Pair Contract ABI
-        const pairABI = [
-            {"inputs":[{"internalType":"address","name":"_token0","type":"address"},{"internalType":"address","name":"_token1","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount0In","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount1In","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount0Out","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount1Out","type":"uint256"},{"indexed":true,"internalType":"address","name":"to","type":"address"}],"name":"Swap","type":"event"},
-            {"inputs":[],"name":"getReserves","outputs":[{"internalType":"uint112","name":"_reserve0","type":"uint112"},{"internalType":"uint112","name":"_reserve1","type":"uint112"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"uint256","name":"amount0Out","type":"uint256"},{"internalType":"uint256","name":"amount1Out","type":"uint256"},{"internalType":"address","name":"to","type":"address"}],"name":"swap","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[],"name":"sync","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
-        ];
-        
-        // Initialize on load
-        window.onload = function() {
-            initWeb3();
-            setupFunctionSelectors();
-        };
-        
-        // Setup parameter fields based on selected function
-        function setupFunctionSelectors() {
-            document.getElementById('tokenFunction').addEventListener('change', function() {
-                const paramsDiv = document.getElementById('tokenParams');
-                paramsDiv.innerHTML = '';
-                
-                switch(this.value) {
-                    case 'balanceOf':
-                        paramsDiv.innerHTML = '<label>Account Address:</label><input type="text" id="balanceOfAccount" placeholder="0x...">';
-                        break;
-                    case 'transfer':
-                        paramsDiv.innerHTML = `
-                            <label>To Address:</label><input type="text" id="transferTo" placeholder="0x...">
-                            <label>Amount:</label><input type="number" id="transferAmount" placeholder="100">`;
-                        break;
-                    case 'studyMint':
-                        paramsDiv.innerHTML = `
-                            <label>To Address:</label><input type="text" id="mintTo" placeholder="0x...">
-                            <label>Amount:</label><input type="number" id="mintAmount" placeholder="100">`;
-                        break;
-                }
-            });
+
+        function updateWalletStatus() {
+            const walletStatus = document.getElementById("walletStatus");
+            const accountInfo = document.getElementById("accountInfo");
             
-            document.getElementById('pairFunction').addEventListener('change', function() {
-                const paramsDiv = document.getElementById('pairParams');
-                paramsDiv.innerHTML = '';
-                
-                switch(this.value) {
-                    case 'swap':
-                        paramsDiv.innerHTML = `
-                            <label>Token0 Out Amount:</label><input type="number" id="amount0Out" placeholder="0">
-                            <label>Token1 Out Amount:</label><input type="number" id="amount1Out" placeholder="0">
-                            <label>To Address:</label><input type="text" id="swapTo" placeholder="0x...">`;
-                        break;
+            if (accounts.length > 0) {
+                walletStatus.textContent = "Conectado";
+                document.getElementById("accountAddress").textContent = accounts[0];
+                accountInfo.classList.remove("hidden");
+                updateEthBalance();
+            } else {
+                walletStatus.textContent = "Não conectado";
+                accountInfo.classList.add("hidden");
+            }
+        }
+
+        async function updateEthBalance() {
+            if (accounts.length > 0) {
+                const balance = await web3.eth.getBalance(accounts[0]);
+                document.getElementById("ethBalance").textContent = web3.utils.fromWei(balance, "ether") + " ETH";
+            }
+        }
+
+        function setupUI() {
+            // Configura listeners para os selects
+            document.getElementById("tokenAction").addEventListener("change", updateTokenParams);
+            document.getElementById("pairAction").addEventListener("change", updatePairParams);
+            
+            // Configura botões de ação
+            document.getElementById("connectWallet").addEventListener("click", initWeb3);
+            document.getElementById("executeTokenAction").addEventListener("click", executeTokenAction);
+            document.getElementById("executePairAction").addEventListener("click", executePairAction);
+            document.getElementById("updateChart").addEventListener("click", updateChartData);
+            document.getElementById("runPumpDump").addEventListener("click", runPumpDumpScenario);
+            
+            // Atualiza parâmetros iniciais
+            updateTokenParams();
+            updatePairParams();
+        }
+
+        function updateTokenParams() {
+            const action = document.getElementById("tokenAction").value;
+            const paramsDiv = document.getElementById("tokenParams");
+            paramsDiv.innerHTML = "";
+            
+            switch(action) {
+                case "balanceOf":
+                    paramsDiv.innerHTML = `
+                        <label>Endereço para consulta:</label>
+                        <input type="text" id="balanceOfAddress" placeholder="0x..." value="${accounts[0] || ""}">`;
+                    break;
+                case "transfer":
+                    paramsDiv.innerHTML = `
+                        <label>Destinatário:</label>
+                        <input type="text" id="transferTo" placeholder="0x...">
+                        <label>Quantidade:</label>
+                        <input type="number" id="transferAmount" placeholder="100">`;
+                    break;
+                case "mint":
+                    paramsDiv.innerHTML = `
+                        <label>Destinatário:</label>
+                        <input type="text" id="mintTo" placeholder="0x..." value="${accounts[0] || ""}">
+                        <label>Quantidade:</label>
+                        <input type="number" id="mintAmount" placeholder="1000">`;
+                    break;
+                case "isOwner":
+                    paramsDiv.innerHTML = `
+                        <label>Endereço para verificar:</label>
+                        <input type="text" id="isOwnerAddress" placeholder="0x..." value="${accounts[0] || ""}">`;
+                    break;
+            }
+        }
+
+        function updatePairParams() {
+            const action = document.getElementById("pairAction").value;
+            const paramsDiv = document.getElementById("pairParams");
+            paramsDiv.innerHTML = "";
+            
+            switch(action) {
+                case "swap":
+                    paramsDiv.innerHTML = `
+                        <label>Quantidade Mínima de Saída (Token 0):</label>
+                        <input type="number" id="amount0Out" placeholder="0">
+                        <label>Quantidade Mínima de Saída (Token 1):</label>
+                        <input type="number" id="amount1Out" placeholder="0">
+                        <label>Destinatário:</label>
+                        <input type="text" id="swapTo" placeholder="0x..." value="${accounts[0] || ""}">
+                        <label>Quantidade a Enviar (ETH, se aplicável):</label>
+                        <input type="number" id="amountEthIn" placeholder="0">`;
+                    break;
+                case "addLiquidity":
+                    paramsDiv.innerHTML = `
+                        <label>Quantidade Token Gorilla:</label>
+                        <input type="number" id="amount0Add" placeholder="100">
+                        <label>Quantidade ETH:</label>
+                        <input type="number" id="amount1Add" placeholder="1">
+                        <label>Destinatário LP:</label>
+                        <input type="text" id="liquidityTo" placeholder="0x..." value="${accounts[0] || ""}">`;
+                    break;
+                case "removeLiquidity":
+                    paramsDiv.innerHTML = `
+                        <label>Quantidade LP Tokens:</label>
+                        <input type="number" id="liquidityAmount" placeholder="100">
+                        <label>Destinatário:</label>
+                        <input type="text" id="removeTo" placeholder="0x..." value="${accounts[0] || ""}">`;
+                    break;
+                case "getReserves":
+                    // No additional parameters needed for getReserves
+                    break;
+            }
+        }
+
+        function initChart() {
+            const ctx = document.getElementById("priceChart").getContext("2d");
+            priceChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: "Preço Token/ETH",
+                        data: [],
+                        borderColor: "rgb(75, 192, 192)",
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
                 }
             });
         }
-        
-        // Execute token function
-        async function executeTokenFunction() {
-            const tokenAddress = document.getElementById('tokenAddress').value;
+
+        async function updateChartData() {
+            const pairAddress = document.getElementById("pairAddress").value;
+            const tokenAddress = document.getElementById("tokenAddress").value;
+            if (!pairAddress || !tokenAddress) {
+                alert("Por favor insira o endereço do contrato do par e do token");
+                return;
+            }
+            
+            pairContract = new web3.eth.Contract(pairABI, pairAddress);
+            
+            try {
+                const reserves = await pairContract.methods.getReserves().call();
+                const token0Address = await pairContract.methods.token0().call();
+                const token1Address = await pairContract.methods.token1().call();
+                
+                let price;
+                let tokenLabel;
+                let ethLabel;
+
+                // Determine which token is Token Gorilla and which is the other (assuming ETH for simplicity)
+                // This assumes Token Gorilla is one of the tokens in the pair.
+                // In a real scenario, you\"d need to fetch token symbols/names.
+                if (token0Address.toLowerCase() === tokenAddress.toLowerCase()) {
+                    // Token Gorilla is token0
+                    price = reserves._reserve1 / reserves._reserve0; // Price of Token Gorilla in terms of Token1 (ETH)
+                    tokenLabel = "Token Gorilla";
+                    ethLabel = "ETH";
+                } else if (token1Address.toLowerCase() === tokenAddress.toLowerCase()) {
+                    // Token Gorilla is token1
+                    price = reserves._reserve0 / reserves._reserve1; // Price of Token Gorilla in terms of Token0 (ETH)
+                    tokenLabel = "Token Gorilla";
+                    ethLabel = "ETH";
+                } else {
+                    // Neither token in the pair is Token Gorilla, or tokenAddress is wrong
+                    console.warn("Token Gorilla não encontrado neste par.");
+                    document.getElementById("pairResult").innerHTML = `<strong>Erro:</strong> Token Gorilla não encontrado neste par.`;
+                    return;
+                }
+                
+                // Atualizar gráfico
+                const now = new Date();
+                const timeLabel = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+                
+                if (priceChart.data.labels.length > 10) {
+                    priceChart.data.labels.shift();
+                    priceChart.data.datasets[0].data.shift();
+                }
+                
+                priceChart.data.labels.push(timeLabel);
+                priceChart.data.datasets[0].data.push(price);
+                priceChart.update();
+                
+                document.getElementById("pairResult").innerHTML = `
+                    <strong>Reservas Atuais:</strong><br>
+                    ${token0Address}: ${web3.utils.fromWei(reserves._reserve0, "ether")} ${token0Address.toLowerCase() === tokenAddress.toLowerCase() ? tokenLabel : ethLabel}<br>
+                    ${token1Address}: ${web3.utils.fromWei(reserves._reserve1, "ether")} ${token1Address.toLowerCase() === tokenAddress.toLowerCase() ? tokenLabel : ethLabel}<br>
+                    <strong>Preço:</strong> 1 ${tokenLabel} = ${price.toFixed(8)} ${ethLabel}
+                `;
+            } catch (error) {
+                console.error("Erro ao atualizar gráfico:", error);
+                document.getElementById("pairResult").innerHTML = `<strong>Erro:</strong> ${error.message}`;
+            }
+        }
+
+        async function executeTokenAction() {
+            const tokenAddress = document.getElementById("tokenAddress").value;
             if (!tokenAddress) {
-                alert("Please enter token contract address");
+                alert("Por favor insira o endereço do contrato do token");
                 return;
             }
             
-            const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
-            const func = document.getElementById('tokenFunction').value;
+            tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
+            const action = document.getElementById("tokenAction").value;
             let result;
             
+            showTransactionStatus("Processando transação...", "info");
+            
             try {
-                switch(func) {
-                    case 'balanceOf':
-                        const account = document.getElementById('balanceOfAccount').value;
-                        result = await tokenContract.methods.balanceOf(account).call();
+                switch(action) {
+                    case "balanceOf":
+                        const balanceOfAddress = document.getElementById("balanceOfAddress").value || accounts[0];
+                        result = await tokenContract.methods.balanceOf(balanceOfAddress).call();
+                        document.getElementById("tokenResult").innerHTML = `<strong>Saldo:</strong> ${web3.utils.fromWei(result, "ether")} tokens`;
+                        showTransactionStatus(`Saldo: ${web3.utils.fromWei(result, "ether")} tokens`, "success");
                         break;
-                    case 'transfer':
-                        const to = document.getElementById('transferTo').value;
-                        const amount = document.getElementById('transferAmount').value;
+                    case "transfer":
+                        const to = document.getElementById("transferTo").value;
+                        const amount = web3.utils.toWei(document.getElementById("transferAmount").value, "ether");
                         result = await tokenContract.methods.transfer(to, amount).send({ from: accounts[0] });
+                        document.getElementById("tokenResult").innerHTML = `<strong>Transação de Transferência:</strong> ${result.transactionHash}`;
+                        showTransactionStatus("Transferência realizada com sucesso", "success");
                         break;
-                    case 'studyMint':
-                        const mintTo = document.getElementById('mintTo').value;
-                        const mintAmount = document.getElementById('mintAmount').value;
-                        result = await tokenContract.methods.studyMint(mintTo, mintAmount).send({ from: accounts[0] });
+                    case "mint":
+                        const mintTo = document.getElementById("mintTo").value || accounts[0];
+                        const mintAmount = web3.utils.toWei(document.getElementById("mintAmount").value, "ether");
+                        result = await tokenContract.methods.mint(mintTo, mintAmount).send({ from: accounts[0] });
+                        document.getElementById("tokenResult").innerHTML = `<strong>Transação de Mint:</strong> ${result.transactionHash}`;
+                        showTransactionStatus(`Tokens mintados com sucesso para ${mintTo}`, "success");
                         break;
+                    case "isOwner":
+                        const isOwnerAddress = document.getElementById("isOwnerAddress").value || accounts[0];
+                        result = await tokenContract.methods.isOwner(isOwnerAddress).send({ from: accounts[0] });
+                        document.getElementById("tokenResult").innerHTML = `<strong>Resultado isOwner:</strong> ${result}`;
+                        showTransactionStatus("Função isOwner executada", "success");
+                        break;
+                    default:
+                        document.getElementById("tokenResult").innerHTML = `Ação ${action} não implementada.`;
+                        showTransactionStatus(`Ação ${action} não implementada.`, "error");
                 }
-                
-                document.getElementById('tokenResult').innerHTML = `<strong>Result:</strong> ${JSON.stringify(result, null, 2)}`;
             } catch (error) {
-                document.getElementById('tokenResult').innerHTML = `<strong>Error:</strong> ${error.message}`;
+                console.error("Erro ao executar ação do token:", error);
+                document.getElementById("tokenResult").innerHTML = `<strong>Erro:</strong> ${error.message}`;
+                showTransactionStatus(`Erro: ${error.message}`, "error");
             }
         }
-        
-        // Execute pair function
-        async function executePairFunction() {
-            const pairAddress = document.getElementById('pairAddress').value;
-            if (!pairAddress) {
-                alert("Please enter pair contract address");
+
+        async function executePairAction() {
+            const pairAddress = document.getElementById("pairAddress").value;
+            const tokenAddress = document.getElementById("tokenAddress").value; // Necessário para identificar o Token Gorilla
+            if (!pairAddress || !tokenAddress) {
+                alert("Por favor insira o endereço do contrato do par e do token");
                 return;
             }
             
-            const pairContract = new web3.eth.Contract(pairABI, pairAddress);
-            const func = document.getElementById('pairFunction').value;
+            pairContract = new web3.eth.Contract(pairABI, pairAddress);
+            const action = document.getElementById("pairAction").value;
             let result;
-            
+
+            showTransactionStatus("Processando transação...", "info");
+
             try {
-                switch(func) {
-                    case 'getReserves':
+                switch(action) {
+                    case "getReserves":
                         result = await pairContract.methods.getReserves().call();
+                        const token0AddressReserves = await pairContract.methods.token0().call();
+                        const token1AddressReserves = await pairContract.methods.token1().call();
+                        
+                        let token0LabelReserves = token0AddressReserves.toLowerCase() === tokenAddress.toLowerCase() ? "Token Gorilla" : "ETH";
+                        let token1LabelReserves = token1AddressReserves.toLowerCase() === tokenAddress.toLowerCase() ? "Token Gorilla" : "ETH";
+
+                        document.getElementById("pairResult").innerHTML = `
+                            <strong>Reservas:</strong><br>
+                            ${token0LabelReserves}: ${web3.utils.fromWei(result._reserve0, "ether")}<br>
+                            ${token1LabelReserves}: ${web3.utils.fromWei(result._reserve1, "ether")}
+                        `;
+                        showTransactionStatus("Reservas consultadas com sucesso", "success");
                         break;
-                    case 'swap':
-                        const amount0Out = document.getElementById('amount0Out').value || '0';
-                        const amount1Out = document.getElementById('amount1Out').value || '0';
-                        const to = document.getElementById('swapTo').value || accounts[0];
-                        result = await pairContract.methods.swap(amount0Out, amount1Out, to).send({ from: accounts[0] });
+                    case "swap":
+                        const amount0Out = web3.utils.toWei(document.getElementById("amount0Out").value, "ether");
+                        const amount1Out = web3.utils.toWei(document.getElementById("amount1Out").value, "ether");
+                        const swapTo = document.getElementById("swapTo").value || accounts[0];
+                        const amountEthIn = web3.utils.toWei(document.getElementById("amountEthIn").value, "ether");
+                        
+                        const token0AddressSwap = await pairContract.methods.token0().call();
+                        const token1AddressSwap = await pairContract.methods.token1().call();
+
+                        // Determine which token is Token Gorilla and which is ETH
+                        const isToken0Gorilla = token0AddressSwap.toLowerCase() === tokenAddress.toLowerCase();
+                        const isToken1Gorilla = token1AddressSwap.toLowerCase() === tokenAddress.toLowerCase();
+
+                        // If Token Gorilla is being sent (i.e., we are receiving ETH)
+                        if ((isToken0Gorilla && parseFloat(web3.utils.fromWei(amount1Out, "ether")) > 0) || (isToken1Gorilla && parseFloat(web3.utils.fromWei(amount0Out, "ether")) > 0)) {
+                            // User wants to receive ETH, so Token Gorilla is being sent.
+                            // We need to approve Token Gorilla for the pair contract.
+                            // The amount to approve is not directly specified in the UI for swap, 
+                            // so we'll assume a large enough amount for the swap to go through.
+                            // In a real application, you'd calculate the required input amount based on output.
+                            const tokenGorillaContract = new web3.eth.Contract(tokenABI, tokenAddress);
+                            const maxApproveAmount = web3.utils.toWei("1000000000", "ether"); // A very large amount for approval
+                            await tokenGorillaContract.methods.approve(pairAddress, maxApproveAmount).send({ from: accounts[0] });
+                            showTransactionStatus("Aprovando Token Gorilla para swap...", "info");
+                        }
+
+                        // Perform the swap
+                        result = await pairContract.methods.swap(amount0Out, amount1Out, swapTo, web3.utils.asciiToHex("")).send({ from: accounts[0], value: amountEthIn });
+                        document.getElementById("pairResult").innerHTML = `<strong>Transação de Swap:</strong> ${result.transactionHash}`;
+                        showTransactionStatus("Swap realizado com sucesso", "success");
                         break;
-                    case 'sync':
-                        result = await pairContract.methods.sync().send({ from: accounts[0] });
+                    case "addLiquidity":
+                        const amount0Add = web3.utils.toWei(document.getElementById("amount0Add").value, "ether");
+                        const amount1Add = web3.utils.toWei(document.getElementById("amount1Add").value, "ether");
+                        const liquidityTo = document.getElementById("liquidityTo").value || accounts[0];
+
+                        // Approve Token Gorilla for the pair contract before adding liquidity
+                        const tokenGorillaContractAdd = new web3.eth.Contract(tokenABI, tokenAddress);
+                        await tokenGorillaContractAdd.methods.approve(pairAddress, amount0Add).send({ from: accounts[0] });
+                        showTransactionStatus("Aprovando Token Gorilla para adicionar liquidez...", "info");
+
+                        // Assuming token1 is ETH, so sending ETH with the transaction
+                        result = await pairContract.methods.mint(liquidityTo).send({ from: accounts[0], value: amount1Add });
+                        document.getElementById("pairResult").innerHTML = `<strong>Transação de Adicionar Liquidez:</strong> ${result.transactionHash}`;
+                        showTransactionStatus("Liquidez adicionada com sucesso", "success");
                         break;
+                    case "removeLiquidity":
+                        const liquidityAmount = web3.utils.toWei(document.getElementById("liquidityAmount").value, "ether");
+                        const removeTo = document.getElementById("removeTo").value || accounts[0];
+
+                        // Approve LP tokens for the pair contract before removing liquidity
+                        // The pair contract itself is the LP token. So approve itself.
+                        await pairContract.methods.approve(pairAddress, liquidityAmount).send({ from: accounts[0] });
+                        showTransactionStatus("Aprovando LP tokens para remover liquidez...", "info");
+
+                        result = await pairContract.methods.burn(removeTo).send({ from: accounts[0] });
+                        document.getElementById("pairResult").innerHTML = `<strong>Transação de Remover Liquidez:</strong> ${result.transactionHash}`;
+                        showTransactionStatus("Liquidez removida com sucesso", "success");
+                        break;
+                    default:
+                        document.getElementById("pairResult").innerHTML = `Ação ${action} não implementada.`;
+                        showTransactionStatus(`Ação ${action} não implementada.`, "error");
                 }
-                
-                document.getElementById('pairResult').innerHTML = `<strong>Result:</strong> ${JSON.stringify(result, null, 2)}`;
             } catch (error) {
-                document.getElementById('pairResult').innerHTML = `<strong>Error:</strong> ${error.message}`;
+                console.error("Erro ao executar ação do par:", error);
+                document.getElementById("pairResult").innerHTML = `<strong>Erro:</strong> ${error.message}`;
+                showTransactionStatus(`Erro: ${error.message}`, "error");
             }
         }
-        
-        // Run a price manipulation scenario
-        async function runManipulationScenario() {
-            const resultDiv = document.getElementById('scenarioResult');
-            resultDiv.innerHTML = "Running simulation...";
-            
+
+        function showTransactionStatus(message, type) {
+            const statusDiv = document.getElementById("transactionStatus");
+            statusDiv.textContent = message;
+            statusDiv.className = `transactionStatus ${type}`;
+            statusDiv.classList.remove("hidden");
+        }
+
+        async function runPumpDumpScenario() {
+            const tokenAddress = document.getElementById("tokenAddress").value;
+            const pairAddress = document.getElementById("pairAddress").value;
+            const scenarioLogs = document.getElementById("scenarioLogs");
+            scenarioLogs.innerHTML = "";
+
+            if (!tokenAddress || !pairAddress) {
+                alert("Por favor, insira os endereços do contrato do token e do par para o cenário.");
+                return;
+            }
+
+            const tokenGorillaContract = new web3.eth.Contract(tokenABI, tokenAddress);
+            const pairContractScenario = new web3.eth.Contract(pairABI, pairAddress);
+            const ownerAccount = accounts[0];
+
+            function logScenario(message, type = "info") {
+                const p = document.createElement("p");
+                p.textContent = message;
+                p.className = type;
+                scenarioLogs.appendChild(p);
+                scenarioLogs.scrollTop = scenarioLogs.scrollHeight; // Scroll to bottom
+            }
+
+            logScenario("Iniciando cenário de Pump & Dump...");
+
             try {
-                // This is a simulation - in a real implementation you would interact with actual contracts
-                const steps = [
-                    "1. Creator mints a large amount of tokens to themselves",
-                    "2. Creator adds initial liquidity to the pair (small amount)",
-                    "3. Creator performs a series of large buys to inflate the price",
-                    "4. Price appears to rise rapidly, attracting other buyers",
-                    "5. Creator sells all tokens at the inflated price",
-                    "6. Price crashes, leaving other investors with losses"
-                ];
+                // Passo 1: Mintar uma grande quantidade de tokens para o owner (Pump)
+                logScenario("Passo 1: Mintando uma grande quantidade de tokens...");
+                const mintAmount = web3.utils.toWei("1000000", "ether"); // Exemplo: 1 milhão de tokens
+                await tokenGorillaContract.methods.mint(ownerAccount, mintAmount).send({ from: ownerAccount });
+                logScenario(`Mint de ${web3.utils.fromWei(mintAmount, "ether")} tokens concluído.`, "success");
+                await updateChartData();
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Espera para o gráfico atualizar
+
+                // Passo 2: Adicionar liquidez com os tokens mintados e uma pequena quantidade de ETH
+                logScenario("Passo 2: Adicionando liquidez com os tokens mintados...");
+                const ethForLiquidity = web3.utils.toWei("1", "ether"); // Exemplo: 1 ETH
                 
-                let output = "<h3>Price Manipulation Scenario Steps:</h3><ol>";
-                for (const step of steps) {
-                    output += `<li>${step}</li>`;
-                    // Simulate delay between steps
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                // Aprovar Token Gorilla para o contrato do par
+                await tokenGorillaContract.methods.approve(pairAddress, mintAmount).send({ from: ownerAccount });
+                logScenario("Aprovação de Token Gorilla para o par concluída.");
+
+                // Adicionar liquidez (mintar LP tokens)
+                await pairContractScenario.methods.mint(ownerAccount).send({ from: ownerAccount, value: ethForLiquidity });
+                logScenario("Liquidez adicionada com sucesso. O preço do token deve subir.", "success");
+                await updateChartData();
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Passo 3: Realizar um swap para vender uma grande parte dos tokens (Dump)
+                logScenario("Passo 3: Realizando um swap para vender tokens...");
+                const tokensToSell = web3.utils.toWei("500000", "ether"); // Exemplo: Vender 500k tokens
+                
+                // Aprovar Token Gorilla para o contrato do par para o swap
+                await tokenGorillaContract.methods.approve(pairAddress, tokensToSell).send({ from: ownerAccount });
+                logScenario("Aprovação de Token Gorilla para swap concluída.");
+
+                // Determine which token is Token Gorilla and which is ETH
+                const token0AddressScenario = await pairContractScenario.methods.token0().call();
+                const token1AddressScenario = await pairContractScenario.methods.token1().call();
+
+                let amount0OutSwap = "0";
+                let amount1OutSwap = "0";
+                
+                // For simplicity, let\"s assume a 1% slippage tolerance for the minimum amount received
+                // In a real scenario, you\"d calculate this based on current reserves.
+                // Here, we\"re just making sure the swap goes through by asking for a very small amount of the other token.
+                // This is not a realistic price calculation, but for demonstrating the swap.
+                const minEthToReceive = web3.utils.toWei("0.0001", "ether"); // A very small amount of ETH
+
+                if (token0AddressScenario.toLowerCase() === tokenAddress.toLowerCase()) {
+                    // Token Gorilla is token0, we are selling token0 to get token1 (ETH)
+                    amount1OutSwap = minEthToReceive; // Minimum ETH to receive
+                    // The amount of token0 (Token Gorilla) to send is implicitly handled by the pool after approval
+                    await pairContractScenario.methods.swap(0, amount1OutSwap, ownerAccount, web3.utils.asciiToHex("")).send({ from: ownerAccount });
+                } else if (token1AddressScenario.toLowerCase() === tokenAddress.toLowerCase()) {
+                    // Token Gorilla is token1, we are selling token1 to get token0 (ETH)
+                    amount0OutSwap = minEthToReceive; // Minimum ETH to receive
+                    // The amount of token1 (Token Gorilla) to send is implicitly handled by the pool after approval
+                    await pairContractScenario.methods.swap(amount0OutSwap, 0, ownerAccount, web3.utils.asciiToHex("")).send({ from: ownerAccount });
+                } else {
+                    logScenario("Erro: Token Gorilla não encontrado no par para o cenário de swap.", "error");
+                    return;
                 }
-                output += "</ol><p>This demonstrates how large holders can manipulate prices in decentralized exchanges.</p>";
-                
-                resultDiv.innerHTML = output;
+
+                logScenario("Swap para vender tokens concluído. O preço do token deve cair.", "success");
+                await updateChartData();
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Passo 4: Remover liquidez (Dump final)
+                logScenario("Passo 4: Removendo liquidez...");
+                // Get current LP token balance
+                const lpBalance = await pairContractScenario.methods.balanceOf(ownerAccount).call();
+                if (lpBalance > 0) {
+                    // Approve LP tokens for the pair contract
+                    await pairContractScenario.methods.approve(pairAddress, lpBalance).send({ from: ownerAccount });
+                    logScenario("Aprovação de LP tokens para remoção de liquidez concluída.");
+
+                    // Remove liquidity
+                    await pairContractScenario.methods.burn(ownerAccount).send({ from: ownerAccount });
+                    logScenario("Liquidez removida com sucesso.", "success");
+                } else {
+                    logScenario("Nenhum token LP encontrado para remover liquidez.", "info");
+                }
+                await updateChartData();
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                logScenario("Cenário de Pump & Dump concluído!", "success");
+
             } catch (error) {
-                resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+                console.error("Erro no cenário de Pump & Dump:", error);
+                logScenario(`Erro no cenário: ${error.message}`, "error");
             }
         }
     </script>
