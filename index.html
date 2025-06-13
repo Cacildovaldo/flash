@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pong Betting Game</title>
+  <!-- Favicon - substitua o link abaixo pelo seu favicon -->
+  <link rel="icon" href="https://example.com/pong-favicon.png" type="image/png">
+  <!-- Fonte Google para título do jogo -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body { 
@@ -27,6 +31,14 @@
       top: 20px; 
       right: 20px; 
       z-index: 10;
+    }
+    h1 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 28px;
+      color: #00bcd4;
+      text-shadow: 0 0 10px rgba(0, 188, 212, 0.7);
+      margin-bottom: 30px;
+      letter-spacing: 1px;
     }
     button { 
       margin: 10px; 
@@ -165,20 +177,16 @@ async function connectWallet() {
     connectBtn.innerText = "Connected ✔";
     isConnected = true;
     
-    // Update UI to show connected state
     document.getElementById("depositBtn").disabled = false;
     updateWaitingPlayers();
     
-    // Listen for account changes
     window.ethereum.on('accountsChanged', (accounts) => {
       if (accounts.length === 0) {
-        // Wallet disconnected
         connectBtn.classList.remove("connected");
         connectBtn.innerText = "Connect Wallet";
         isConnected = false;
         document.getElementById("depositBtn").disabled = true;
       } else {
-        // Account changed
         updateWaitingPlayers();
       }
     });
@@ -200,17 +208,14 @@ async function depositBet() {
     const usdcAbi = ["function approve(address spender, uint256 amount)"];
     const usdc = new ethers.Contract(usdcAddress, usdcAbi, signer);
     
-    // Show loading state
     const depositBtn = document.getElementById("depositBtn");
     const originalText = depositBtn.innerText;
     depositBtn.innerText = "Processing...";
     depositBtn.disabled = true;
     
-    // First approve the spending
     const approveTx = await usdc.approve(CONTRACT_ADDRESS, amount);
     await approveTx.wait();
     
-    // Then deposit the bet
     const tx = await contract.depositBet(amount);
     await tx.wait();
     
@@ -286,7 +291,6 @@ function switchLanguage() {
   document.getElementById("waitingTitle").innerText = lang === "pt" ? "Jogadores Aguardando" : "Waiting Players";
 }
 
-// Enhanced demo Pong game with better visuals
 const canvas = document.getElementById("demoCanvas");
 const ctx = canvas.getContext("2d");
 let ball = { x: 200, y: 100, vx: 3, vy: 3, r: 10 };
@@ -304,11 +308,9 @@ function drawPaddle(x, y, width, height) {
 }
 
 function demoGame() {
-  // Clear canvas with semi-transparent black for trail effect
   ctx.fillStyle = "rgba(10, 10, 26, 0.2)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
-  // Draw center line
   ctx.strokeStyle = "rgba(0, 188, 212, 0.3)";
   ctx.setLineDash([5, 10]);
   ctx.beginPath();
@@ -317,7 +319,6 @@ function demoGame() {
   ctx.stroke();
   ctx.setLineDash([]);
   
-  // Draw ball with glow effect
   ctx.fillStyle = "#00bcd4";
   ctx.shadowBlur = 10;
   ctx.shadowColor = "#00bcd4";
@@ -326,31 +327,24 @@ function demoGame() {
   ctx.fill();
   ctx.shadowBlur = 0;
   
-  // Draw paddles
   drawPaddle(paddleLeft.x, paddleLeft.y, paddleLeft.width, paddleLeft.height);
   drawPaddle(paddleRight.x, paddleRight.y, paddleRight.width, paddleRight.height);
   
-  // Ball movement with simple "AI"
   ball.x += ball.vx; 
   ball.y += ball.vy;
   
-  // Ball collision with walls
   if(ball.y < ball.r || ball.y > canvas.height - ball.r) {
     ball.vy *= -1;
-    // Add visual effect on wall hit
     canvas.classList.add("glow");
     setTimeout(() => canvas.classList.remove("glow"), 200);
   }
   
-  // Simple paddle movement (AI)
   paddleLeft.y += (ball.y - (paddleLeft.y + paddleLeft.height/2)) * 0.1;
   paddleRight.y += (ball.y - (paddleRight.y + paddleRight.height/2)) * 0.1;
   
-  // Keep paddles in canvas
   paddleLeft.y = Math.max(0, Math.min(canvas.height - paddleLeft.height, paddleLeft.y));
   paddleRight.y = Math.max(0, Math.min(canvas.height - paddleRight.height, paddleRight.y));
   
-  // Ball collision with paddles
   if (ball.x - ball.r < paddleLeft.x + paddleLeft.width && 
       ball.y > paddleLeft.y && ball.y < paddleLeft.y + paddleLeft.height) {
     ball.vx *= -1;
@@ -363,7 +357,6 @@ function demoGame() {
     ball.x = paddleRight.x - ball.r;
   }
   
-  // Ball out of bounds
   if(ball.x < 0 || ball.x > canvas.width) {
     ball.x = canvas.width/2;
     ball.y = canvas.height/2;
@@ -374,10 +367,8 @@ function demoGame() {
   requestAnimationFrame(demoGame);
 }
 
-// Start the demo game
 demoGame();
 
-// Create particle effect background
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
   const particleCount = 50;
@@ -393,7 +384,6 @@ function createParticles() {
     particle.style.top = `${Math.random() * 100}%`;
     particle.style.opacity = Math.random() * 0.5 + 0.1;
     
-    // Animation
     const duration = Math.random() * 20 + 10;
     particle.style.animation = `float ${duration}s linear infinite`;
     
@@ -419,7 +409,6 @@ function createParticles() {
   }
 }
 
-// Initialize the page
 window.onload = function() {
   createParticles();
   document.getElementById("depositBtn").disabled = true;
