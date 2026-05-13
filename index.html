@@ -2,16 +2,15 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>PING Token 💎 | Stake & Ganhe USDT Real | Bonding Curve Automática</title>
-    <meta name="description" content="PING Token - Bonding Curve Automática com Staking Integrado. Ganhe USDT REAL enquanto ajuda o protocolo. 100% transparente e descentralizado.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PING Staking 💎 | Deposite USDT, Ganhe USDT</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💎%3C/text%3E%3C/svg%3E">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
@@ -19,30 +18,13 @@
             min-height: 100vh;
             padding: 1rem;
             color: #e0e4ff;
-            position: relative;
-        }
-
-        /* Animated background effect */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 50%, rgba(79, 172, 254, 0.08) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            position: relative;
-            z-index: 1;
         }
 
-        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -55,7 +37,6 @@
             backdrop-filter: blur(10px);
             border-radius: 28px;
             border: 1px solid rgba(79, 172, 254, 0.3);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
 
         .logo {
@@ -66,37 +47,10 @@
             font-weight: bold;
         }
 
-        .logo span:first-child {
-            font-size: 2.5rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .logo span:last-child {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .badge {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            padding: 0.2rem 0.8rem;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            color: white;
-        }
-
         .wallet-section {
             display: flex;
             gap: 1rem;
             align-items: center;
-            flex-wrap: wrap;
         }
 
         .wallet-btn {
@@ -106,15 +60,8 @@
             border-radius: 40px;
             color: #0a0e27;
             font-weight: bold;
-            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
-        }
-
-        .wallet-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+            transition: all 0.3s;
         }
 
         .wallet-address {
@@ -123,17 +70,14 @@
             border-radius: 40px;
             font-family: monospace;
             font-size: 0.85rem;
-            border: 1px solid rgba(79, 172, 254, 0.5);
         }
 
-        /* Hero Banner */
         .hero {
             background: linear-gradient(135deg, rgba(79, 172, 254, 0.15), rgba(0, 242, 254, 0.05));
             border-radius: 32px;
             padding: 2rem;
             margin-bottom: 2rem;
             text-align: center;
-            border: 1px solid rgba(79, 172, 254, 0.3);
         }
 
         .hero h1 {
@@ -141,39 +85,16 @@
             margin-bottom: 1rem;
         }
 
-        .hero .highlight {
+        .highlight {
             background: linear-gradient(135deg, #4facfe, #00f2fe);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            font-size: 2.8rem;
         }
 
-        .hero .sub {
-            color: #b8c0ff;
-            font-size: 1.1rem;
-        }
-
-        .feature-badges {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 1.5rem;
-        }
-
-        .feature-badge {
-            background: rgba(79, 172, 254, 0.15);
-            padding: 0.5rem 1.2rem;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(79, 172, 254, 0.3);
-        }
-
-        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
@@ -206,24 +127,13 @@
             font-weight: bold;
         }
 
-        .stat-small {
-            font-size: 0.8rem;
-            color: #8e9eff;
-            margin-top: 0.3rem;
-        }
-
-        /* Cards */
         .card {
             background: rgba(15, 20, 45, 0.8);
             backdrop-filter: blur(10px);
             border-radius: 32px;
             padding: 1.8rem;
             border: 1px solid rgba(79, 172, 254, 0.25);
-            transition: all 0.3s;
-        }
-
-        .card:hover {
-            border-color: rgba(79, 172, 254, 0.5);
+            margin-bottom: 1.5rem;
         }
 
         .card h2 {
@@ -231,36 +141,12 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.5rem;
         }
 
-        /* Staking Benefits */
-        .staking-benefits {
+        .flex-2cols {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .benefit-item {
-            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.05));
-            border-radius: 20px;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .benefit-item .emoji {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .benefit-item h4 {
-            margin-bottom: 0.3rem;
-        }
-
-        .benefit-item p {
-            font-size: 0.75rem;
-            color: #b8c0ff;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
         }
 
         .input-group {
@@ -270,7 +156,6 @@
         .input-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 500;
             color: #b8c0ff;
         }
 
@@ -282,12 +167,6 @@
             border-radius: 20px;
             color: white;
             font-size: 1rem;
-            transition: 0.2s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #4facfe;
         }
 
         .action-btn {
@@ -297,29 +176,17 @@
             border: none;
             border-radius: 40px;
             font-weight: bold;
-            font-size: 1.1rem;
-            color: #0a0e27;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 0.5rem;
-        }
-
-        .action-btn-danger {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
         }
 
         .action-btn-success {
             background: linear-gradient(135deg, #11998e, #38ef7d);
         }
 
-        .action-btn-warning {
-            background: linear-gradient(135deg, #f6d365, #fda085);
-        }
-
-        .flex-2cols {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 1.5rem;
+        .action-btn-danger {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
         }
 
         .info-text {
@@ -329,63 +196,12 @@
             font-size: 0.8rem;
             margin-top: 1rem;
             color: #b8c0ff;
-            line-height: 1.5;
         }
 
-        .contract-link {
-            background: rgba(0,0,0,0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 16px;
-            font-family: monospace;
-            font-size: 0.7rem;
-            word-break: break-all;
-            text-align: center;
-        }
-
-        .contract-link a {
-            color: #4facfe;
-            text-decoration: none;
-        }
-
-        .contract-link a:hover {
-            text-decoration: underline;
-        }
-
-        .tab-bar {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            background: rgba(20, 25, 55, 0.7);
-            padding: 0.7rem 1.5rem;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .tab.active {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            color: #0a0e27;
+        .apy-highlight {
+            font-size: 2rem;
             font-weight: bold;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            color: #38ef7d;
         }
 
         .tx-status {
@@ -396,484 +212,334 @@
             padding: 1rem 1.5rem;
             border-radius: 50px;
             border-left: 4px solid #4facfe;
-            font-size: 0.85rem;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .reward-highlight {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            border-radius: 20px;
-            padding: 1rem;
-            text-align: center;
-            margin-top: 1rem;
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #4facfe;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         footer {
             text-align: center;
             padding: 2rem;
             color: #5a6e8a;
-            font-size: 0.75rem;
-            margin-top: 1rem;
+            font-size: 0.7rem;
         }
 
         @media (max-width: 768px) {
+            .stat-value { font-size: 1rem; }
             .hero h1 { font-size: 1.6rem; }
-            .hero .highlight { font-size: 1.8rem; }
-            .stat-value { font-size: 1.1rem; }
-            .card { padding: 1.2rem; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- Header -->
     <div class="header">
         <div class="logo">
             <span>💎</span>
-            <span>PING Token</span>
-            <span class="badge">🔥 BURN & EARN</span>
+            <span>PING Staking</span>
         </div>
         <div class="wallet-section">
             <div class="wallet-address" id="walletDisplay">Desconectado</div>
-            <button class="wallet-btn" id="connectBtn">🔌 Conectar Carteira</button>
+            <button class="wallet-btn" id="connectBtn">🔌 Conectar</button>
         </div>
     </div>
 
-    <!-- Hero Section -->
     <div class="hero">
-        <h1>💎 <span class="highlight">PING Token</span> 💎</h1>
-        <div class="sub">⚡ A PRIMEIRA BONDING CURVE COM STAKING QUE PAGA EM USDT REAL ⚡</div>
-        <div class="feature-badges">
-            <span class="feature-badge">📈 Bonding Curve Automática</span>
-            <span class="feature-badge">💰 Stake & Ganhe USDT</span>
-            <span class="feature-badge">🔥 Taxas Queimadas</span>
-            <span class="feature-badge">🛡️ Anti-Dump</span>
-            <span class="feature-badge">📊 100% Transparente</span>
-        </div>
+        <h1>💎 <span class="highlight">Staking em USDT</span> 💎</h1>
+        <p style="font-size: 1.2rem;">Deposite USDT → Receba recompensas em USDT<br>Sem comprar PING manualmente!</p>
     </div>
 
-    <!-- Stats Dashboard -->
-    <div class="stats-grid" id="statsGrid">
-        <div class="stat-card"><div class="stat-label">💰 PREÇO PING</div><div class="stat-value" id="price">-- USDT</div><div class="stat-small">↑ Bonding Curve</div></div>
-        <div class="stat-card"><div class="stat-label">🔄 SUPPLY CIRCULANTE</div><div class="stat-value" id="supply">--</div><div class="stat-small">PING tokens</div></div>
-        <div class="stat-card"><div class="stat-label">💧 RESERVA DE LIQUIDEZ</div><div class="stat-value" id="reserve">-- USDT</div><div class="stat-small">Garantia de saque</div></div>
-        <div class="stat-card"><div class="stat-label">🏦 TESOURARIA</div><div class="stat-value" id="treasury">-- USDT</div><div class="stat-small">Desenvolvimento</div></div>
-        <div class="stat-card"><div class="stat-label">🎁 FUNDO DE STAKING</div><div class="stat-value" id="stakingFund">-- USDT</div><div class="stat-small">💰 Suas recompensas!</div></div>
-        <div class="stat-card"><div class="stat-label">🪙 SEU SALDO PING</div><div class="stat-value" id="pingBalance">--</div><div class="stat-small">Disponível para stake</div></div>
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">💰 Total Staked</div><div class="stat-value" id="totalStaked">-- USDT</div></div>
+        <div class="stat-card"><div class="stat-label">🎁 Fundo Recompensas</div><div class="stat-value" id="rewardFund">-- USDT</div></div>
+        <div class="stat-card"><div class="stat-label">📈 APY Estimado</div><div class="stat-value" id="apy">--%</div></div>
+        <div class="stat-card"><div class="stat-label">👥 Stakers</div><div class="stat-value" id="stakersCount">--</div></div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tab-bar">
-        <div class="tab active" data-tab="trade">📊 TRADE & LIQUIDEZ</div>
-        <div class="tab" data-tab="staking">⛏️ STAKE & GANHE USDT</div>
-        <div class="tab" data-tab="info">📜 INFORMAÇÕES</div>
-    </div>
-
-    <!-- Tab Trade -->
-    <div id="tab-trade" class="tab-content active">
-        <div class="flex-2cols">
-            <div class="card">
-                <h2>📈 COMPRAR PING</h2>
-                <div class="input-group">
-                    <label>💰 Quantidade USDT</label>
-                    <input type="number" id="buyAmount" placeholder="Ex: 100" step="10" min="5">
-                </div>
-                <button class="action-btn" id="buyBtn">✅ Comprar PING</button>
-                <div class="info-text">
-                    <strong>🔬 Como funciona a Bonding Curve:</strong><br>
-                    Preço = 0.01 + 0.0001 × Supply + 0.0000001 × Supply²<br>
-                    Quanto mais pessoas compram, MAIS CARO fica! 📈
-                </div>
-                <div class="info-text">
-                    💸 <strong>Taxas da compra:</strong><br>
-                    3% Tesouraria | 3% Reserva | 2% Staking (SUAS RECOMPENSAS) | 2% Emergência
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>📉 VENDER PING</h2>
-                <div class="input-group">
-                    <label>🪙 Quantidade PING</label>
-                    <input type="number" id="sellAmount" placeholder="Ex: 1000" step="100">
-                </div>
-                <button class="action-btn action-btn-danger" id="sellBtn">💸 Vender PING</button>
-                <div class="info-text">
-                    <strong>🛡️ Proteções Anti-Dump:</strong><br>
-                    • Máximo 10% do supply por venda<br>
-                    • Cooldown de 1 hora entre vendas<br>
-                    • Máximo 50% do seu saldo por vez<br>
-                    • Taxa de saída 5% (vai para reserva)
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tab Staking -->
-    <div id="tab-staking" class="tab-content">
-        <!-- Staking Benefits Highlight -->
-        <div class="staking-benefits">
-            <div class="benefit-item">
-                <div class="emoji">💰</div>
-                <h4>RECEBA USDT REAL</h4>
-                <p>Nada de tokens inflacionários! Você ganha DÓLAR DE VERDADE no seu bolso.</p>
-            </div>
-            <div class="benefit-item">
-                <div class="emoji">🔥</div>
-                <h4>QUEIMA DEFLACIONÁRIA</h4>
-                <p>Taxas de saque são queimadas, reduzindo o supply e valorizando o token.</p>
-            </div>
-            <div class="benefit-item">
-                <div class="emoji">⚡</div>
-                <h4>RECOMPENSAS AUTOMÁTICAS</h4>
-                <p>Sem precisar fazer nada! O contrato distribui automaticamente.</p>
-            </div>
-            <div class="benefit-item">
-                <div class="emoji">📊</div>
-                <h4>APY COMPETITIVO</h4>
-                <p>Quanto mais pessoas usam, maiores as recompensas!</p>
-            </div>
-        </div>
-
-        <div class="flex-2cols">
-            <div class="card">
-                <h2>⛏️ FAZER STAKE</h2>
-                <div class="input-group">
-                    <label>🪙 Quantidade PING para Stake</label>
-                    <input type="number" id="stakeAmount" placeholder="Ex: 1000" step="100">
-                </div>
-                <button class="action-btn action-btn-success" id="stakeBtn">🔒 FAZER STAKE</button>
-                <div class="info-text">
-                    <strong>✨ Ao fazer stake:</strong><br>
-                    • Seus PING são queimados (reduz supply!)<br>
-                    • Você começa a GANHAR USDT REAL automaticamente<br>
-                    • Quanto mais tempo em stake, mais recompensas!
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>💸 RETIRAR STAKE</h2>
-                <div class="input-group">
-                    <label>🪙 Quantidade PING para Retirar</label>
-                    <input type="number" id="unstakeAmount" placeholder="Ex: 500" step="100">
-                </div>
-                <button class="action-btn action-btn-danger" id="unstakeBtn">🔓 RETIRAR STAKE</button>
-                <div class="info-text">
-                    <strong>⚠️ Taxas de saída:</strong><br>
-                    • Depois de 30 dias: taxa 1% (queimada)<br>
-                    • Antes de 30 dias: taxa 5% (queimada)<br>
-                    • Suas recompensas são pagas EM USDT!
-                </div>
-            </div>
-        </div>
-
-        <!-- User Rewards Panel -->
+    <div class="flex-2cols">
         <div class="card">
-            <h2>💰 SUAS RECOMPENSAS EM USDT REAL</h2>
-            <div class="reward-highlight" style="background: linear-gradient(135deg, #4facfe20, #00f2fe10);">
-                <div style="font-size: 3rem; margin-bottom: 0.5rem;" id="pendingRewardsEmoji">💵</div>
-                <div style="font-size: 2rem; font-weight: bold; color: #38ef7d;" id="pendingRewards">-- USDT</div>
-                <div style="font-size: 0.8rem; margin-top: 0.5rem;">🔔 Recompensas pendentes - Clique no botão abaixo para receber!</div>
+            <h2>💰 DEPOSITAR USDT</h2>
+            <div class="input-group">
+                <label>Quantidade USDT</label>
+                <input type="number" id="stakeAmount" placeholder="Ex: 100" step="10" min="10">
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem;">
-                <div><strong>💎 Total em Stake:</strong> <span id="stakedAmount" style="color:#38ef7d; font-size:1.3rem;">-- PING</span></div>
-                <div><strong>⏰ Tempo em Stake:</strong> <span id="stakeDuration">--</span></div>
-                <button class="wallet-btn" id="claimRewardsBtn" style="padding: 0.8rem 1.8rem;">🎁 REIVINDICAR RECOMPENSAS</button>
+            <button class="action-btn action-btn-success" id="stakeBtn">✅ Depositar e Stakar</button>
+            <div class="info-text">
+                🔹 Mínimo: 10 USDT | Máximo: 10.000 USDT<br>
+                🔹 O contrato compra PING automaticamente<br>
+                🔹 Você recebe recompensas EM USDT
             </div>
         </div>
 
-        <!-- Pool Stats -->
         <div class="card">
-            <h2>📊 ESTATÍSTICAS DO POOL DE STAKING</h2>
-            <div class="stats-grid" style="margin-bottom:0;">
-                <div class="stat-card"><div class="stat-label">💎 Total em Stake</div><div class="stat-value" id="totalStaked">-- PING</div></div>
-                <div class="stat-card"><div class="stat-label">🎁 Fundo de Recompensas</div><div class="stat-value" id="availableRewards">-- USDT</div></div>
-                <div class="stat-card"><div class="stat-label">📈 APY Estimado</div><div class="stat-value" id="poolAPY">--%</div></div>
-                <div class="stat-card"><div class="stat-label">👥 Stakers Ativos</div><div class="stat-value" id="totalStakers">--</div></div>
+            <h2>💸 RETIRAR STAKE</h2>
+            <div class="input-group">
+                <label>Quantidade USDT</label>
+                <input type="number" id="unstakeAmount" placeholder="Ex: 50" step="10">
             </div>
-            <div class="info-text" style="margin-top: 1rem;">
-                💡 <strong>Como o APY é calculado:</strong> O fundo de staking recebe 2% de TODAS as compras. Quanto mais volume de compras, MAIORES suas recompensas!
+            <button class="action-btn action-btn-danger" id="unstakeBtn">🔓 Retirar Stake</button>
+            <div class="info-text">
+                🔹 Taxa de performance: 5% sobre lucros<br>
+                🔹 Recompensas são pagas automaticamente
             </div>
         </div>
     </div>
 
-    <!-- Tab Info -->
-    <div id="tab-info" class="tab-content">
-        <div class="flex-2cols">
-            <div class="card">
-                <h2>⚙️ COMO FUNCIONA O SISTEMA</h2>
-                <div class="info-text" style="margin-bottom: 1rem;">
-                    <strong>🔬 Bonding Curve Automática</strong><br>
-                    O preço do PING é determinado por uma fórmula matemática que NUNCA para de funcionar. Não depende de Uniswap ou liquidity pools externas.<br><br>
-                    <code style="background:#0a0e27; padding:0.5rem; display:block; border-radius:12px; text-align:center;">
-                    Preço = 0.01 + 0.0001 × Supply + 0.0000001 × Supply²
-                    </code><br>
-                    ✅ Sempre disponível para compra e venda!<br>
-                    ✅ Preço transparente e previsível!
-                </div>
-                <div class="info-text">
-                    <strong>⛏️ Sistema de Staking Revolucionário</strong><br>
-                    • 2% de TODAS as compras vão para o fundo de staking<br>
-                    • O fundo é distribuído automaticamente entre os stakers<br>
-                    • Proporcional ao tempo e quantidade em stake<br>
-                    • Você recebe USDT REAL, não tokens fantasmas!
-                </div>
-            </div>
+    <div class="card">
+        <h2>📊 SEU STAKE</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div><strong>💵 Seu Stake:</strong> <span id="userStaked">-- USDT</span></div>
+            <div><strong>🪙 PING Referência:</strong> <span id="userPing">--</span></div>
+            <div><strong>🎁 Recompensas:</strong> <span id="pendingRewards" style="color:#38ef7d; font-size:1.3rem;">-- USDT</span></div>
+            <div><strong>📈 Lucro/Prejuízo:</strong> <span id="pnl">-- USDT</span></div>
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button class="action-btn" id="claimBtn" style="flex:1;">🎁 Reivindicar Recompensas</button>
+            <button class="action-btn action-btn-success" id="compoundBtn" style="flex:1;">🔄 Reinvestir (Auto-Compound)</button>
+        </div>
+    </div>
 
-            <div class="card">
-                <h2>📜 CONTRATO VERIFICADO</h2>
-                <div class="contract-link">
-                    📋 <strong>Token PING (BSC Mainnet)</strong><br>
-                    <a href="https://bscscan.com/address/0x7d89ea65be4b433012465b7a7e5bd00359d37d3b" target="_blank" rel="noopener noreferrer">
-                        0x7d89ea65be4b433012465b7a7e5bd00359d37d3b
-                    </a><br>
-                    🔗 <strong>Clique para ver no BscScan</strong> 👆
-                </div>
-                <div class="info-text" style="margin-top: 1rem;">
-                    <strong>🔒 Segurança e Transparência:</strong><br>
-                    • Contrato NÃO tem função de "puxar tapete" (rug pull)<br>
-                    • Criador só pode sacar 30% da tesouraria por vez<br>
-                    • Fundo de staking é 100% público e verificável<br>
-                    • Reservas visíveis na blockchain a qualquer momento
-                </div>
-                <div class="info-text" style="margin-top: 1rem;">
-                    <strong>⚡ Por que investir no PING?</strong><br>
-                    🚀 Primeira bonding curve com staking integrado na BSC<br>
-                    💰 Ganhe USDT REAL enquanto o protocolo cresce<br>
-                    🔥 Sistema deflacionário (taxas queimadas)<br>
-                    🛡️ Proteções anti-dump para todos
-                </div>
-            </div>
+    <div class="card">
+        <h2>⚙️ Como Funciona</h2>
+        <div class="info-text">
+            <strong>1️⃣ Você deposita USDT</strong> → O contrato compra PING automaticamente<br>
+            <strong>2️⃣ Seu stake rende recompensas</strong> → Pagas em USDT do fundo de staking<br>
+            <strong>3️⃣ Você retira USDT</strong> → O contrato vende o PING e devolve USDT + lucros<br>
+            <strong>4️⃣ Taxa de performance</strong> → 5% apenas sobre LUCROS (se houver)
         </div>
     </div>
 
     <footer>
-        ⚠️ <strong>Aviso importante:</strong> PING Token é um projeto experimental com bonding curve e staking automático. Entenda os riscos antes de investir. NADA É GARANTIDO.<br>
-        💎 <strong>PING Token</strong> - Transparência | Sustentabilidade | Recompensas Reais em USDT
+        ⚠️ Risco: O valor do PING pode cair. Seu stake está sujeito à variação do mercado.<br>
+        💎 Sistema 100% automatizado na BSC Mainnet
     </footer>
 </div>
-<div id="txStatus" class="tx-status" style="display: none;">✅ Pronto</div>
+<div id="txStatus" class="tx-status" style="display: none;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <script>
-    // ================= CONFIGURAÇÕES =================
-    const CONTRACT_ADDRESS = "0x7d89ea65be4b433012465b7a7e5bd00359d37d3b";
+    // CONFIGURAÇÕES - ATUALIZE COM OS ENDEREÇOS REAIS
+    const STAKING_ADDRESS = "0x02ebB958147e28b499D040e40f8aED26AA9c5F89";
     const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
+    const PING_ADDRESS = "0x7d89ea65be4b433012465b7a7e5bd00359d37d3b";
     const BSC_CHAIN_ID = "0x38";
 
-    const ABI = [
-        "function name() view returns (string)", "function symbol() view returns (string)", "function decimals() view returns (uint8)",
-        "function totalSupply() view returns (uint256)", "function balanceOf(address) view returns (uint256)",
-        "function currentPrice() view returns (uint256)", "function getReserves() view returns (uint256, uint256, uint256, uint256)",
-        "function getSystemHealth() view returns (uint256, uint256, string)", "function buy(uint256 usdtAmount) external",
-        "function sell(uint256 pingAmount, uint256 minUSDTAmount) external", "function approve(address, uint256) returns (bool)",
-        "function allowance(address, address) view returns (uint256)",
-        "function stake(uint256 amount) external", "function unstake(uint256 amount) external", "function claimRewards() external",
-        "function pendingReward(address) view returns (uint256)", "function totalStaked() view returns (uint256)",
+    const STAKING_ABI = [
+        "function stake(uint256 usdtAmount) external",
+        "function unstake(uint256 usdtAmount) external",
+        "function claimRewards() external",
+        "function compoundRewards() external",
+        "function pendingReward(address) view returns (uint256)",
+        "function getStakerInfo(address) view returns (uint256, uint256, uint256, uint256, uint256, uint256)",
         "function getPoolStats() view returns (uint256, uint256, uint256, uint256, uint256)",
-        "function getStakerInfo(address) view returns (uint256, uint256, uint256, uint256)"
+        "function totalStakedUSDT() view returns (uint256)",
+        "function rewardFund() view returns (uint256)",
+        "function stakers(address) view returns (uint256, uint256, uint256, uint256, uint256, uint256)"
     ];
 
     const USDT_ABI = [
-        "function transferFrom(address, address, uint256) returns (bool)", 
-        "function approve(address, uint256) returns (bool)", 
-        "function allowance(address, address) view returns (uint256)", 
-        "function balanceOf(address) view returns (uint256)"
+        "function transferFrom(address, address, uint256) returns (bool)",
+        "function approve(address, uint256) returns (bool)",
+        "function allowance(address, address) view returns (uint256)",
+        "function balanceOf(address) view returns (uint256)",
+        "function decimals() view returns (uint8)"
     ];
 
-    let provider, signer, userAddress, contract, usdtContract;
+    let provider, signer, userAddress, stakingContract, usdtContract;
     let isConnected = false;
+    let isProcessing = false;
+    let usdtDecimals = 18;
 
-    // DOM Elements
     const connectBtn = document.getElementById("connectBtn");
     const walletDisplay = document.getElementById("walletDisplay");
     const txStatusDiv = document.getElementById("txStatus");
 
-    function showStatus(msg, isError = false) {
-        txStatusDiv.style.display = "block";
+    function showStatus(msg, isError = false, txHash = null) {
+        txStatusDiv.style.display = "flex";
         txStatusDiv.style.background = isError ? "#4a1a2a" : "#1a3a2a";
         txStatusDiv.style.borderLeftColor = isError ? "#f5576c" : "#4facfe";
-        txStatusDiv.innerHTML = isError ? "❌ " + msg : "✅ " + msg;
-        setTimeout(() => { txStatusDiv.style.display = "none"; }, 5000);
+        let html = isError ? "❌ " + msg : "✅ " + msg;
+        if(txHash) html += ` <a href="https://bscscan.com/tx/${txHash}" target="_blank" style="color:#4facfe;">🔗 Ver</a>`;
+        txStatusDiv.innerHTML = html;
+        setTimeout(() => { if(txStatusDiv.innerHTML === html) txStatusDiv.style.display = "none"; }, 8000);
     }
 
-    // Tabs
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
-        });
-    });
+    function setProcessing(processing, btnId = null) {
+        isProcessing = processing;
+        if(btnId) {
+            const btn = document.getElementById(btnId);
+            if(btn) btn.disabled = processing;
+        }
+        if(processing) {
+            txStatusDiv.style.display = "flex";
+            txStatusDiv.innerHTML = '<div class="spinner"></div> Processando...';
+        }
+    }
 
     async function updateDashboard() {
-        if (!contract || !isConnected) return;
+        if(!stakingContract || !isConnected) return;
         try {
-            const priceRaw = await contract.currentPrice();
-            document.getElementById("price").innerHTML = Number(ethers.formatUnits(priceRaw, 18)).toFixed(6) + " USDT";
+            const poolStats = await stakingContract.getPoolStats();
+            document.getElementById("totalStaked").innerHTML = Number(ethers.formatUnits(poolStats[0], 18)).toFixed(2) + " USDT";
+            document.getElementById("rewardFund").innerHTML = Number(ethers.formatUnits(poolStats[1], 18)).toFixed(2) + " USDT";
+            document.getElementById("apy").innerHTML = (Number(poolStats[3]) / 100).toFixed(2) + "%";
+            document.getElementById("stakersCount").innerHTML = poolStats[4];
+
+            const stakerInfo = await stakingContract.getStakerInfo(userAddress);
+            document.getElementById("userStaked").innerHTML = Number(ethers.formatUnits(stakerInfo[0], 18)).toFixed(2) + " USDT";
+            document.getElementById("userPing").innerHTML = Number(ethers.formatUnits(stakerInfo[1], 18)).toFixed(2);
+            document.getElementById("pendingRewards").innerHTML = Number(ethers.formatUnits(stakerInfo[2], 18)).toFixed(4) + " USDT";
             
-            const supplyRaw = await contract.totalSupply();
-            document.getElementById("supply").innerHTML = Number(ethers.formatUnits(supplyRaw, 18)).toFixed(0) + " PING";
-            
-            const reserves = await contract.getReserves();
-            document.getElementById("reserve").innerHTML = Number(ethers.formatUnits(reserves[0], 18)).toFixed(2) + " USDT";
-            document.getElementById("treasury").innerHTML = Number(ethers.formatUnits(reserves[1], 18)).toFixed(2) + " USDT";
-            document.getElementById("stakingFund").innerHTML = Number(ethers.formatUnits(reserves[2], 18)).toFixed(2) + " USDT";
-            
-            const userPing = await contract.balanceOf(userAddress);
-            document.getElementById("pingBalance").innerHTML = Number(ethers.formatUnits(userPing, 18)).toFixed(2) + " PING";
-            
-            // Staking info
-            const pending = await contract.pendingReward(userAddress);
-            const pendingFormatted = Number(ethers.formatUnits(pending, 18)).toFixed(4);
-            document.getElementById("pendingRewards").innerHTML = pendingFormatted + " USDT";
-            
-            const stakerInfo = await contract.getStakerInfo(userAddress);
-            document.getElementById("stakedAmount").innerHTML = Number(ethers.formatUnits(stakerInfo[0], 18)).toFixed(2) + " PING";
-            document.getElementById("stakeDuration").innerHTML = Math.floor(Number(stakerInfo[2]) / 86400) + " dias";
-            
-            const poolStats = await contract.getPoolStats();
-            document.getElementById("totalStaked").innerHTML = Number(ethers.formatUnits(poolStats[0], 18)).toFixed(0) + " PING";
-            document.getElementById("availableRewards").innerHTML = Number(ethers.formatUnits(poolStats[1], 18)).toFixed(2) + " USDT";
-            document.getElementById("poolAPY").innerHTML = (Number(poolStats[3]) / 100).toFixed(2) + "%";
-            document.getElementById("totalStakers").innerHTML = poolStats[4];
+            const pnl = Number(ethers.formatUnits(stakerInfo[5], 18));
+            const pnlElem = document.getElementById("pnl");
+            pnlElem.innerHTML = pnl.toFixed(4) + " USDT";
+            pnlElem.style.color = pnl > 0 ? "#38ef7d" : pnl < 0 ? "#f5576c" : "#b8c0ff";
         } catch(e) { console.warn(e); }
     }
 
-    async function approveUSDT(amountWei) {
-        const allowance = await usdtContract.allowance(userAddress, CONTRACT_ADDRESS);
-        if (allowance >= amountWei) return true;
-        showStatus("Aprovando USDT no contrato...");
-        const tx = await usdtContract.approve(CONTRACT_ADDRESS, ethers.MaxUint256);
+    async function approveUSDT(amount) {
+        const allowance = await usdtContract.allowance(userAddress, STAKING_ADDRESS);
+        if(allowance >= amount) return true;
+        showStatus("Aprovando USDT...");
+        const tx = await usdtContract.approve(STAKING_ADDRESS, amount);
         await tx.wait();
-        showStatus("✅ USDT aprovado com sucesso!");
+        showStatus("✅ USDT aprovado!");
         return true;
     }
-
-    async function approvePINGForStaking(amountWei) {
-        const allowance = await contract.allowance(userAddress, CONTRACT_ADDRESS);
-        if (allowance >= amountWei) return true;
-        showStatus("Aprovando PING para staking...");
-        const tx = await contract.approve(CONTRACT_ADDRESS, ethers.MaxUint256);
-        await tx.wait();
-        showStatus("✅ PING aprovado para staking!");
-        return true;
-    }
-
-    // Buy
-    document.getElementById("buyBtn")?.addEventListener("click", async () => {
-        if (!isConnected) { showStatus("Conecte a carteira primeiro!", true); return; }
-        const amount = parseFloat(document.getElementById("buyAmount").value);
-        if (isNaN(amount) || amount < 5) { showStatus("Valor mínimo: 5 USDT", true); return; }
-        const amountWei = ethers.parseUnits(amount.toString(), 18);
-        try {
-            await approveUSDT(amountWei);
-            showStatus("Executando compra... Confirme na carteira.");
-            const tx = await contract.buy(amountWei);
-            await tx.wait();
-            showStatus(`🎉 Compra de ${amount} USDT realizada! Você recebeu PING.`);
-            document.getElementById("buyAmount").value = "";
-            updateDashboard();
-        } catch(e) { showStatus("Erro: " + e.message.slice(0,100), true); }
-    });
-
-    // Sell
-    document.getElementById("sellBtn")?.addEventListener("click", async () => {
-        if (!isConnected) { showStatus("Conecte a carteira primeiro!", true); return; }
-        const amount = parseFloat(document.getElementById("sellAmount").value);
-        if (isNaN(amount) || amount <= 0) { showStatus("Digite uma quantidade válida", true); return; }
-        const amountWei = ethers.parseUnits(amount.toString(), 18);
-        try {
-            showStatus("Executando venda... Confirme na carteira.");
-            const tx = await contract.sell(amountWei, 0);
-            await tx.wait();
-            showStatus(`💰 Venda de ${amount} PING realizada! USDT enviado.`);
-            document.getElementById("sellAmount").value = "";
-            updateDashboard();
-        } catch(e) { showStatus("Erro: " + e.message.slice(0,100), true); }
-    });
 
     // Stake
     document.getElementById("stakeBtn")?.addEventListener("click", async () => {
-        if (!isConnected) { showStatus("Conecte a carteira primeiro!", true); return; }
+        if(!isConnected || isProcessing) { showStatus("Conecte a carteira", true); return; }
         const amount = parseFloat(document.getElementById("stakeAmount").value);
-        if (isNaN(amount) || amount <= 0) { showStatus("Digite uma quantidade válida", true); return; }
-        const amountWei = ethers.parseUnits(amount.toString(), 18);
+        if(isNaN(amount) || amount < 10) { showStatus("Mínimo 10 USDT", true); return; }
+        
+        const amountWei = ethers.parseUnits(amount.toString(), usdtDecimals);
+        setProcessing(true, "stakeBtn");
+        
         try {
-            await approvePINGForStaking(amountWei);
-            showStatus("Fazendo stake... Confirme na carteira.");
-            const tx = await contract.stake(amountWei);
+            await approveUSDT(amountWei);
+            showStatus("Depositando e fazendo stake...");
+            const tx = await stakingContract.stake(amountWei);
             await tx.wait();
-            showStatus(`🔒 Stake de ${amount} PING realizado! Agora você ganha USDT.`);
+            showStatus(`✅ Stake de ${amount} USDT realizado!`, false, tx.hash);
             document.getElementById("stakeAmount").value = "";
             updateDashboard();
-        } catch(e) { showStatus("Erro: " + e.message.slice(0,100), true); }
+        } catch(e) {
+            const errMsg = e?.reason || e?.message || "Erro desconhecido";
+            showStatus(errMsg.slice(0,100), true);
+        } finally {
+            setProcessing(false, "stakeBtn");
+        }
     });
 
     // Unstake
     document.getElementById("unstakeBtn")?.addEventListener("click", async () => {
-        if (!isConnected) { showStatus("Conecte a carteira primeiro!", true); return; }
+        if(!isConnected || isProcessing) { showStatus("Conecte a carteira", true); return; }
         const amount = parseFloat(document.getElementById("unstakeAmount").value);
-        if (isNaN(amount) || amount <= 0) { showStatus("Digite uma quantidade válida", true); return; }
-        const amountWei = ethers.parseUnits(amount.toString(), 18);
+        if(isNaN(amount) || amount <= 0) { showStatus("Quantidade inválida", true); return; }
+        
+        const amountWei = ethers.parseUnits(amount.toString(), usdtDecimals);
+        setProcessing(true, "unstakeBtn");
+        
         try {
-            showStatus("Retirando stake... Confirme na carteira.");
-            const tx = await contract.unstake(amountWei);
+            showStatus("Retirando stake...");
+            const tx = await stakingContract.unstake(amountWei);
             await tx.wait();
-            showStatus(`🔓 Stake de ${amount} PING retirado! Recompensas enviadas.`);
+            showStatus(`✅ Retirada de ${amount} USDT realizada!`, false, tx.hash);
             document.getElementById("unstakeAmount").value = "";
             updateDashboard();
-        } catch(e) { showStatus("Erro: " + e.message.slice(0,100), true); }
+        } catch(e) {
+            const errMsg = e?.reason || e?.message || "Erro desconhecido";
+            showStatus(errMsg.slice(0,100), true);
+        } finally {
+            setProcessing(false, "unstakeBtn");
+        }
     });
 
     // Claim Rewards
-    document.getElementById("claimRewardsBtn")?.addEventListener("click", async () => {
-        if (!isConnected) { showStatus("Conecte a carteira primeiro!", true); return; }
+    document.getElementById("claimBtn")?.addEventListener("click", async () => {
+        if(!isConnected || isProcessing) { showStatus("Conecte a carteira", true); return; }
+        setProcessing(true, "claimBtn");
         try {
-            showStatus("Reivindicando recompensas... Confirme na carteira.");
-            const tx = await contract.claimRewards();
+            showStatus("Reivindicando recompensas...");
+            const tx = await stakingContract.claimRewards();
             await tx.wait();
-            showStatus("🎁 Recompensas recebidas em USDT! Confira sua carteira.");
+            showStatus("✅ Recompensas recebidas!", false, tx.hash);
             updateDashboard();
-        } catch(e) { showStatus("Erro: " + e.message.slice(0,100), true); }
+        } catch(e) {
+            const errMsg = e?.reason || e?.message || "Erro desconhecido";
+            showStatus(errMsg.slice(0,100), true);
+        } finally {
+            setProcessing(false, "claimBtn");
+        }
+    });
+
+    // Compound
+    document.getElementById("compoundBtn")?.addEventListener("click", async () => {
+        if(!isConnected || isProcessing) { showStatus("Conecte a carteira", true); return; }
+        setProcessing(true, "compoundBtn");
+        try {
+            showStatus("Reinvestindo recompensas...");
+            const tx = await stakingContract.compoundRewards();
+            await tx.wait();
+            showStatus("✅ Recompensas reinvestidas!", false, tx.hash);
+            updateDashboard();
+        } catch(e) {
+            const errMsg = e?.reason || e?.message || "Erro desconhecido";
+            showStatus(errMsg.slice(0,100), true);
+        } finally {
+            setProcessing(false, "compoundBtn");
+        }
     });
 
     // Connect Wallet
     async function connectWallet() {
-        if (window.ethereum) {
-            try {
-                await window.ethereum.request({ method: "eth_requestAccounts" });
-                provider = new ethers.BrowserProvider(window.ethereum);
-                const network = await provider.getNetwork();
-                const chainId = Number(network.chainId);
-                if (chainId !== 56) {
-                    showStatus("⚠️ Por favor, mude para BSC Mainnet (Chain ID 56)", true);
-                    try {
-                        await window.ethereum.request({
-                            method: "wallet_switchEthereumChain",
-                            params: [{ chainId: BSC_CHAIN_ID }],
-                        });
-                        setTimeout(() => connectWallet(), 1000);
-                        return;
-                    } catch(e) { return; }
-                }
-                signer = await provider.getSigner();
-                userAddress = await signer.getAddress();
-                walletDisplay.innerHTML = userAddress.slice(0,6)+"..."+userAddress.slice(-4);
-                isConnected = true;
-                contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-                usdtContract = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
-                showStatus("✅ Carteira conectada na BSC Mainnet!");
-                updateDashboard();
-                setInterval(() => { if(isConnected) updateDashboard(); }, 10000);
-            } catch(e) { console.error(e); showStatus("Erro ao conectar carteira", true); }
-        } else {
-            showStatus("📱 Instale MetaMask ou Rabby Wallet para continuar!", true);
-        }
+        if(!window.ethereum) { showStatus("Instale MetaMask!", true); return; }
+        try {
+            await window.ethereum.request({ method: "eth_requestAccounts" });
+            provider = new ethers.BrowserProvider(window.ethereum);
+            const network = await provider.getNetwork();
+            if(Number(network.chainId) !== 56) {
+                showStatus("Mude para BSC Mainnet", true);
+                await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: BSC_CHAIN_ID }] });
+                setTimeout(() => connectWallet(), 1000);
+                return;
+            }
+            signer = await provider.getSigner();
+            userAddress = await signer.getAddress();
+            walletDisplay.innerHTML = userAddress.slice(0,6)+"..."+userAddress.slice(-4);
+            isConnected = true;
+            stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+            usdtContract = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
+            try { usdtDecimals = await usdtContract.decimals(); } catch(e) {}
+            showStatus("✅ Conectado à BSC");
+            updateDashboard();
+            setInterval(() => { if(isConnected) updateDashboard(); }, 10000);
+        } catch(e) { showStatus("Erro ao conectar", true); }
     }
 
     connectBtn.addEventListener("click", connectWallet);
+
+    if(window.ethereum) {
+        window.ethereum.on('accountsChanged', (accounts) => {
+            if(accounts.length === 0) { location.reload(); }
+            else connectWallet();
+        });
+        window.ethereum.on('chainChanged', () => location.reload());
+    }
 </script>
 </body>
 </html>
