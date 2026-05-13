@@ -2,15 +2,16 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PING Staking 💎 | Deposite USDT, Ganhe USDT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>PING Staking 💎 | Stake USDT, Ganhe USDT | Bonding Curve Automática</title>
+    <meta name="description" content="Staking descentralizado em USDT na BSC. Deposite USDT, o sistema compra PING automaticamente via bonding curve. Recompensas em USDT real. 100% transparente.">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💎%3C/text%3E%3C/svg%3E">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
         }
 
         body {
@@ -21,10 +22,11 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -37,64 +39,114 @@
             backdrop-filter: blur(10px);
             border-radius: 28px;
             border: 1px solid rgba(79, 172, 254, 0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
         }
 
-        .wallet-section {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
+        .logo span:first-child {
+            font-size: 2rem;
         }
 
-        .wallet-btn {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            border: none;
-            padding: 0.8rem 1.8rem;
-            border-radius: 40px;
-            color: #0a0e27;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .wallet-address {
-            background: rgba(0,0,0,0.4);
-            padding: 0.5rem 1.2rem;
-            border-radius: 40px;
-            font-family: monospace;
-            font-size: 0.85rem;
-        }
-
-        .hero {
-            background: linear-gradient(135deg, rgba(79, 172, 254, 0.15), rgba(0, 242, 254, 0.05));
-            border-radius: 32px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .highlight {
+        .logo span:last-child {
             background: linear-gradient(135deg, #4facfe, #00f2fe);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
 
+        .badge {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .wallet-section {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .wallet-btn {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 40px;
+            color: #0a0e27;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+        }
+
+        .wallet-address {
+            background: rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            border: 1px solid rgba(79, 172, 254, 0.5);
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.12), rgba(0, 242, 254, 0.04));
+            border-radius: 32px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            border: 1px solid rgba(79, 172, 254, 0.2);
+        }
+
+        .hero h1 {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .hero .highlight {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2.2rem;
+        }
+
+        .feature-badges {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1.2rem;
+        }
+
+        .feature-badge {
+            background: rgba(79, 172, 254, 0.15);
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(79, 172, 254, 0.3);
+        }
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
@@ -103,7 +155,7 @@
             background: rgba(20, 25, 55, 0.7);
             backdrop-filter: blur(8px);
             border-radius: 24px;
-            padding: 1.2rem;
+            padding: 1rem;
             text-align: center;
             border: 1px solid rgba(79, 172, 254, 0.2);
             transition: all 0.3s;
@@ -115,7 +167,7 @@
         }
 
         .stat-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: #8e9eff;
@@ -123,45 +175,76 @@
         }
 
         .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
         }
 
+        .stat-small {
+            font-size: 0.65rem;
+            color: #8e9eff;
+            margin-top: 0.2rem;
+        }
+
+        /* Reserve Ratio Bar */
+        .reserve-bar {
+            background: rgba(0,0,0,0.4);
+            border-radius: 20px;
+            height: 6px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .reserve-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        /* Cards */
         .card {
             background: rgba(15, 20, 45, 0.8);
             backdrop-filter: blur(10px);
-            border-radius: 32px;
-            padding: 1.8rem;
+            border-radius: 28px;
+            padding: 1.5rem;
             border: 1px solid rgba(79, 172, 254, 0.25);
-            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: rgba(79, 172, 254, 0.5);
         }
 
         .card h2 {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 1.3rem;
         }
 
         .flex-2cols {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
             gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .input-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
             color: #b8c0ff;
+            font-size: 0.85rem;
         }
 
         .input-group input {
             width: 100%;
-            padding: 1rem;
+            padding: 0.8rem;
             background: rgba(0,0,0,0.4);
             border: 1px solid #2a2f55;
             border-radius: 20px;
@@ -169,16 +252,23 @@
             font-size: 1rem;
         }
 
+        .input-group input:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
         .action-btn {
             width: 100%;
-            padding: 1rem;
+            padding: 0.8rem;
             background: linear-gradient(135deg, #4facfe, #00f2fe);
             border: none;
             border-radius: 40px;
             font-weight: bold;
             font-size: 1rem;
+            color: #0a0e27;
             cursor: pointer;
             transition: all 0.3s;
+            margin-top: 0.3rem;
         }
 
         .action-btn-success {
@@ -189,19 +279,53 @@
             background: linear-gradient(135deg, #f093fb, #f5576c);
         }
 
-        .info-text {
-            background: rgba(79, 172, 254, 0.1);
-            padding: 0.8rem;
-            border-radius: 16px;
-            font-size: 0.8rem;
-            margin-top: 1rem;
-            color: #b8c0ff;
+        .action-btn-warning {
+            background: linear-gradient(135deg, #f6d365, #fda085);
         }
 
-        .apy-highlight {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #38ef7d;
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-text {
+            background: rgba(79, 172, 254, 0.08);
+            padding: 0.7rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            margin-top: 0.8rem;
+            color: #b8c0ff;
+            line-height: 1.4;
+        }
+
+        .warning-text {
+            background: rgba(245, 87, 108, 0.15);
+            border-left: 3px solid #f5576c;
+        }
+
+        .success-text {
+            background: rgba(56, 239, 125, 0.1);
+            border-left: 3px solid #38ef7d;
+        }
+
+        .contract-address {
+            background: rgba(0,0,0,0.3);
+            padding: 0.5rem;
+            border-radius: 16px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            word-break: break-all;
+            text-align: center;
+        }
+
+        .contract-address a {
+            color: #4facfe;
+            text-decoration: none;
+        }
+
+        .contract-address a:hover {
+            text-decoration: underline;
         }
 
         .tx-status {
@@ -209,18 +333,20 @@
             bottom: 20px;
             right: 20px;
             background: #1a1f3a;
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.2rem;
             border-radius: 50px;
             border-left: 4px solid #4facfe;
+            font-size: 0.8rem;
             z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .spinner {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 2px solid #4facfe;
             border-top-color: transparent;
             border-radius: 50%;
@@ -231,44 +357,88 @@
             to { transform: rotate(360deg); }
         }
 
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .status-safe {
+            background: #11998e20;
+            color: #38ef7d;
+            border: 1px solid #38ef7d;
+        }
+
+        .status-warning {
+            background: #f6d36520;
+            color: #f6d365;
+            border: 1px solid #f6d365;
+        }
+
+        .status-critical {
+            background: #f5576c20;
+            color: #f5576c;
+            border: 1px solid #f5576c;
+        }
+
         footer {
             text-align: center;
             padding: 2rem;
             color: #5a6e8a;
             font-size: 0.7rem;
+            margin-top: 1rem;
         }
 
         @media (max-width: 768px) {
+            .hero h1 { font-size: 1.4rem; }
+            .hero .highlight { font-size: 1.6rem; }
             .stat-value { font-size: 1rem; }
-            .hero h1 { font-size: 1.6rem; }
+            .card { padding: 1rem; }
         }
     </style>
 </head>
 <body>
 <div class="container">
+    <!-- Header -->
     <div class="header">
         <div class="logo">
             <span>💎</span>
             <span>PING Staking</span>
+            <span class="badge">BSC Mainnet</span>
         </div>
         <div class="wallet-section">
             <div class="wallet-address" id="walletDisplay">Desconectado</div>
-            <button class="wallet-btn" id="connectBtn">🔌 Conectar</button>
+            <button class="wallet-btn" id="connectBtn">🔌 Conectar Carteira</button>
         </div>
     </div>
 
+    <!-- Hero -->
     <div class="hero">
-        <h1>💎 <span class="highlight">Staking em USDT</span> 💎</h1>
-        <p style="font-size: 1.2rem;">Deposite USDT → Receba recompensas em USDT<br>Sem comprar PING manualmente!</p>
+        <h1>💎 <span class="highlight">Staking USDT → Ganhe USDT</span> 💎</h1>
+        <p style="margin-bottom: 0.5rem;">Deposite USDT, o sistema compra PING automaticamente via <strong>Bonding Curve</strong></p>
+        <p style="font-size: 0.85rem;">Recompensas em USDT real | 100% automatizado | Reserve Ratio protege o sistema</p>
+        <div class="feature-badges">
+            <span class="feature-badge">📈 Bonding Curve</span>
+            <span class="feature-badge">💰 Stake USDT</span>
+            <span class="feature-badge">🎁 Ganhe USDT</span>
+            <span class="feature-badge">🛡️ Anti-Bankrun</span>
+            <span class="feature-badge">📊 Transparente</span>
+        </div>
     </div>
 
+    <!-- Stats Grid -->
     <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">💰 Total Staked</div><div class="stat-value" id="totalStaked">-- USDT</div></div>
+        <div class="stat-card"><div class="stat-label">💰 TVL (Total Staked)</div><div class="stat-value" id="totalStaked">-- USDT</div></div>
         <div class="stat-card"><div class="stat-label">🎁 Fundo Recompensas</div><div class="stat-value" id="rewardFund">-- USDT</div></div>
-        <div class="stat-card"><div class="stat-label">📈 APY Estimado</div><div class="stat-value" id="apy">--%</div></div>
+        <div class="stat-card"><div class="stat-label">📈 APY Estimado</div><div class="stat-value" id="apy">--%</div><div class="stat-small">Variável conforme entradas</div></div>
         <div class="stat-card"><div class="stat-label">👥 Stakers</div><div class="stat-value" id="stakersCount">--</div></div>
+        <div class="stat-card"><div class="stat-label">💎 Reserve Ratio</div><div class="stat-value" id="reserveRatio">--%</div><div class="reserve-bar"><div class="reserve-fill" id="reserveFill"></div></div></div>
+        <div class="stat-card"><div class="stat-label">🔒 Status</div><div class="stat-value"><span id="systemStatus" class="status-badge status-safe">🔵 Ativo</span></div></div>
     </div>
 
+    <!-- Main Actions -->
     <div class="flex-2cols">
         <div class="card">
             <h2>💰 DEPOSITAR USDT</h2>
@@ -279,8 +449,8 @@
             <button class="action-btn action-btn-success" id="stakeBtn">✅ Depositar e Stakar</button>
             <div class="info-text">
                 🔹 Mínimo: 10 USDT | Máximo: 10.000 USDT<br>
-                🔹 O contrato compra PING automaticamente<br>
-                🔹 Você recebe recompensas EM USDT
+                🔹 O contrato compra PING automaticamente via Bonding Curve<br>
+                🔹 Quanto mais pessoas depositam, maior o APY!
             </div>
         </div>
 
@@ -292,51 +462,109 @@
             </div>
             <button class="action-btn action-btn-danger" id="unstakeBtn">🔓 Retirar Stake</button>
             <div class="info-text">
-                🔹 Taxa de performance: 5% sobre lucros<br>
-                🔹 Recompensas são pagas automaticamente
+                🔹 Taxa de performance: 5% APENAS sobre lucros<br>
+                🔹 Recompensas são pagas automaticamente<br>
+                🔹 Saques protegidos pelo Reserve Ratio
             </div>
         </div>
     </div>
 
+    <!-- User Panel -->
     <div class="card">
         <h2>📊 SEU STAKE</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-            <div><strong>💵 Seu Stake:</strong> <span id="userStaked">-- USDT</span></div>
-            <div><strong>🪙 PING Referência:</strong> <span id="userPing">--</span></div>
-            <div><strong>🎁 Recompensas:</strong> <span id="pendingRewards" style="color:#38ef7d; font-size:1.3rem;">-- USDT</span></div>
-            <div><strong>📈 Lucro/Prejuízo:</strong> <span id="pnl">-- USDT</span></div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+            <div><strong>💵 Seu Stake:</strong> <span id="userStaked" style="font-size: 1.2rem;">-- USDT</span></div>
+            <div><strong>🪙 PING em Referência:</strong> <span id="userPing">--</span></div>
+            <div><strong>🎁 Recompensas Pendentes:</strong> <span id="pendingRewards" style="color:#38ef7d; font-size: 1.2rem;">-- USDT</span></div>
+            <div><strong>📈 Lucro Estimado:</strong> <span id="pnl" style="font-size: 1.1rem;">-- USDT</span></div>
         </div>
-        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-            <button class="action-btn" id="claimBtn" style="flex:1;">🎁 Reivindicar Recompensas</button>
+        <div style="display: flex; gap: 1rem; margin-top: 1.2rem; flex-wrap: wrap;">
+            <button class="action-btn" id="claimBtn" style="flex:1; background: linear-gradient(135deg, #4facfe, #00f2fe);">🎁 Reivindicar Recompensas</button>
             <button class="action-btn action-btn-success" id="compoundBtn" style="flex:1;">🔄 Reinvestir (Auto-Compound)</button>
         </div>
     </div>
 
+    <!-- Info Section -->
+    <div class="flex-2cols">
+        <div class="card">
+            <h2>⚙️ COMO FUNCIONA</h2>
+            <div class="info-text success-text">
+                <strong>✅ PASSOS DO SISTEMA:</strong><br><br>
+                <strong>1. Você deposita USDT</strong> → Contrato recebe seu USDT<br>
+                <strong>2. Contrato compra PING</strong> → Usa a Bonding Curve do token PING<br>
+                <strong>3. Seu stake rende</strong> → Recompensas em USDT do fundo de staking<br>
+                <strong>4. Você saca</strong> → Contrato vende PING e devolve USDT + lucros
+            </div>
+            <div class="info-text">
+                <strong>🔬 Bonding Curve (Preço do PING):</strong><br>
+                <code style="background:#0a0e27; padding:0.3rem; display:block; border-radius:12px; text-align:center; font-size:0.7rem;">
+                Preço = 0.01 + 0.0001 × Supply(em milhões) + 0.0000001 × Supply²(em milhões)
+                </code>
+                <br>✅ Supply aumenta com compras → Preço SOBE<br>
+                ✅ Supply diminui com vendas → Preço CAI<br>
+                ✅ Único comprador/vendedor é o próprio contrato!
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🛡️ SEGURANÇA E SUSTENTABILIDADE</h2>
+            <div class="info-text">
+                <strong>🔒 Reserve Ratio Protection:</strong><br>
+                • Reserva USDT do token PING / Valor total do sistema<br>
+                • Se cair abaixo de 20%, sistema trava vendas<br>
+                • Protege contra bankrun e insolvência<br>
+                • Apenas novos depósitos destravam
+            </div>
+            <div class="info-text">
+                <strong>💪 POR QUE É SEGURO?</strong><br>
+                • Token PING pode mintar/queimar (liquidez 100% interna)<br>
+                • Não depende de Uniswap ou oráculos externos<br>
+                • Sem risco de impermanent loss<br>
+                • Contrato auditável e transparente<br>
+                • Criador só saca 30% da tesouraria por vez
+            </div>
+        </div>
+    </div>
+
+    <!-- Contratos -->
     <div class="card">
-        <h2>⚙️ Como Funciona</h2>
-        <div class="info-text">
-            <strong>1️⃣ Você deposita USDT</strong> → O contrato compra PING automaticamente<br>
-            <strong>2️⃣ Seu stake rende recompensas</strong> → Pagas em USDT do fundo de staking<br>
-            <strong>3️⃣ Você retira USDT</strong> → O contrato vende o PING e devolve USDT + lucros<br>
-            <strong>4️⃣ Taxa de performance</strong> → 5% apenas sobre LUCROS (se houver)
+        <h2>📜 CONTRATOS VERIFICADOS</h2>
+        <div style="display: grid; gap: 0.8rem;">
+            <div class="contract-address">
+                🔗 <strong>Staking USDT</strong><br>
+                <a href="https://bscscan.com/address/0x02ebB958147e28b499D040e40f8aED26AA9c5F89" target="_blank" rel="noopener noreferrer">
+                    0x02ebB958147e28b499D040e40f8aED26AA9c5F89
+                </a>
+            </div>
+            <div class="contract-address">
+                🔗 <strong>Token PING (Bonding Curve)</strong><br>
+                <a href="https://bscscan.com/address/0x7d89ea65be4b433012465b7a7e5bd00359d37d3b" target="_blank" rel="noopener noreferrer">
+                    0x7D89Ea65BE4b433012465b7a7e5bD00359d37d3B
+                </a>
+            </div>
+            <div class="contract-address">
+                💵 <strong>USDT (BSC)</strong><br>
+                0x55d398326f99059fF775485246999027B3197955
+            </div>
         </div>
     </div>
 
     <footer>
-        ⚠️ Risco: O valor do PING pode cair. Seu stake está sujeito à variação do mercado.<br>
-        💎 Sistema 100% automatizado na BSC Mainnet
+        ⚠️ <strong>Aviso de Risco:</strong> Sistema depende de fluxo contínuo de depósitos. Reserve Ratio abaixo de 20% trava saques temporariamente.<br>
+        💎 <strong>PING Protocol</strong> - Staking Automático com Bonding Curve | Transparente | Sustentável | 100% na BSC
     </footer>
 </div>
 <div id="txStatus" class="tx-status" style="display: none;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <script>
-    // CONFIGURAÇÕES - ATUALIZE COM OS ENDEREÇOS REAIS
+    // ================= CONFIGURAÇÕES =================
     const STAKING_ADDRESS = "0x02ebB958147e28b499D040e40f8aED26AA9c5F89";
     const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
-    const PING_ADDRESS = "0x7d89ea65be4b433012465b7a7e5bd00359d37d3b";
+    const PING_TOKEN_ADDRESS = "0x7d89ea65be4b433012465b7a7e5bd00359d37d3b";
     const BSC_CHAIN_ID = "0x38";
 
+    // ABI do Staking
     const STAKING_ABI = [
         "function stake(uint256 usdtAmount) external",
         "function unstake(uint256 usdtAmount) external",
@@ -346,8 +574,16 @@
         "function getStakerInfo(address) view returns (uint256, uint256, uint256, uint256, uint256, uint256)",
         "function getPoolStats() view returns (uint256, uint256, uint256, uint256, uint256)",
         "function totalStakedUSDT() view returns (uint256)",
-        "function rewardFund() view returns (uint256)",
-        "function stakers(address) view returns (uint256, uint256, uint256, uint256, uint256, uint256)"
+        "function rewardFund() view returns (uint256)"
+    ];
+
+    // ABI do Token PING para Reserve Ratio
+    const PING_ABI = [
+        "function totalSupply() view returns (uint256)",
+        "function currentPrice() view returns (uint256)",
+        "function getReserves() view returns (uint256, uint256, uint256, uint256)",
+        "function getReserveRatio() view returns (uint256)",
+        "function sellRestricted() view returns (bool)"
     ];
 
     const USDT_ABI = [
@@ -358,11 +594,13 @@
         "function decimals() view returns (uint8)"
     ];
 
-    let provider, signer, userAddress, stakingContract, usdtContract;
+    let provider, signer, userAddress, stakingContract, pingContract, usdtContract;
     let isConnected = false;
     let isProcessing = false;
     let usdtDecimals = 18;
+    let dashboardInterval = null;
 
+    // DOM Elements
     const connectBtn = document.getElementById("connectBtn");
     const walletDisplay = document.getElementById("walletDisplay");
     const txStatusDiv = document.getElementById("txStatus");
@@ -372,9 +610,13 @@
         txStatusDiv.style.background = isError ? "#4a1a2a" : "#1a3a2a";
         txStatusDiv.style.borderLeftColor = isError ? "#f5576c" : "#4facfe";
         let html = isError ? "❌ " + msg : "✅ " + msg;
-        if(txHash) html += ` <a href="https://bscscan.com/tx/${txHash}" target="_blank" style="color:#4facfe;">🔗 Ver</a>`;
+        if(txHash) {
+            html += ` <a href="https://bscscan.com/tx/${txHash}" target="_blank" style="color:#4facfe;">🔗 Ver</a>`;
+        }
         txStatusDiv.innerHTML = html;
-        setTimeout(() => { if(txStatusDiv.innerHTML === html) txStatusDiv.style.display = "none"; }, 8000);
+        setTimeout(() => { 
+            if(txStatusDiv.innerHTML === html) txStatusDiv.style.display = "none"; 
+        }, 8000);
     }
 
     function setProcessing(processing, btnId = null) {
@@ -385,19 +627,39 @@
         }
         if(processing) {
             txStatusDiv.style.display = "flex";
-            txStatusDiv.innerHTML = '<div class="spinner"></div> Processando...';
+            txStatusDiv.innerHTML = '<div class="spinner"></div> Processando transação...';
         }
     }
 
     async function updateDashboard() {
-        if(!stakingContract || !isConnected) return;
+        if(!stakingContract || !pingContract || !isConnected) return;
         try {
+            // Pool stats do staking
             const poolStats = await stakingContract.getPoolStats();
             document.getElementById("totalStaked").innerHTML = Number(ethers.formatUnits(poolStats[0], 18)).toFixed(2) + " USDT";
             document.getElementById("rewardFund").innerHTML = Number(ethers.formatUnits(poolStats[1], 18)).toFixed(2) + " USDT";
             document.getElementById("apy").innerHTML = (Number(poolStats[3]) / 100).toFixed(2) + "%";
             document.getElementById("stakersCount").innerHTML = poolStats[4];
 
+            // Reserve Ratio do token PING
+            const reserveRatioRaw = await pingContract.getReserveRatio();
+            const reserveRatio = Number(reserveRatioRaw) / 100;
+            document.getElementById("reserveRatio").innerHTML = reserveRatio.toFixed(1) + "%";
+            
+            const fillElem = document.getElementById("reserveFill");
+            fillElem.style.width = Math.min(100, reserveRatio) + "%";
+            if(reserveRatio < 20) {
+                fillElem.style.background = "#f5576c";
+                document.getElementById("systemStatus").innerHTML = '<span class="status-badge status-critical">⚠️ CRÍTICO - Vendas Limitadas</span>';
+            } else if(reserveRatio < 50) {
+                fillElem.style.background = "#f6d365";
+                document.getElementById("systemStatus").innerHTML = '<span class="status-badge status-warning">🟡 ATENÇÃO - Reserve Ratio Baixo</span>';
+            } else {
+                fillElem.style.background = "#38ef7d";
+                document.getElementById("systemStatus").innerHTML = '<span class="status-badge status-safe">🟢 SAUDÁVEL - Ativo</span>';
+            }
+
+            // Staker info
             const stakerInfo = await stakingContract.getStakerInfo(userAddress);
             document.getElementById("userStaked").innerHTML = Number(ethers.formatUnits(stakerInfo[0], 18)).toFixed(2) + " USDT";
             document.getElementById("userPing").innerHTML = Number(ethers.formatUnits(stakerInfo[1], 18)).toFixed(2);
@@ -413,28 +675,29 @@
     async function approveUSDT(amount) {
         const allowance = await usdtContract.allowance(userAddress, STAKING_ADDRESS);
         if(allowance >= amount) return true;
-        showStatus("Aprovando USDT...");
+        showStatus("Aprovando USDT no contrato...");
         const tx = await usdtContract.approve(STAKING_ADDRESS, amount);
         await tx.wait();
-        showStatus("✅ USDT aprovado!");
+        showStatus("✅ USDT aprovado com sucesso!");
         return true;
     }
 
     // Stake
     document.getElementById("stakeBtn")?.addEventListener("click", async () => {
-        if(!isConnected || isProcessing) { showStatus("Conecte a carteira", true); return; }
+        if(!isConnected || isProcessing) { showStatus("Conecte a carteira primeiro!", true); return; }
         const amount = parseFloat(document.getElementById("stakeAmount").value);
-        if(isNaN(amount) || amount < 10) { showStatus("Mínimo 10 USDT", true); return; }
+        if(isNaN(amount) || amount < 10) { showStatus("Mínimo de 10 USDT", true); return; }
+        if(amount > 10000) { showStatus("Máximo de 10.000 USDT por transação", true); return; }
         
         const amountWei = ethers.parseUnits(amount.toString(), usdtDecimals);
         setProcessing(true, "stakeBtn");
         
         try {
             await approveUSDT(amountWei);
-            showStatus("Depositando e fazendo stake...");
+            showStatus("Depositando e fazendo stake... Confirme na carteira.");
             const tx = await stakingContract.stake(amountWei);
             await tx.wait();
-            showStatus(`✅ Stake de ${amount} USDT realizado!`, false, tx.hash);
+            showStatus(`✅ Stake de ${amount} USDT realizado com sucesso!`, false, tx.hash);
             document.getElementById("stakeAmount").value = "";
             updateDashboard();
         } catch(e) {
@@ -447,15 +710,15 @@
 
     // Unstake
     document.getElementById("unstakeBtn")?.addEventListener("click", async () => {
-        if(!isConnected || isProcessing) { showStatus("Conecte a carteira", true); return; }
+        if(!isConnected || isProcessing) { showStatus("Conecte a carteira primeiro!", true); return; }
         const amount = parseFloat(document.getElementById("unstakeAmount").value);
-        if(isNaN(amount) || amount <= 0) { showStatus("Quantidade inválida", true); return; }
+        if(isNaN(amount) || amount <= 0) { showStatus("Digite uma quantidade válida", true); return; }
         
         const amountWei = ethers.parseUnits(amount.toString(), usdtDecimals);
         setProcessing(true, "unstakeBtn");
         
         try {
-            showStatus("Retirando stake...");
+            showStatus("Retirando stake... Confirme na carteira.");
             const tx = await stakingContract.unstake(amountWei);
             await tx.wait();
             showStatus(`✅ Retirada de ${amount} USDT realizada!`, false, tx.hash);
@@ -471,13 +734,13 @@
 
     // Claim Rewards
     document.getElementById("claimBtn")?.addEventListener("click", async () => {
-        if(!isConnected || isProcessing) { showStatus("Conecte a carteira", true); return; }
+        if(!isConnected || isProcessing) { showStatus("Conecte a carteira primeiro!", true); return; }
         setProcessing(true, "claimBtn");
         try {
-            showStatus("Reivindicando recompensas...");
+            showStatus("Reivindicando recompensas... Confirme na carteira.");
             const tx = await stakingContract.claimRewards();
             await tx.wait();
-            showStatus("✅ Recompensas recebidas!", false, tx.hash);
+            showStatus("✅ Recompensas recebidas em USDT!", false, tx.hash);
             updateDashboard();
         } catch(e) {
             const errMsg = e?.reason || e?.message || "Erro desconhecido";
@@ -489,13 +752,13 @@
 
     // Compound
     document.getElementById("compoundBtn")?.addEventListener("click", async () => {
-        if(!isConnected || isProcessing) { showStatus("Conecte a carteira", true); return; }
+        if(!isConnected || isProcessing) { showStatus("Conecte a carteira primeiro!", true); return; }
         setProcessing(true, "compoundBtn");
         try {
-            showStatus("Reinvestindo recompensas...");
+            showStatus("Reinvestindo recompensas... Confirme na carteira.");
             const tx = await stakingContract.compoundRewards();
             await tx.wait();
-            showStatus("✅ Recompensas reinvestidas!", false, tx.hash);
+            showStatus("✅ Recompensas reinvestidas no stake!", false, tx.hash);
             updateDashboard();
         } catch(e) {
             const errMsg = e?.reason || e?.message || "Erro desconhecido";
@@ -507,38 +770,65 @@
 
     // Connect Wallet
     async function connectWallet() {
-        if(!window.ethereum) { showStatus("Instale MetaMask!", true); return; }
+        if(!window.ethereum) { showStatus("Instale MetaMask ou Rabby Wallet!", true); return; }
         try {
             await window.ethereum.request({ method: "eth_requestAccounts" });
             provider = new ethers.BrowserProvider(window.ethereum);
             const network = await provider.getNetwork();
-            if(Number(network.chainId) !== 56) {
-                showStatus("Mude para BSC Mainnet", true);
-                await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: BSC_CHAIN_ID }] });
-                setTimeout(() => connectWallet(), 1000);
-                return;
+            const chainId = Number(network.chainId);
+            
+            if(chainId !== 56) {
+                showStatus("⚠️ Por favor, mude para BSC Mainnet (Chain ID 56)", true);
+                try {
+                    await window.ethereum.request({
+                        method: "wallet_switchEthereumChain",
+                        params: [{ chainId: BSC_CHAIN_ID }],
+                    });
+                    setTimeout(() => connectWallet(), 1000);
+                    return;
+                } catch(e) { return; }
             }
+            
             signer = await provider.getSigner();
             userAddress = await signer.getAddress();
             walletDisplay.innerHTML = userAddress.slice(0,6)+"..."+userAddress.slice(-4);
             isConnected = true;
+            
             stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+            pingContract = new ethers.Contract(PING_TOKEN_ADDRESS, PING_ABI, signer);
             usdtContract = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
-            try { usdtDecimals = await usdtContract.decimals(); } catch(e) {}
-            showStatus("✅ Conectado à BSC");
+            
+            try { usdtDecimals = await usdtContract.decimals(); } catch(e) { usdtDecimals = 18; }
+            
+            showStatus("✅ Carteira conectada à BSC Mainnet!");
             updateDashboard();
-            setInterval(() => { if(isConnected) updateDashboard(); }, 10000);
-        } catch(e) { showStatus("Erro ao conectar", true); }
+            
+            if(dashboardInterval) clearInterval(dashboardInterval);
+            dashboardInterval = setInterval(() => { if(isConnected) updateDashboard(); }, 10000);
+        } catch(e) { 
+            console.error(e); 
+            showStatus("Erro ao conectar carteira", true); 
+        }
     }
 
     connectBtn.addEventListener("click", connectWallet);
 
+    // Eventos da carteira
     if(window.ethereum) {
         window.ethereum.on('accountsChanged', (accounts) => {
-            if(accounts.length === 0) { location.reload(); }
-            else connectWallet();
+            if(accounts.length === 0) {
+                isConnected = false;
+                userAddress = null;
+                walletDisplay.innerHTML = "Desconectado";
+                if(dashboardInterval) clearInterval(dashboardInterval);
+                showStatus("Carteira desconectada", true);
+            } else {
+                connectWallet();
+            }
         });
-        window.ethereum.on('chainChanged', () => location.reload());
+        window.ethereum.on('chainChanged', () => {
+            window.location.reload();
+        });
     }
 </script>
 </body>
