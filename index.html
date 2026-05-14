@@ -9,52 +9,42 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1429 100%); min-height: 100vh; padding: 1rem; color: #e0e4ff; }
         .container { max-width: 1200px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; padding: 1rem 1.8rem; background: rgba(10, 14, 39, 0.8); backdrop-filter: blur(10px); border-radius: 28px; border: 1px solid rgba(79, 172, 254, 0.3); }
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: rgba(10,14,39,0.8); backdrop-filter: blur(10px); border-radius: 28px; padding: 1rem 1.8rem; margin-bottom: 2rem; border: 1px solid rgba(79,172,254,0.3); }
         .logo { display: flex; align-items: center; gap: 12px; font-size: 1.6rem; font-weight: bold; }
         .logo span:first-child { font-size: 2rem; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
         .logo span:last-child { background: linear-gradient(135deg, #4facfe, #00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .badge { background: linear-gradient(135deg, #11998e, #38ef7d); padding: 0.2rem 0.8rem; border-radius: 40px; font-size: 0.65rem; font-weight: bold; }
         .wallet-section { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
         .wallet-btn { background: linear-gradient(135deg, #4facfe, #00f2fe); border: none; padding: 0.7rem 1.5rem; border-radius: 40px; color: #0a0e27; font-weight: bold; cursor: pointer; transition: all 0.3s; }
-        .wallet-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6); }
-        .wallet-address { background: rgba(0,0,0,0.4); padding: 0.5rem 1rem; border-radius: 40px; font-family: monospace; font-size: 0.8rem; border: 1px solid rgba(79, 172, 254, 0.5); }
-        .apy-highlight { background: linear-gradient(135deg, rgba(17, 153, 142, 0.2), rgba(56, 239, 125, 0.1)); border-radius: 32px; padding: 1.5rem; margin-bottom: 2rem; text-align: center; border: 2px solid rgba(56, 239, 125, 0.3); animation: glow 2s infinite; }
-        @keyframes glow { 0%, 100% { border-color: rgba(56, 239, 125, 0.3); } 50% { border-color: rgba(56, 239, 125, 0.8); box-shadow: 0 0 20px rgba(56, 239, 125, 0.2); } }
+        .wallet-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,172,254,0.6); }
+        .wallet-address { background: rgba(0,0,0,0.4); padding: 0.5rem 1rem; border-radius: 40px; font-family: monospace; font-size: 0.8rem; border: 1px solid rgba(79,172,254,0.5); }
+        .apy-box { background: linear-gradient(135deg, rgba(17,153,142,0.2), rgba(56,239,125,0.1)); border-radius: 32px; padding: 1.5rem; margin-bottom: 2rem; text-align: center; border: 2px solid rgba(56,239,125,0.3); animation: glow 2s infinite; }
+        @keyframes glow { 0%,100%{border-color:rgba(56,239,125,0.3);} 50%{border-color:rgba(56,239,125,0.8);box-shadow:0 0 20px rgba(56,239,125,0.2);} }
         .apy-value { font-size: 3.5rem; font-weight: bold; background: linear-gradient(135deg, #11998e, #38ef7d); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1; }
         .apy-label { font-size: 0.8rem; color: #8e9eff; letter-spacing: 2px; }
-        .hero { background: linear-gradient(135deg, rgba(79, 172, 254, 0.12), rgba(0, 242, 254, 0.04)); border-radius: 32px; padding: 1.5rem; margin-bottom: 2rem; text-align: center; border: 1px solid rgba(79, 172, 254, 0.2); }
-        .feature-badges { display: flex; justify-content: center; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; }
-        .feature-badge { background: rgba(79, 172, 254, 0.15); padding: 0.4rem 1rem; border-radius: 40px; font-size: 0.75rem; border: 1px solid rgba(79, 172, 254, 0.3); }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .stat-card { background: rgba(20, 25, 55, 0.7); backdrop-filter: blur(8px); border-radius: 24px; padding: 1rem; text-align: center; border: 1px solid rgba(79, 172, 254, 0.2); transition: all 0.3s; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: rgba(20,25,55,0.7); backdrop-filter: blur(8px); border-radius: 24px; padding: 1rem; text-align: center; border: 1px solid rgba(79,172,254,0.2); transition: all 0.3s; }
         .stat-card:hover { border-color: #4facfe; transform: translateY(-3px); }
         .stat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: #8e9eff; margin-bottom: 0.5rem; }
         .stat-value { font-size: 1.3rem; font-weight: bold; }
-        .reserve-bar { background: rgba(0,0,0,0.4); border-radius: 20px; height: 6px; margin: 0.5rem 0; overflow: hidden; }
-        .reserve-fill { height: 100%; border-radius: 20px; transition: width 0.3s; width: 0%; }
-        .card { background: rgba(15, 20, 45, 0.8); backdrop-filter: blur(10px); border-radius: 28px; padding: 1.5rem; border: 1px solid rgba(79, 172, 254, 0.25); margin-bottom: 1.5rem; }
+        .card { background: rgba(15,20,45,0.8); backdrop-filter: blur(10px); border-radius: 28px; padding: 1.5rem; border: 1px solid rgba(79,172,254,0.25); margin-bottom: 1.5rem; }
         .card h2 { margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-size: 1.3rem; }
-        .flex-2cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .flex { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
         .input-group { margin-bottom: 1rem; }
         .input-group label { display: block; margin-bottom: 0.4rem; font-weight: 500; color: #b8c0ff; font-size: 0.85rem; }
         .input-group input { width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid #2a2f55; border-radius: 20px; color: white; font-size: 1rem; }
         .action-btn { width: 100%; padding: 0.8rem; background: linear-gradient(135deg, #4facfe, #00f2fe); border: none; border-radius: 40px; font-weight: bold; font-size: 1rem; color: #0a0e27; cursor: pointer; transition: all 0.3s; margin-top: 0.3rem; }
         .action-btn-success { background: linear-gradient(135deg, #11998e, #38ef7d); }
         .action-btn-danger { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .info-text { background: rgba(79, 172, 254, 0.08); padding: 0.7rem; border-radius: 16px; font-size: 0.75rem; margin-top: 0.8rem; color: #b8c0ff; line-height: 1.4; }
-        .contract-address { background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 16px; font-family: monospace; font-size: 0.7rem; word-break: break-all; text-align: center; }
-        .contract-address a { color: #4facfe; text-decoration: none; }
+        .info-text { background: rgba(79,172,254,0.08); padding: 0.7rem; border-radius: 16px; font-size: 0.75rem; margin-top: 0.8rem; color: #b8c0ff; line-height: 1.4; }
+        .contract-addr { background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 16px; font-family: monospace; font-size: 0.7rem; text-align: center; }
         .tx-status { position: fixed; bottom: 20px; right: 20px; background: #1a1f3a; padding: 0.8rem 1.2rem; border-radius: 50px; border-left: 4px solid #4facfe; font-size: 0.8rem; z-index: 1000; display: flex; align-items: center; gap: 10px; }
         .spinner { width: 18px; height: 18px; border: 2px solid #4facfe; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .status-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
-        .status-safe { background: #11998e20; color: #38ef7d; border: 1px solid #38ef7d; }
-        .status-warning { background: #f6d36520; color: #f6d365; border: 1px solid #f6d365; }
-        .status-critical { background: #f5576c20; color: #f5576c; border: 1px solid #f5576c; }
+        .status-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; font-weight: bold; background: #38ef7d20; color: #38ef7d; border: 1px solid #38ef7d; }
         footer { text-align: center; padding: 2rem; color: #5a6e8a; font-size: 0.7rem; margin-top: 1rem; }
-        @media (max-width: 768px) { .apy-value { font-size: 2.5rem; } .stat-value { font-size: 1rem; } .card { padding: 1rem; } }
+        @media (max-width: 768px) { .apy-value { font-size: 2.5rem; } .stat-value { font-size: 1rem; } }
     </style>
 </head>
 <body>
@@ -67,22 +57,22 @@
         </div>
     </div>
 
-    <div class="apy-highlight">
-        <div class="apy-label">📈 APY REAL DO CONTRATO 📈</div>
+    <div class="apy-box">
+        <div class="apy-label">📈 APY REAL DO CONTRATO</div>
         <div class="apy-value" id="apyValue">0%</div>
         <div class="apy-label">AO ANO • RECOMPENSAS EM USDT REAL</div>
-        <div style="margin-top: 0.8rem; font-size: 0.75rem;">💰 <span id="rewardFundDisplay" style="color:#38ef7d;">0</span> em recompensas • 👥 <span id="stakersCountDisplay">0</span> stakers</div>
+        <div style="margin-top: 0.8rem; font-size: 0.75rem;">💰 <span id="rewardFundDisplay" style="color:#38ef7d;">0</span> USDT em recompensas • 👥 <span id="stakersCountDisplay">0</span> stakers</div>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">💰 TVL (Total Staked)</div><div class="stat-value" id="totalStaked">0 USDT</div></div>
-        <div class="stat-card"><div class="stat-label">🎁 Fundo Recompensas</div><div class="stat-value" id="rewardFund">0 USDT</div></div>
+        <div class="stat-card"><div class="stat-label">💰 TVL</div><div class="stat-value" id="totalStaked">0 USDT</div></div>
+        <div class="stat-card"><div class="stat-label">🎁 Fundo</div><div class="stat-value" id="rewardFund">0 USDT</div></div>
         <div class="stat-card"><div class="stat-label">👥 Stakers</div><div class="stat-value" id="stakersCount">0</div></div>
-        <div class="stat-card"><div class="stat-label">💎 Reserve Ratio</div><div class="stat-value" id="reserveRatio">100%</div><div class="reserve-bar"><div class="reserve-fill" id="reserveFill" style="width:100%"></div></div></div>
-        <div class="stat-card"><div class="stat-label">🔒 Status</div><div class="stat-value"><span id="systemStatus" class="status-badge status-safe">🟢 Saudável</span></div></div>
+        <div class="stat-card"><div class="stat-label">🪙 Preço PING</div><div class="stat-value" id="pingPrice">-- USDT</div></div>
+        <div class="stat-card"><div class="stat-label">🔒 Status</div><div class="stat-value"><span id="systemStatus" class="status-badge">🟢 Ativo</span></div></div>
     </div>
 
-    <div class="flex-2cols">
+    <div class="flex">
         <div class="card">
             <h2>💰 DEPOSITAR USDT</h2>
             <div class="input-group">
@@ -90,7 +80,11 @@
                 <input type="number" id="stakeAmount" placeholder="Ex: 100" step="1" min="1">
             </div>
             <button class="action-btn action-btn-success" id="stakeBtn">✅ Depositar e Stakar</button>
-            <div class="info-text">🔹 O contrato COMPRA PING automaticamente<br>🔹 Você ganha recompensas em USDT</div>
+            <div class="info-text">
+                🔹 O contrato COMPRA PING automaticamente com seu USDT<br>
+                🔹 Você ganha recompensas em USDT do fundo de staking<br>
+                🔹 Quanto mais pessoas depositam, maior o APY!
+            </div>
         </div>
 
         <div class="card">
@@ -100,73 +94,87 @@
                 <input type="number" id="unstakeAmount" placeholder="Ex: 50" step="1">
             </div>
             <button class="action-btn action-btn-danger" id="unstakeBtn">🔓 Retirar Stake</button>
-            <div class="info-text">🔹 Taxa: 5% APENAS sobre LUCROS<br>🔹 O contrato VENDE o PING e devolve USDT</div>
+            <div class="info-text">
+                🔹 Taxa de performance: 5% APENAS sobre LUCROS<br>
+                🔹 O contrato VENDE o PING e devolve USDT<br>
+                🔹 Criador recebe taxa automaticamente
+            </div>
         </div>
     </div>
 
     <div class="card">
         <h2>📊 SEU STAKE</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
-            <div><strong>💵 Seu Stake:</strong> <span id="userStaked">0 USDT</span></div>
-            <div><strong>🪙 PING:</strong> <span id="userPing">0</span></div>
-            <div><strong>🎁 Recompensas:</strong> <span id="pendingRewards" style="color:#38ef7d;">0 USDT</span></div>
+            <div><strong>💵 Seu Stake:</strong> <span id="userStaked" style="font-size: 1.2rem;">0 USDT</span></div>
+            <div><strong>🪙 PING no Stake:</strong> <span id="userPing">0</span></div>
+            <div><strong>🎁 Recompensas:</strong> <span id="pendingRewards" style="color:#38ef7d; font-size: 1.2rem;">0 USDT</span></div>
         </div>
         <div style="display: flex; gap: 1rem; margin-top: 1.2rem; flex-wrap: wrap;">
             <button class="action-btn" id="claimBtn" style="flex:1;">🎁 Reivindicar Recompensas</button>
-            <button class="action-btn action-btn-success" id="compoundBtn" style="flex:1;">🔄 Reinvestir</button>
+            <button class="action-btn action-btn-success" id="compoundBtn" style="flex:1;">🔄 Reinvestir (Auto-Compound)</button>
         </div>
     </div>
 
     <div class="card">
-        <h2>📜 CONTRATO</h2>
-        <div class="contract-address">
-            <a href="https://bscscan.com/address/0x4034115279E72FbFB2ac4FEfC8Bb7a87E06A4c63" target="_blank">
-                0x4034115279E72FbFB2ac4FEfC8Bb7a87E06A4c63
+        <h2>📜 CONTRATOS</h2>
+        <div class="contract-addr">
+            🔗 <strong>Staking USDT</strong><br>
+            <a href="https://bscscan.com/address/0x71713cD5Ca0071e6cC8238Ff98D2e2bC025EBCd6" target="_blank" style="color:#4facfe;">
+                0x71713cD5Ca0071e6cC8238Ff98D2e2bC025EBCd6
             </a>
         </div>
-        <div class="info-text">✅ APENAS o contrato compra/vende PING - sem manipulação externa<br>✅ Mínimo para stake: $1 USDT</div>
+        <div class="contract-addr" style="margin-top: 0.5rem;">
+            🔗 <strong>Token PING</strong><br>
+            <a href="https://bscscan.com/address/0x6fB4733D38841e7c51Dc2D3Fece5B52C4EEbB01E" target="_blank" style="color:#4facfe;">
+                0x6fB4733D38841e7c51Dc2D3Fece5B52C4EEbB01E
+            </a>
+        </div>
+        <div class="info-text" style="margin-top: 0.8rem;">
+            ✅ Apenas o contrato compra/vende PING - sem manipulação externa<br>
+            ✅ Mínimo para stake: $1 USDT | Taxa de performance: 5% sobre lucros
+        </div>
     </div>
 
-    <footer>⚠️ APY é variável. Reserve Ratio abaixo de 20% trava saques temporariamente.</footer>
+    <footer>⚠️ APY é variável. Reserve Ratio abaixo de 20% trava saques temporariamente. Sempre DYOR.</footer>
 </div>
 <div id="txStatus" class="tx-status" style="display: none;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <script>
-    // CONFIGURAÇÕES
-    const CONTRACT_ADDRESS = "0x4034115279E72FbFB2ac4FEfC8Bb7a87E06A4c63";
+    // ================= CONFIGURAÇÕES =================
+    const STAKING_ADDRESS = "0x71713cD5Ca0071e6cC8238Ff98D2e2bC025EBCd6";
+    const PING_ADDRESS = "0x6fB4733D38841e7c51Dc2D3Fece5B52C4EEbB01E";
     const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
     const BSC_CHAIN_ID = "0x38";
 
-    // ABI COMPLETA (com todas as funções que o contrato tem)
-    const CONTRACT_ABI = [
-        "function stakeUSDT(uint256 usdtAmount) external",
-        "function unstakeUSDT(uint256 usdtAmount) external",
-        "function claimStakingRewards() external",
-        "function compoundStakingRewards() external",
+    // ABI do Staking
+    const STAKING_ABI = [
+        "function stake(uint256 usdtAmount) external",
+        "function unstake(uint256 usdtAmount) external",
+        "function claimRewards() external",
+        "function compoundRewards() external",
         "function pendingReward(address) view returns (uint256)",
-        "function totalStakedUSDT() view returns (uint256)",
-        "function stakingRewardFund() view returns (uint256)",
-        "function getStakingPoolStats() view returns (uint256, uint256, uint256, uint256, uint256)",
-        "function getStakingInfo(address) view returns (uint256, uint256, uint256, uint256, uint256, uint256)",
-        "function getReserveRatio() view returns (uint256)",
-        "function sellRestricted() view returns (bool)",
-        "function paused() view returns (bool)",
-        "function minStakeAmount() view returns (uint256)"
+        "function getUserInfo(address) view returns (uint256, uint256, uint256)",
+        "function getPoolStats() view returns (uint256, uint256, uint256, uint256, uint256)",
+        "function totalStaked() view returns (uint256)",
+        "function rewardFund() view returns (uint256)"
+    ];
+
+    // ABI do PING (apenas para preço)
+    const PING_ABI = [
+        "function currentPrice() view returns (uint256)"
     ];
 
     const USDT_ABI = [
-        "function transferFrom(address, address, uint256) returns (bool)",
-        "function approve(address, uint256) returns (bool)",
-        "function allowance(address, address) view returns (uint256)",
+        "function transferFrom(address,address,uint256) returns (bool)",
+        "function approve(address,uint256) returns (bool)",
+        "function allowance(address,address) view returns (uint256)",
         "function balanceOf(address) view returns (uint256)",
         "function decimals() view returns (uint8)"
     ];
 
-    let provider, signer, userAddress, contract, usdtContract;
-    let isConnected = false;
-    let isProcessing = false;
-    let usdtDecimals = 18;
+    let provider, signer, user, staking, ping, usdt;
+    let connected = false, processing = false, decimals = 18;
     let refreshInterval = null;
 
     const connectBtn = document.getElementById("connectBtn");
@@ -183,191 +191,201 @@
         setTimeout(() => { if(txStatusDiv.innerHTML === html) txStatusDiv.style.display = "none"; }, 8000);
     }
 
-    function setProcessing(processing, btnId = null) {
-        isProcessing = processing;
+    function setProcessing(processingFlag, btnId = null) {
+        processing = processingFlag;
         if(btnId) {
             const btn = document.getElementById(btnId);
-            if(btn) btn.disabled = processing;
+            if(btn) btn.disabled = processingFlag;
         }
-        if(processing) {
+        if(processingFlag) {
             txStatusDiv.style.display = "flex";
-            txStatusDiv.innerHTML = '<div class="spinner"></div> Processando...';
+            txStatusDiv.innerHTML = '<div class="spinner"></div> Processando transação...';
         }
     }
 
     async function updateDashboard() {
-        if(!contract || !isConnected) return;
+        if(!staking || !connected) return;
         try {
-            const poolStats = await contract.getStakingPoolStats();
-            const totalStaked = Number(ethers.formatUnits(poolStats[0], 18));
-            const rewardFund = Number(ethers.formatUnits(poolStats[1], 18));
-            const apy = Number(poolStats[3]) / 100;
-            const stakersCount = Number(poolStats[4]);
+            const stats = await staking.getPoolStats();
+            const totalStaked = Number(ethers.formatUnits(stats[0], 18));
+            const rewardFund = Number(ethers.formatUnits(stats[1], 18));
+            const apy = (Number(stats[3]) / 100).toFixed(2);
+            const stakersCount = Number(stats[4]);
             
             document.getElementById("totalStaked").innerHTML = totalStaked.toFixed(2) + " USDT";
             document.getElementById("rewardFund").innerHTML = rewardFund.toFixed(2) + " USDT";
             document.getElementById("stakersCount").innerHTML = stakersCount;
-            document.getElementById("apyValue").innerHTML = apy.toFixed(2) + "%";
-            document.getElementById("rewardFundDisplay").innerHTML = rewardFund.toFixed(2) + " USDT";
+            document.getElementById("apyValue").innerHTML = apy + "%";
+            document.getElementById("rewardFundDisplay").innerHTML = rewardFund.toFixed(2);
             document.getElementById("stakersCountDisplay").innerHTML = stakersCount;
 
-            const reserveRatio = Number(await contract.getReserveRatio()) / 100;
-            document.getElementById("reserveRatio").innerHTML = reserveRatio.toFixed(1) + "%";
-            const fillElem = document.getElementById("reserveFill");
-            fillElem.style.width = Math.min(100, reserveRatio) + "%";
-            
-            if(reserveRatio < 20) {
-                fillElem.style.background = "#f5576c";
-                document.getElementById("systemStatus").innerHTML = '<span class="status-badge status-critical">🔴 CRÍTICO</span>';
-            } else if(reserveRatio < 50) {
-                fillElem.style.background = "#f6d365";
-                document.getElementById("systemStatus").innerHTML = '<span class="status-badge status-warning">🟡 ATENÇÃO</span>';
-            } else {
-                fillElem.style.background = "#38ef7d";
-                document.getElementById("systemStatus").innerHTML = '<span class="status-badge status-safe">🟢 SAUDÁVEL</span>';
-            }
+            // Preço do PING
+            try {
+                const price = await ping.currentPrice();
+                const priceFormatted = Number(ethers.formatUnits(price, 18)).toFixed(6);
+                document.getElementById("pingPrice").innerHTML = priceFormatted + " USDT";
+            } catch(e) { console.warn(e); }
 
-            const stakerInfo = await contract.getStakingInfo(userAddress);
-            document.getElementById("userStaked").innerHTML = Number(ethers.formatUnits(stakerInfo[0], 18)).toFixed(2) + " USDT";
-            document.getElementById("userPing").innerHTML = Number(ethers.formatUnits(stakerInfo[1], 18)).toFixed(2);
-            document.getElementById("pendingRewards").innerHTML = Number(ethers.formatUnits(stakerInfo[2], 18)).toFixed(4) + " USDT";
+            // Informações do usuário
+            const userInfo = await staking.getUserInfo(user);
+            document.getElementById("userStaked").innerHTML = Number(ethers.formatUnits(userInfo[0], 18)).toFixed(2) + " USDT";
+            document.getElementById("userPing").innerHTML = Number(ethers.formatUnits(userInfo[1], 18)).toFixed(2);
+            document.getElementById("pendingRewards").innerHTML = Number(ethers.formatUnits(userInfo[2], 18)).toFixed(4) + " USDT";
         } catch(e) { console.warn(e); }
     }
 
     async function approveUSDT(amount) {
-        const allowance = await usdtContract.allowance(userAddress, CONTRACT_ADDRESS);
+        const allowance = await usdt.allowance(user, STAKING_ADDRESS);
         if(allowance >= amount) return true;
-        showStatus("Aprovando USDT...");
-        const tx = await usdtContract.approve(CONTRACT_ADDRESS, amount);
+        showStatus("Aprovando USDT no contrato...", false);
+        const tx = await usdt.approve(STAKING_ADDRESS, amount);
         await tx.wait();
-        showStatus("✅ USDT aprovado!");
+        showStatus("✅ USDT aprovado com sucesso!", false);
         return true;
     }
 
-    // STAKE
+    // Stake
     document.getElementById("stakeBtn")?.addEventListener("click", async () => {
-        if(!isConnected || isProcessing) { showStatus("Conecte a carteira!", true); return; }
+        if(!connected || processing) { showStatus("Conecte a carteira primeiro!", true); return; }
         const amount = parseFloat(document.getElementById("stakeAmount").value);
-        if(isNaN(amount) || amount < 1) { showStatus("Mínimo 1 USDT", true); return; }
+        if(isNaN(amount) || amount < 1) { showStatus("Mínimo de 1 USDT", true); return; }
+        if(amount > 10000) { showStatus("Máximo de 10.000 USDT por transação", true); return; }
         
-        const amountWei = ethers.parseUnits(amount.toString(), usdtDecimals);
+        const amountWei = ethers.parseUnits(amount.toString(), decimals);
         setProcessing(true, "stakeBtn");
         
         try {
             await approveUSDT(amountWei);
-            showStatus("Depositando USDT...");
-            const tx = await contract.stakeUSDT(amountWei);
+            showStatus("Depositando USDT - O contrato vai comprar PING automaticamente...", false);
+            const tx = await staking.stake(amountWei);
             await tx.wait();
-            showStatus(`✅ Stake de ${amount} USDT realizado!`, false, tx.hash);
+            showStatus(`✅ Stake de ${amount} USDT realizado! O contrato comprou PING para você.`, false, tx.hash);
             document.getElementById("stakeAmount").value = "";
-            updateDashboard();
+            await updateDashboard();
         } catch(e) {
-            const errMsg = e?.reason || e?.message || e?.error?.message || "Erro desconhecido";
+            const errMsg = e?.reason || e?.message || "Erro desconhecido";
             showStatus(errMsg.slice(0,150), true);
         } finally {
             setProcessing(false, "stakeBtn");
         }
     });
 
-    // UNSTAKE
+    // Unstake
     document.getElementById("unstakeBtn")?.addEventListener("click", async () => {
-        if(!isConnected || isProcessing) { showStatus("Conecte a carteira!", true); return; }
+        if(!connected || processing) { showStatus("Conecte a carteira primeiro!", true); return; }
         const amount = parseFloat(document.getElementById("unstakeAmount").value);
-        if(isNaN(amount) || amount <= 0) { showStatus("Quantidade inválida", true); return; }
+        if(isNaN(amount) || amount <= 0) { showStatus("Digite uma quantidade válida", true); return; }
         
-        const amountWei = ethers.parseUnits(amount.toString(), usdtDecimals);
+        const amountWei = ethers.parseUnits(amount.toString(), decimals);
         setProcessing(true, "unstakeBtn");
         
         try {
-            showStatus("Retirando stake...");
-            const tx = await contract.unstakeUSDT(amountWei);
+            showStatus("Retirando stake - O contrato vai vender PING e devolver USDT...", false);
+            const tx = await staking.unstake(amountWei);
             await tx.wait();
             showStatus(`✅ Retirada de ${amount} USDT realizada!`, false, tx.hash);
             document.getElementById("unstakeAmount").value = "";
-            updateDashboard();
+            await updateDashboard();
         } catch(e) {
-            const errMsg = e?.reason || e?.message || e?.error?.message || "Erro desconhecido";
+            const errMsg = e?.reason || e?.message || "Erro desconhecido";
             showStatus(errMsg.slice(0,150), true);
         } finally {
             setProcessing(false, "unstakeBtn");
         }
     });
 
-    // CLAIM
+    // Claim Rewards
     document.getElementById("claimBtn")?.addEventListener("click", async () => {
-        if(!isConnected || isProcessing) { showStatus("Conecte a carteira!", true); return; }
+        if(!connected || processing) { showStatus("Conecte a carteira primeiro!", true); return; }
         setProcessing(true, "claimBtn");
         try {
-            showStatus("Reivindicando recompensas...");
-            const tx = await contract.claimStakingRewards();
+            showStatus("Reivindicando recompensas...", false);
+            const tx = await staking.claimRewards();
             await tx.wait();
-            showStatus("✅ Recompensas recebidas!", false, tx.hash);
-            updateDashboard();
+            showStatus("✅ Recompensas recebidas em USDT!", false, tx.hash);
+            await updateDashboard();
         } catch(e) {
-            const errMsg = e?.reason || e?.message || e?.error?.message || "Erro desconhecido";
+            const errMsg = e?.reason || e?.message || "Erro desconhecido";
             showStatus(errMsg.slice(0,150), true);
         } finally {
             setProcessing(false, "claimBtn");
         }
     });
 
-    // COMPOUND
+    // Compound Rewards
     document.getElementById("compoundBtn")?.addEventListener("click", async () => {
-        if(!isConnected || isProcessing) { showStatus("Conecte a carteira!", true); return; }
+        if(!connected || processing) { showStatus("Conecte a carteira primeiro!", true); return; }
         setProcessing(true, "compoundBtn");
         try {
-            showStatus("Reinvestindo recompensas...");
-            const tx = await contract.compoundStakingRewards();
+            showStatus("Reinvestindo recompensas...", false);
+            const tx = await staking.compoundRewards();
             await tx.wait();
-            showStatus("✅ Recompensas reinvestidas!", false, tx.hash);
-            updateDashboard();
+            showStatus("✅ Recompensas reinvestidas! Seu stake aumentou.", false, tx.hash);
+            await updateDashboard();
         } catch(e) {
-            const errMsg = e?.reason || e?.message || e?.error?.message || "Erro desconhecido";
+            const errMsg = e?.reason || e?.message || "Erro desconhecido";
             showStatus(errMsg.slice(0,150), true);
         } finally {
             setProcessing(false, "compoundBtn");
         }
     });
 
-    // CONECTAR CARTEIRA
+    // Conectar carteira
     async function connectWallet() {
-        if(!window.ethereum) { showStatus("Instale MetaMask ou Rabby!", true); return; }
+        if(!window.ethereum) { showStatus("Instale MetaMask ou Rabby Wallet!", true); return; }
         try {
             await window.ethereum.request({ method: "eth_requestAccounts" });
             provider = new ethers.BrowserProvider(window.ethereum);
             const network = await provider.getNetwork();
-            if(Number(network.chainId) !== 56) {
-                showStatus("Mude para BSC Mainnet", true);
+            const chainId = Number(network.chainId);
+            
+            if(chainId !== 56) {
+                showStatus("⚠️ Por favor, mude para BSC Mainnet", true);
                 try {
                     await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: BSC_CHAIN_ID }] });
                     setTimeout(() => connectWallet(), 1000);
                     return;
                 } catch(e) { return; }
             }
+            
             signer = await provider.getSigner();
-            userAddress = await signer.getAddress();
-            walletDisplay.innerHTML = userAddress.slice(0,6)+"..."+userAddress.slice(-4);
-            isConnected = true;
+            user = await signer.getAddress();
+            walletDisplay.innerHTML = user.slice(0,6)+"..."+user.slice(-4);
+            connected = true;
             
-            contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-            usdtContract = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
-            try { usdtDecimals = await usdtContract.decimals(); } catch(e) { usdtDecimals = 18; }
+            staking = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+            ping = new ethers.Contract(PING_ADDRESS, PING_ABI, signer);
+            usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
             
-            showStatus("✅ Conectado à BSC!");
-            updateDashboard();
+            try { decimals = await usdt.decimals(); } catch(e) { decimals = 18; }
+            
+            showStatus("✅ Conectado à BSC Mainnet!", false);
+            await updateDashboard();
+            
             if(refreshInterval) clearInterval(refreshInterval);
-            refreshInterval = setInterval(() => { if(isConnected) updateDashboard(); }, 10000);
-        } catch(e) { showStatus("Erro ao conectar", true); }
+            refreshInterval = setInterval(() => { if(connected) updateDashboard(); }, 10000);
+        } catch(e) { 
+            console.error(e); 
+            showStatus("Erro ao conectar carteira", true); 
+        }
     }
 
     connectBtn.addEventListener("click", connectWallet);
 
     if(window.ethereum) {
         window.ethereum.on('accountsChanged', (accounts) => {
-            if(accounts.length === 0) { location.reload(); }
-            else connectWallet();
+            if(accounts.length === 0) {
+                connected = false;
+                walletDisplay.innerHTML = "Desconectado";
+                if(refreshInterval) clearInterval(refreshInterval);
+                showStatus("Carteira desconectada", true);
+            } else {
+                connectWallet();
+            }
         });
-        window.ethereum.on('chainChanged', () => location.reload());
+        window.ethereum.on('chainChanged', () => {
+            window.location.reload();
+        });
     }
 </script>
 </body>
