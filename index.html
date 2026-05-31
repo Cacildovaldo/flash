@@ -1,463 +1,582 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>PING Protocol 💎 | Staking USDT Automático</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💎%3C/text%3E%3C/svg%3E">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 FLASH LOAN XPULS - ARBITRAGEM REAL | BSC MAINNET</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1429 100%); min-height: 100vh; padding: 1rem; color: #e0e4ff; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: rgba(10,14,39,0.8); backdrop-filter: blur(10px); border-radius: 28px; padding: 1rem 1.8rem; margin-bottom: 2rem; border: 1px solid rgba(79,172,254,0.3); }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.6rem; font-weight: bold; }
-        .logo span:first-child { font-size: 2rem; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
-        .logo span:last-child { background: linear-gradient(135deg, #4facfe, #00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .badge { background: linear-gradient(135deg, #11998e, #38ef7d); padding: 0.2rem 0.8rem; border-radius: 40px; font-size: 0.65rem; font-weight: bold; }
-        .wallet-section { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-        .wallet-btn { background: linear-gradient(135deg, #4facfe, #00f2fe); border: none; padding: 0.7rem 1.5rem; border-radius: 40px; color: #0a0e27; font-weight: bold; cursor: pointer; transition: all 0.3s; }
-        .wallet-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,172,254,0.6); }
-        .wallet-address { background: rgba(0,0,0,0.4); padding: 0.5rem 1rem; border-radius: 40px; font-family: monospace; font-size: 0.8rem; border: 1px solid rgba(79,172,254,0.5); }
-        .apy-box { background: linear-gradient(135deg, rgba(17,153,142,0.2), rgba(56,239,125,0.1)); border-radius: 32px; padding: 1.5rem; margin-bottom: 2rem; text-align: center; border: 2px solid rgba(56,239,125,0.3); animation: glow 2s infinite; }
-        @keyframes glow { 0%,100%{border-color:rgba(56,239,125,0.3);} 50%{border-color:rgba(56,239,125,0.8);box-shadow:0 0 20px rgba(56,239,125,0.2);} }
-        .apy-value { font-size: 3.5rem; font-weight: bold; background: linear-gradient(135deg, #11998e, #38ef7d); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1; }
-        .apy-label { font-size: 0.8rem; color: #8e9eff; letter-spacing: 2px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .stat-card { background: rgba(20,25,55,0.7); backdrop-filter: blur(8px); border-radius: 24px; padding: 1rem; text-align: center; border: 1px solid rgba(79,172,254,0.2); transition: all 0.3s; }
-        .stat-card:hover { border-color: #4facfe; transform: translateY(-3px); }
-        .stat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: #8e9eff; margin-bottom: 0.5rem; }
-        .stat-value { font-size: 1.3rem; font-weight: bold; }
-        .card { background: rgba(15,20,45,0.8); backdrop-filter: blur(10px); border-radius: 28px; padding: 1.5rem; border: 1px solid rgba(79,172,254,0.25); margin-bottom: 1.5rem; }
-        .card h2 { margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-size: 1.3rem; }
-        .flex { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
-        .input-group { margin-bottom: 1rem; }
-        .input-group label { display: block; margin-bottom: 0.4rem; font-weight: 500; color: #b8c0ff; font-size: 0.85rem; }
-        .input-group input { width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid #2a2f55; border-radius: 20px; color: white; font-size: 1rem; }
-        .action-btn { width: 100%; padding: 0.8rem; background: linear-gradient(135deg, #4facfe, #00f2fe); border: none; border-radius: 40px; font-weight: bold; font-size: 1rem; color: #0a0e27; cursor: pointer; transition: all 0.3s; margin-top: 0.3rem; }
-        .action-btn-success { background: linear-gradient(135deg, #11998e, #38ef7d); }
-        .action-btn-danger { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .info-text { background: rgba(79,172,254,0.08); padding: 0.7rem; border-radius: 16px; font-size: 0.75rem; margin-top: 0.8rem; color: #b8c0ff; line-height: 1.4; }
-        .contract-addr { background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 16px; font-family: monospace; font-size: 0.7rem; text-align: center; }
-        .tx-status { position: fixed; bottom: 20px; right: 20px; background: #1a1f3a; padding: 0.8rem 1.2rem; border-radius: 50px; border-left: 4px solid #4facfe; font-size: 0.8rem; z-index: 1000; display: flex; align-items: center; gap: 10px; }
-        .spinner { width: 18px; height: 18px; border: 2px solid #4facfe; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .status-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; font-weight: bold; background: #38ef7d20; color: #38ef7d; border: 1px solid #38ef7d; }
-        footer { text-align: center; padding: 2rem; color: #5a6e8a; font-size: 0.7rem; margin-top: 1rem; }
-        @media (max-width: 768px) { .apy-value { font-size: 2.5rem; } .stat-value { font-size: 1rem; } }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0c10 0%, #1a1f2e 100%);
+            color: #e6edf3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(22, 27, 34, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 32px;
+            max-width: 850px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+        h1 {
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        h1 span {
+            font-size: 2rem;
+        }
+        .sub {
+            text-align: center;
+            color: #8b949e;
+            margin-bottom: 28px;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 16px;
+            font-size: 0.85rem;
+        }
+        button {
+            background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            margin-top: 12px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: 0 8px 20px rgba(35, 134, 54, 0.3);
+        }
+        button:disabled {
+            background: #6e7681;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .card {
+            background: #0d1117;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #30363d;
+            transition: all 0.2s;
+        }
+        .card:hover {
+            border-color: #3b82f6;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .address-hash {
+            font-family: 'Monaco', 'Menlo', monospace;
+            background: #161b22;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #79c0ff;
+            word-break: break-all;
+        }
+        .status {
+            padding: 14px;
+            border-radius: 16px;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 16px;
+            font-size: 0.9rem;
+        }
+        .success { background: #0d4423; color: #3fb950; border: 1px solid #2ea043; }
+        .error { background: #441d1d; color: #f85149; border: 1px solid #f85149; }
+        .warning { background: #422d14; color: #d29922; border: 1px solid #d29922; }
+        .info { background: #1a2a3a; color: #79c0ff; border: 1px solid #1f6feb; }
+        .profit-highlight {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2ea043;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .label-badge {
+            font-weight: 600;
+            background: #1f2937;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        hr {
+            border-color: #30363d;
+            margin: 16px 0;
+        }
+        .flex-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .flex-buttons button {
+            flex: 1;
+        }
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .flow-step {
+            background: #161b22;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin: 5px 0;
+            width: 100%;
+            text-align: center;
+            border-left: 4px solid #2ea043;
+        }
+        .flow-arrow {
+            color: #2ea043;
+            font-size: 1.2rem;
+            margin: 2px 0;
+        }
+        .pool-low { color: #f85149; font-weight: bold; }
+        .pool-high { color: #2ea043; font-weight: bold; }
+        .contract-address {
+            background: #0d4423;
+            padding: 12px;
+            border-radius: 16px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1rem;
+            margin: 10px 0;
+            border: 1px solid #2ea043;
+        }
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .gas-warning {
+            background: #422d14;
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 0.75rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <div class="logo"><span>💎</span><span>PING Protocol</span><span class="badge">Staking USDT Automático</span></div>
-        <div class="wallet-section">
-            <div class="wallet-address" id="walletDisplay">Desconectado</div>
-            <button class="wallet-btn" id="connectBtn">🔌 Conectar Carteira</button>
+    <h1>
+        <span>🔄</span> FLASH LOAN ARBITRAGE
+        <span>⚡</span>
+    </h1>
+    <div class="sub">XPULS / USDT | Multi-Hop: V3 ➜ V3 ➜ V2 | EXECUÇÃO REAL</div>
+
+    <!-- Status do Contrato -->
+    <div class="contract-address">
+        ✅ CONTRATO EXECUTOR IMPLANTADO<br>
+        <span style="font-size: 0.85rem; color: #79c0ff;">0x98b51E1b82ae29dc012ee72f681373826E2D8E01</span>
+    </div>
+
+    <!-- FLUXO COMPLETO DA ARBITRAGEM -->
+    <div class="card" style="border-color: #2ea043;">
+        <div style="text-align: center; margin-bottom: 15px;">
+            <span class="label-badge">🎯 ESTRATÉGIA MULTI-HOP CONFIRMADA</span>
         </div>
-    </div>
-
-    <div class="apy-box">
-        <div class="apy-label">📈 APY REAL DO CONTRATO</div>
-        <div class="apy-value" id="apyValue">0%</div>
-        <div class="apy-label">AO ANO • RECOMPENSAS EM USDT REAL</div>
-        <div style="margin-top: 0.8rem; font-size: 0.75rem;">💰 <span id="rewardFundDisplay" style="color:#38ef7d;">0</span> USDT em recompensas • 👥 <span id="stakersCountDisplay">0</span> stakers</div>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">💰 TVL Staked</div><div class="stat-value" id="totalStaked">0 PING</div></div>
-        <div class="stat-card"><div class="stat-label">🎁 Fundo Recompensas</div><div class="stat-value" id="rewardFund">0 USDT</div></div>
-        <div class="stat-card"><div class="stat-label">👥 Stakers</div><div class="stat-value" id="stakersCount">0</div></div>
-        <div class="stat-card"><div class="stat-label">🪙 Preço PING</div><div class="stat-value" id="pingPrice">-- USDT</div></div>
-        <div class="stat-card"><div class="stat-label">🔒 Status</div><div class="stat-value"><span id="systemStatus" class="status-badge">🟢 Ativo</span></div></div>
-    </div>
-
-    <div class="flex">
-        <div class="card">
-            <h2>💰 DEPOSITAR USDT (COMPRA PING)</h2>
-            <div class="input-group">
-                <label>Quantidade USDT (mínimo 5 USDT)</label>
-                <input type="number" id="buyAmount" placeholder="Ex: 100" step="5" min="5">
+        <div class="flow-container">
+            <div class="flow-step">
+                <strong>📍 1. FLASH LOAN (Pegar USDT)</strong><br>
+                <span class="address-hash">0x366961...652050</span><br>
+                <span class="pool-high">Pool V3 USDT/BUSD - ALTA LIQUIDEZ (~$10M+)</span>
             </div>
-            <button class="action-btn action-btn-success" id="buyBtn">✅ Comprar e Stakar</button>
-            <div class="info-text">
-                🔹 O contrato COMPRA PING com seu USDT (bonding curve)<br>
-                🔹 2% do valor vai para o fundo de staking (SUAS RECOMPENSAS)<br>
-                🔹 Você ganha recompensas em USDT
+            <div class="flow-arrow">⬇️ ⬇️ ⬇️</div>
+            <div class="flow-step">
+                <strong>📍 2. COMPRAR XPULS (Gastar USDT)</strong><br>
+                <span class="address-hash">0xFA5A37...D75103</span><br>
+                <span class="pool-low">Pool V3 XPULS/USDT - BAIXA LIQUIDEZ (~$922) | PREÇO MAIS BAIXO</span>
             </div>
-        </div>
-
-        <div class="card">
-            <h2>💸 VENDER PING (RETIRAR STAKE)</h2>
-            <div class="input-group">
-                <label>Quantidade PING</label>
-                <input type="number" id="sellAmount" placeholder="Ex: 1000" step="100">
+            <div class="flow-arrow">⬇️ ⬇️ ⬇️</div>
+            <div class="flow-step">
+                <strong>📍 3. VENDER XPULS (Receber USDT + Lucro)</strong><br>
+                <span class="address-hash">0xd7501e...F1627</span><br>
+                <span class="pool-high">Pool V2 XPULS/USDT - ALTA LIQUIDEZ (~$50K+) | PREÇO MAIS ALTO</span>
             </div>
-            <button class="action-btn action-btn-danger" id="sellBtn">💸 Vender e Retirar</button>
-            <div class="info-text">
-                🔹 Taxa de saída: 5%<br>
-                🔹 Cooldown: 1 hora entre vendas<br>
-                🔹 Máximo 10% do supply por venda
+            <div class="flow-arrow">⬇️ ⬇️ ⬇️</div>
+            <div class="flow-step">
+                <strong>📍 4. PAGAR FLASH LOAN + TAXAS</strong><br>
+                Devolve USDT + 0.05% para o Pool V3 USDT/BUSD
+            </div>
+            <div class="flow-arrow">⬇️ ⬇️ ⬇️</div>
+            <div class="flow-step">
+                <strong>📍 5. LUCRO NA SUA CARTEIRA</strong><br>
+                <span class="pool-high">💰 Diferença entre compra e venda - taxas</span>
             </div>
         </div>
     </div>
 
+    <!-- CONEXÃO DA CARTEIRA -->
     <div class="card">
-        <h2>⛏️ STAKING DE PING (JÁ COMPRADO)</h2>
-        <div class="flex" style="margin-bottom:0;">
-            <div class="input-group">
-                <label>Quantidade PING para Stake</label>
-                <input type="number" id="stakeAmount" placeholder="Ex: 1000" step="100">
-                <button class="action-btn action-btn-success" id="stakeBtn" style="margin-top:0.5rem;">🔒 Fazer Stake</button>
-            </div>
-            <div class="input-group">
-                <label>Quantidade PING para Retirar</label>
-                <input type="number" id="unstakeAmount" placeholder="Ex: 500" step="100">
-                <button class="action-btn action-btn-danger" id="unstakeBtn" style="margin-top:0.5rem;">🔓 Retirar Stake</button>
-            </div>
-        </div>
-        <div class="info-text">
-            💡 <strong>Staking de PING:</strong> Seus PING são queimados e você ganha recompensas em USDT!<br>
-            🔹 Taxa saque: 1% após 30 dias | 5% antes de 30 dias
-        </div>
+        <button id="connectBtn">🔌 Conectar MetaMask / Rabby Wallet</button>
+        <div id="walletStatus" class="status info">⚪ Desconectado - Clique para conectar</div>
+        <div id="networkStatus" class="status info"></div>
+        <div id="ownerStatus" class="status info" style="display: none;"></div>
     </div>
 
+    <!-- AÇÕES -->
     <div class="card">
-        <h2>📊 SEU STAKE E RECOMPENSAS</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
-            <div><strong>💵 PING em Stake:</strong> <span id="userStaked" style="font-size: 1.2rem;">0 PING</span></div>
-            <div><strong>🎁 Recompensas Pendentes:</strong> <span id="pendingRewards" style="color:#38ef7d; font-size: 1.2rem;">0 USDT</span></div>
+        <div class="flex-buttons">
+            <button id="simulateBtn" disabled>📊 1. SIMULAR ARBITRAGEM</button>
+            <button id="executeBtn" disabled>⚡ 2. EXECUTAR ARBITRAGEM</button>
         </div>
-        <div style="display: flex; gap: 1rem; margin-top: 1.2rem;">
-            <button class="action-btn" id="claimBtn" style="flex:1;">🎁 Reivindicar Recompensas</button>
-            <button class="action-btn action-btn-success" id="compoundBtn" style="flex:1;">🔄 Reinvestir (Auto-Compound)</button>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>📜 CONTRATO VERIFICADO</h2>
-        <div class="contract-addr">
-            🔗 <strong>PING Token (Staking Integrado)</strong><br>
-            <a href="https://bscscan.com/address/0x7d89ea65be4b433012465b7a7e5bd00359d37d3b" target="_blank" style="color:#4facfe;">
-                0x7d89ea65be4b433012465b7a7e5bd00359d37d3b
-            </a>
-        </div>
-        <div class="info-text" style="margin-top: 0.8rem;">
-            ✅ Token PING com Bonding Curve + Staking integrado<br>
-            ✅ Apenas o contrato compra/vende PING<br>
-            ✅ Taxas: 3% Tesouraria | 2% Staking | 3% Reserva | 2% Emergência
+        <div id="txStatus" class="status info">💡 Conecte a carteira para começar</div>
+        <div class="gas-warning">
+            ⚠️ Certifique-se de ter BNB na carteira para pagar o gas (recomendado: pelo menos 0.01 BNB)<br>
+            ✅ O contrato já está implantado em <strong>0x98b51E1b82ae29dc012ee72f681373826E2D8E01</strong><br>
+            🔑 Você precisa ser o OWNER do contrato para executar
         </div>
     </div>
-
-    <footer>⚠️ APY é variável. O contrato tem proteção anti-dump e reserve ratio. Sempre DYOR.</footer>
 </div>
-<div id="txStatus" class="tx-status" style="display: none;"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>
-    // ================= CONFIGURAÇÕES =================
-    const PING_ADDRESS = "0x7d89ea65be4b433012465b7a7e5bd00359d37d3b";
-    const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
-    const BSC_CHAIN_ID = "0x38";
-
-    // ABI do contrato PING (completa para as funções que vamos usar)
-    const PING_ABI = [
-        // Staking
-        "function stake(uint256 amount) external",
-        "function unstake(uint256 amount) external",
-        "function claimRewards() external",
-        "function compoundRewards() external",
-        "function pendingReward(address) view returns (uint256)",
-        "function getStakerInfo(address) view returns (uint256, uint256, uint256, uint256)",
-        "function getPoolStats() view returns (uint256, uint256, uint256, uint256, uint256)",
-        "function totalStaked() view returns (uint256)",
-        "function stakingUSDT() view returns (uint256)",
-        // Compra/Venda
-        "function buy(uint256 usdtAmount) external",
-        "function sell(uint256 pingAmount, uint256 minUSDTAmount) external",
-        "function currentPrice() view returns (uint256)",
-        "function balanceOf(address) view returns (uint256)",
-        "function approve(address, uint256) returns (bool)",
-        "function allowance(address, address) view returns (uint256)"
+    // ============================================================
+    // CONFIGURAÇÃO - SEU CONTRATO JÁ IMPLANTADO
+    // ============================================================
+    const YOUR_CONTRACT_ADDRESS = "0x98b51E1b82ae29dc012ee72f681373826E2D8E01";
+    
+    // Tokens
+    const USDT = "0x55d398326f99059fF775485246999027B3197955";
+    const BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+    const XPULS = "0xABaE909cD93BC2DDF90086F9Aa6C3f8e154E8228";
+    
+    // Pools
+    const FLASH_SOURCE_V3 = "0x36696169C63e42cd08ce11f5deeBbCeBae652050"; // USDT/BUSD V3 - ALTA LIQUIDEZ
+    const XPULS_V3_POOL = "0xFA5A3785019C9ba68E1607F8B636e49Fe7D75103"; // XPULS/USDT V3 - BAIXA LIQUIDEZ
+    const XPULS_V2_POOL = "0xd7501eC4223CF439dA3606E038E463EEEAAF1627"; // XPULS/USDT V2 - ALTA LIQUIDEZ
+    
+    const BSC_CHAIN_ID_DEC = 56;
+    
+    // ABI do contrato de arbitragem
+    const ARBITRAGE_ABI = [
+        "function startArbitrage(uint256 _amountToBorrow) external",
+        "function owner() external view returns (address)"
     ];
-
-    const USDT_ABI = [
-        "function transferFrom(address,address,uint256) returns (bool)",
-        "function approve(address,uint256) returns (bool)",
-        "function allowance(address,address) view returns (uint256)",
-        "function balanceOf(address) view returns (uint256)",
-        "function decimals() view returns (uint8)"
+    
+    // ABIs para simulação
+    const V2_PAIR_ABI = [
+        "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
+        "function token0() external view returns (address)"
     ];
-
-    let provider, signer, user, ping, usdt;
-    let connected = false, processing = false, decimals = 18;
-    let refreshInterval = null;
-
-    const connectBtn = document.getElementById("connectBtn");
-    const walletDisplay = document.getElementById("walletDisplay");
-    const txStatusDiv = document.getElementById("txStatus");
-
-    function showStatus(msg, isError = false, txHash = null) {
-        txStatusDiv.style.display = "flex";
-        txStatusDiv.style.background = isError ? "#4a1a2a" : "#1a3a2a";
-        txStatusDiv.style.borderLeftColor = isError ? "#f5576c" : "#4facfe";
-        let html = isError ? "❌ " + msg : "✅ " + msg;
-        if(txHash) html += ` <a href="https://bscscan.com/tx/${txHash}" target="_blank" style="color:#4facfe;">🔗 Ver</a>`;
-        txStatusDiv.innerHTML = html;
-        setTimeout(() => { if(txStatusDiv.innerHTML === html) txStatusDiv.style.display = "none"; }, 8000);
-    }
-
-    function setProcessing(processingFlag, btnId = null) {
-        processing = processingFlag;
-        if(btnId) {
-            const btn = document.getElementById(btnId);
-            if(btn) btn.disabled = processingFlag;
-        }
-        if(processingFlag) {
-            txStatusDiv.style.display = "flex";
-            txStatusDiv.innerHTML = '<div class="spinner"></div> Processando transação...';
-        }
-    }
-
-    async function updateDashboard() {
-        if(!ping || !connected) return;
-        try {
-            // Pool stats
-            const stats = await ping.getPoolStats();
-            const totalStakedPing = Number(ethers.formatUnits(stats[0], 18));
-            const rewardFund = Number(ethers.formatUnits(stats[1], 18));
-            const apy = (Number(stats[3]) / 100).toFixed(2);
-            const stakersCount = Number(stats[4]);
-            
-            document.getElementById("totalStaked").innerHTML = totalStakedPing.toFixed(2) + " PING";
-            document.getElementById("rewardFund").innerHTML = rewardFund.toFixed(2) + " USDT";
-            document.getElementById("stakersCount").innerHTML = stakersCount;
-            document.getElementById("apyValue").innerHTML = apy + "%";
-            document.getElementById("rewardFundDisplay").innerHTML = rewardFund.toFixed(2);
-            document.getElementById("stakersCountDisplay").innerHTML = stakersCount;
-
-            // Preço do PING
-            const price = await ping.currentPrice();
-            const priceFormatted = Number(ethers.formatUnits(price, 18)).toFixed(6);
-            document.getElementById("pingPrice").innerHTML = priceFormatted + " USDT";
-
-            // Informações do usuário (stake)
-            const stakerInfo = await ping.getStakerInfo(user);
-            document.getElementById("userStaked").innerHTML = Number(ethers.formatUnits(stakerInfo[0], 18)).toFixed(2) + " PING";
-            document.getElementById("pendingRewards").innerHTML = Number(ethers.formatUnits(stakerInfo[1], 18)).toFixed(4) + " USDT";
-        } catch(e) { console.warn(e); }
-    }
-
-    async function approveUSDT(amount) {
-        const allowance = await usdt.allowance(user, PING_ADDRESS);
-        if(allowance >= amount) return true;
-        showStatus("Aprovando USDT...", false);
-        const tx = await usdt.approve(PING_ADDRESS, amount);
-        await tx.wait();
-        showStatus("✅ USDT aprovado!", false);
-        return true;
-    }
-
-    async function approvePING(amount) {
-        const allowance = await ping.allowance(user, PING_ADDRESS);
-        if(allowance >= amount) return true;
-        showStatus("Aprovando PING...", false);
-        const tx = await ping.approve(PING_ADDRESS, amount);
-        await tx.wait();
-        showStatus("✅ PING aprovado!", false);
-        return true;
-    }
-
-    // COMPRAR PING (deposita USDT)
-    document.getElementById("buyBtn")?.addEventListener("click", async () => {
-        if(!connected || processing) { showStatus("Conecte a carteira!", true); return; }
-        const amount = parseFloat(document.getElementById("buyAmount").value);
-        if(isNaN(amount) || amount < 5) { showStatus("Mínimo de 5 USDT", true); return; }
-        
-        const amountWei = ethers.parseUnits(amount.toString(), decimals);
-        setProcessing(true, "buyBtn");
-        
-        try {
-            await approveUSDT(amountWei);
-            showStatus("Comprando PING...", false);
-            const tx = await ping.buy(amountWei);
-            await tx.wait();
-            showStatus(`✅ Compra de ${amount} USDT em PING realizada!`, false, tx.hash);
-            document.getElementById("buyAmount").value = "";
-            await updateDashboard();
-        } catch(e) {
-            const errMsg = e?.reason || e?.message || "Erro desconhecido";
-            showStatus(errMsg.slice(0,150), true);
-        } finally {
-            setProcessing(false, "buyBtn");
-        }
-    });
-
-    // VENDER PING
-    document.getElementById("sellBtn")?.addEventListener("click", async () => {
-        if(!connected || processing) { showStatus("Conecte a carteira!", true); return; }
-        const amount = parseFloat(document.getElementById("sellAmount").value);
-        if(isNaN(amount) || amount <= 0) { showStatus("Quantidade válida", true); return; }
-        
-        const amountWei = ethers.parseUnits(amount.toString(), 18);
-        setProcessing(true, "sellBtn");
-        
-        try {
-            showStatus("Vendendo PING...", false);
-            const tx = await ping.sell(amountWei, 0);
-            await tx.wait();
-            showStatus(`✅ Venda de ${amount} PING realizada!`, false, tx.hash);
-            document.getElementById("sellAmount").value = "";
-            await updateDashboard();
-        } catch(e) {
-            const errMsg = e?.reason || e?.message || "Erro desconhecido";
-            showStatus(errMsg.slice(0,150), true);
-        } finally {
-            setProcessing(false, "sellBtn");
-        }
-    });
-
-    // STAKE (usando PING já comprado)
-    document.getElementById("stakeBtn")?.addEventListener("click", async () => {
-        if(!connected || processing) { showStatus("Conecte a carteira!", true); return; }
-        const amount = parseFloat(document.getElementById("stakeAmount").value);
-        if(isNaN(amount) || amount <= 0) { showStatus("Quantidade válida", true); return; }
-        
-        const amountWei = ethers.parseUnits(amount.toString(), 18);
-        setProcessing(true, "stakeBtn");
-        
-        try {
-            await approvePING(amountWei);
-            showStatus("Fazendo stake...", false);
-            const tx = await ping.stake(amountWei);
-            await tx.wait();
-            showStatus(`✅ Stake de ${amount} PING realizado!`, false, tx.hash);
-            document.getElementById("stakeAmount").value = "";
-            await updateDashboard();
-        } catch(e) {
-            const errMsg = e?.reason || e?.message || "Erro desconhecido";
-            showStatus(errMsg.slice(0,150), true);
-        } finally {
-            setProcessing(false, "stakeBtn");
-        }
-    });
-
-    // UNSTAKE
-    document.getElementById("unstakeBtn")?.addEventListener("click", async () => {
-        if(!connected || processing) { showStatus("Conecte a carteira!", true); return; }
-        const amount = parseFloat(document.getElementById("unstakeAmount").value);
-        if(isNaN(amount) || amount <= 0) { showStatus("Quantidade válida", true); return; }
-        
-        const amountWei = ethers.parseUnits(amount.toString(), 18);
-        setProcessing(true, "unstakeBtn");
-        
-        try {
-            showStatus("Retirando stake...", false);
-            const tx = await ping.unstake(amountWei);
-            await tx.wait();
-            showStatus(`✅ Retirada de ${amount} PING do stake!`, false, tx.hash);
-            document.getElementById("unstakeAmount").value = "";
-            await updateDashboard();
-        } catch(e) {
-            const errMsg = e?.reason || e?.message || "Erro desconhecido";
-            showStatus(errMsg.slice(0,150), true);
-        } finally {
-            setProcessing(false, "unstakeBtn");
-        }
-    });
-
-    // CLAIM REWARDS
-    document.getElementById("claimBtn")?.addEventListener("click", async () => {
-        if(!connected || processing) { showStatus("Conecte a carteira!", true); return; }
-        setProcessing(true, "claimBtn");
-        try {
-            showStatus("Reivindicando recompensas...", false);
-            const tx = await ping.claimRewards();
-            await tx.wait();
-            showStatus("✅ Recompensas recebidas em USDT!", false, tx.hash);
-            await updateDashboard();
-        } catch(e) {
-            const errMsg = e?.reason || e?.message || "Erro desconhecido";
-            showStatus(errMsg.slice(0,150), true);
-        } finally {
-            setProcessing(false, "claimBtn");
-        }
-    });
-
-    // COMPOUND REWARDS
-    document.getElementById("compoundBtn")?.addEventListener("click", async () => {
-        if(!connected || processing) { showStatus("Conecte a carteira!", true); return; }
-        setProcessing(true, "compoundBtn");
-        try {
-            showStatus("Reinvestindo recompensas...", false);
-            const tx = await ping.compoundRewards();
-            await tx.wait();
-            showStatus("✅ Recompensas reinvestidas!", false, tx.hash);
-            await updateDashboard();
-        } catch(e) {
-            const errMsg = e?.reason || e?.message || "Erro desconhecido";
-            showStatus(errMsg.slice(0,150), true);
-        } finally {
-            setProcessing(false, "compoundBtn");
-        }
-    });
-
-    // Conectar carteira
+    const V3_POOL_ABI = [
+        "function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint32 feeProtocol, bool unlocked)"
+    ];
+    
+    // Variáveis globais
+    let provider, signer, userAddress = null;
+    let arbitrageContract = null;
+    let isOwner = false;
+    
+    // Elementos DOM
+    const connectBtn = document.getElementById('connectBtn');
+    const executeBtn = document.getElementById('executeBtn');
+    const simulateBtn = document.getElementById('simulateBtn');
+    const walletStatusDiv = document.getElementById('walletStatus');
+    const networkStatusDiv = document.getElementById('networkStatus');
+    const txStatusDiv = document.getElementById('txStatus');
+    const ownerStatusDiv = document.getElementById('ownerStatus');
+    
+    // ============================================================
+    // FUNÇÃO: Conectar carteira
+    // ============================================================
     async function connectWallet() {
-        if(!window.ethereum) { showStatus("Instale MetaMask ou Rabby!", true); return; }
+        if (typeof window.ethereum === 'undefined') {
+            walletStatusDiv.innerHTML = '❌ MetaMask ou Rabby não detectado! Instale a extensão.';
+            walletStatusDiv.className = 'status error';
+            return;
+        }
+        
         try {
-            await window.ethereum.request({ method: "eth_requestAccounts" });
-            provider = new ethers.BrowserProvider(window.ethereum);
-            const network = await provider.getNetwork();
-            const chainId = Number(network.chainId);
+            walletStatusDiv.innerHTML = '<span class="loading"></span> Conectando...';
+            walletStatusDiv.className = 'status info';
             
-            if(chainId !== 56) {
-                showStatus("⚠️ Mude para BSC Mainnet", true);
-                try {
-                    await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: BSC_CHAIN_ID }] });
-                    setTimeout(() => connectWallet(), 1000);
-                    return;
-                } catch(e) { return; }
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            userAddress = accounts[0];
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            signer = provider.getSigner();
+            
+            const network = await provider.getNetwork();
+            
+            if (network.chainId !== BSC_CHAIN_ID_DEC) {
+                walletStatusDiv.innerHTML = `⚠️ Rede errada: ID ${network.chainId}. Mude para BSC Mainnet na carteira.`;
+                walletStatusDiv.className = 'status warning';
+                networkStatusDiv.innerHTML = '❌ Rede incorreta. Por favor, mude para Binance Smart Chain.';
+                networkStatusDiv.className = 'status error';
+                executeBtn.disabled = true;
+                simulateBtn.disabled = true;
+                return;
             }
             
-            signer = await provider.getSigner();
-            user = await signer.getAddress();
-            walletDisplay.innerHTML = user.slice(0,6)+"..."+user.slice(-4);
-            connected = true;
+            // Inicializar o contrato com o endereço fixo
+            arbitrageContract = new ethers.Contract(YOUR_CONTRACT_ADDRESS, ARBITRAGE_ABI, signer);
             
-            ping = new ethers.Contract(PING_ADDRESS, PING_ABI, signer);
-            usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
+            // Verificar se a carteira conectada é a owner do contrato
+            try {
+                const contractOwner = await arbitrageContract.owner();
+                isOwner = contractOwner.toLowerCase() === userAddress.toLowerCase();
+                if (!isOwner) {
+                    ownerStatusDiv.style.display = 'block';
+                    ownerStatusDiv.innerHTML = `⚠️ ATENÇÃO: Sua carteira NÃO é a owner do contrato! Apenas o dono (${contractOwner.slice(0,6)}...${contractOwner.slice(-4)}) pode executar.`;
+                    ownerStatusDiv.className = 'status warning';
+                    executeBtn.disabled = true;
+                    walletStatusDiv.innerHTML = `✅ Conectado: ${userAddress.slice(0,6)}...${userAddress.slice(-4)} (usuário comum)`;
+                } else {
+                    ownerStatusDiv.style.display = 'block';
+                    ownerStatusDiv.innerHTML = `✅ VERIFICADO: Você é o OWNER do contrato! Pode executar arbitragem.`;
+                    ownerStatusDiv.className = 'status success';
+                    executeBtn.disabled = false;
+                    simulateBtn.disabled = false;
+                    walletStatusDiv.innerHTML = `✅ Conectado (OWNER): ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+                }
+                walletStatusDiv.className = 'status success';
+            } catch (err) {
+                console.warn("Erro ao verificar owner:", err);
+                walletStatusDiv.innerHTML = `✅ Conectado: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+                walletStatusDiv.className = 'status success';
+                simulateBtn.disabled = false;
+            }
             
-            try { decimals = await usdt.decimals(); } catch(e) { decimals = 18; }
+            networkStatusDiv.innerHTML = '✅ BSC Mainnet (Chain ID 56)';
+            networkStatusDiv.className = 'status success';
+            txStatusDiv.innerHTML = '✅ Pronto! Clique em "SIMULAR" para ver o lucro estimado.';
+            txStatusDiv.className = 'status success';
             
-            showStatus("✅ Conectado à BSC Mainnet!", false);
-            await updateDashboard();
+            // Listeners para mudanças
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length === 0) window.location.reload();
+                else window.location.reload();
+            });
+            window.ethereum.on('chainChanged', () => window.location.reload());
             
-            if(refreshInterval) clearInterval(refreshInterval);
-            refreshInterval = setInterval(() => { if(connected) updateDashboard(); }, 10000);
-        } catch(e) { 
-            console.error(e); 
-            showStatus("Erro ao conectar", true); 
+        } catch (error) {
+            console.error(error);
+            walletStatusDiv.innerHTML = `❌ Erro: ${error.message}`;
+            walletStatusDiv.className = 'status error';
         }
     }
-
-    connectBtn.addEventListener("click", connectWallet);
-
-    if(window.ethereum) {
-        window.ethereum.on('accountsChanged', (accounts) => {
-            if(accounts.length === 0) {
-                connected = false;
-                walletDisplay.innerHTML = "Desconectado";
-                if(refreshInterval) clearInterval(refreshInterval);
-                showStatus("Carteira desconectada", true);
+    
+    // ============================================================
+    // FUNÇÃO: Simular Lucro
+    // ============================================================
+    async function simulateProfit() {
+        if (!userAddress) {
+            alert('Conecte a carteira primeiro');
+            return;
+        }
+        
+        txStatusDiv.innerHTML = '<span class="loading"></span> Calculando oportunidade de arbitragem multi-hop...';
+        txStatusDiv.className = 'status info';
+        simulateBtn.disabled = true;
+        
+        try {
+            const readProvider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
+            
+            // Obter preço do XPULS no V3 (pool de BAIXA liquidez - onde vamos COMPRAR)
+            const v3Pool = new ethers.Contract(XPULS_V3_POOL, V3_POOL_ABI, readProvider);
+            const slot0 = await v3Pool.slot0();
+            const sqrtPriceX96_V3 = slot0[0];
+            const priceV3 = (Number(sqrtPriceX96_V3) / 2**96) ** 2;
+            
+            // Obter preço do XPULS no V2 (pool de ALTA liquidez - onde vamos VENDER)
+            const v2Pool = new ethers.Contract(XPULS_V2_POOL, V2_PAIR_ABI, readProvider);
+            const [reserve0, reserve1] = await v2Pool.getReserves();
+            const token0V2 = await v2Pool.token0();
+            
+            let reserveXPULS_V2, reserveUSDT_V2;
+            const xpulsLower = XPULS.toLowerCase();
+            if (token0V2.toLowerCase() === xpulsLower) {
+                reserveXPULS_V2 = Number(ethers.utils.formatUnits(reserve0, 18));
+                reserveUSDT_V2 = Number(ethers.utils.formatUnits(reserve1, 18));
             } else {
-                connectWallet();
+                reserveXPULS_V2 = Number(ethers.utils.formatUnits(reserve1, 18));
+                reserveUSDT_V2 = Number(ethers.utils.formatUnits(reserve0, 18));
             }
-        });
-        window.ethereum.on('chainChanged', () => {
-            window.location.reload();
-        });
+            const priceV2 = reserveUSDT_V2 / reserveXPULS_V2;
+            
+            // Cálculo da arbitragem
+            const amountIn = 1000; // 1000 USDT
+            const flashFee = amountIn * 0.0005; // 0.05% do pool V3 USDT/BUSD
+            const xpulsBought = amountIn / priceV3; // Quantos XPULS compramos no V3
+            const usdtReceived = xpulsBought * priceV2; // USDT recebido ao vender no V2
+            const profit = usdtReceived - amountIn - flashFee;
+            const profitPercent = (profit / amountIn) * 100;
+            const priceDifferencePercent = ((priceV2 / priceV3) - 1) * 100;
+            
+            let profitColor = profit > 0 ? '#2ea043' : '#f85149';
+            let profitSymbol = profit > 0 ? '💰' : '⚠️';
+            
+            txStatusDiv.innerHTML = `
+                <strong>📊 SIMULAÇÃO EM TEMPO REAL - ARBITRAGEM MULTI-HOP</strong><br><br>
+                <strong>🔵 Pool V3 (COMPRA - Baixa Liquidez):</strong><br>
+                🟣 Preço XPULS: <strong>$${priceV3.toFixed(6)}</strong> <span class="pool-low">(liquidez ~$922)</span><br><br>
+                <strong>🟢 Pool V2 (VENDA - Alta Liquidez):</strong><br>
+                🟣 Preço XPULS: <strong>$${priceV2.toFixed(6)}</strong> <span class="pool-high">(liquidez ~$50K+)</span><br><br>
+                📊 Diferença de preço: <strong>${priceDifferencePercent.toFixed(2)}%</strong><br>
+                🟣 XPULS comprados no V3: <strong>${xpulsBought.toFixed(4)} XPULS</strong><br>
+                💵 Valor de venda no V2: <strong>$${usdtReceived.toFixed(2)} USDT</strong><br>
+                💸 Taxa do Flash Loan (0.05%): <strong>$${flashFee.toFixed(4)} USDT</strong><br>
+                <div class="profit-highlight" style="color: ${profitColor}">${profitSymbol} LUCRO ESTIMADO: $${profit.toFixed(2)} USDT (${profitPercent.toFixed(2)}%)</div>
+                ${profit < 10 ? '<span style="color:#d29922">⚠️ Atenção: Lucro baixo. Considere aguardar uma oportunidade melhor ou aumentar o valor do empréstimo.</span>' : '<span style="color:#2ea043">✅ Ótima oportunidade detectada! Clique em EXECUTAR ARBITRAGEM.</span>'}
+            `;
+            txStatusDiv.className = profit > 0 ? 'status success' : 'status warning';
+            
+        } catch (err) {
+            console.error(err);
+            txStatusDiv.innerHTML = `❌ Erro na simulação: ${err.message}. Verifique se os pools estão com liquidez.`;
+            txStatusDiv.className = 'status error';
+        } finally {
+            simulateBtn.disabled = false;
+        }
     }
+    
+    // ============================================================
+    // FUNÇÃO: Executar Arbitragem Real
+    // ============================================================
+    async function executeArbitrage() {
+        if (!arbitrageContract) {
+            alert('Contrato não inicializado. Reconecte a carteira.');
+            return;
+        }
+        
+        if (!isOwner) {
+            alert('⚠️ Apenas a carteira OWNER do contrato pode executar esta função.\n\nVerifique se você é o dono do contrato implantado em:\n' + YOUR_CONTRACT_ADDRESS);
+            return;
+        }
+        
+        // Confirmar com o usuário
+        const confirmMsg = "⚠️ ATENÇÃO: Isso vai executar uma transação REAL na blockchain BSC.\n\n" +
+                           "📋 DETALHES DA OPERAÇÃO:\n" +
+                           "• Flash Loan: 1000 USDT do Pool V3 USDT/BUSD\n" +
+                           "• Compra: XPULS no Pool V3 XPULS/USDT (preço baixo)\n" +
+                           "• Venda: XPULS no Pool V2 XPULS/USDT (preço alto)\n" +
+                           "• Taxa: 0.05% do flash loan\n\n" +
+                           "💰 Você precisa ter BNB na carteira para pagar o gas.\n\n" +
+                           "Deseja continuar?";
+        if (!confirm(confirmMsg)) return;
+        
+        txStatusDiv.innerHTML = '<span class="loading"></span> Enviando transação de arbitragem... Confirme na sua carteira.';
+        txStatusDiv.className = 'status info';
+        executeBtn.disabled = true;
+        simulateBtn.disabled = true;
+        
+        try {
+            const amount = ethers.utils.parseUnits("1000", 18);
+            
+            // Estimar gas
+            let gasEstimate;
+            try {
+                gasEstimate = await arbitrageContract.estimateGas.startArbitrage(amount);
+            } catch (e) {
+                console.warn("Estimate gas failed, using default", e);
+                gasEstimate = 800000;
+            }
+            const gasLimit = gasEstimate.mul(12).div(10); // +20% de margem
+            const gasPrice = ethers.utils.parseUnits("3", "gwei");
+            
+            const tx = await arbitrageContract.startArbitrage(amount, {
+                gasLimit: gasLimit,
+                gasPrice: gasPrice
+            });
+            
+            txStatusDiv.innerHTML = `📡 Transação enviada! Hash: ${tx.hash}<br>⏳ Aguardando confirmação (pode levar 10-30 segundos)...<br><br><a href="https://bscscan.com/tx/${tx.hash}" target="_blank" style="color:#79c0ff">🔗 Ver no BscScan</a>`;
+            
+            const receipt = await tx.wait();
+            
+            if (receipt.status === 1) {
+                txStatusDiv.innerHTML = `✅✅✅ ARBITRAGEM EXECUTADA COM SUCESSO! ✅✅✅<br><br>
+                🧾 <strong>Transação confirmada:</strong> <a href="https://bscscan.com/tx/${tx.hash}" target="_blank" style="color:#2ea043">${tx.hash}</a><br>
+                💰 <strong>Verifique sua carteira</strong> - o lucro deve ter sido creditado em USDT!<br>
+                🔍 Gas usado: ${receipt.gasUsed.toString()} | Status: Sucesso`;
+                txStatusDiv.className = 'status success';
+            } else {
+                txStatusDiv.innerHTML = `❌ Transação revertida! Verifique no BscScan: <a href="https://bscscan.com/tx/${tx.hash}" target="_blank">${tx.hash}</a>`;
+                txStatusDiv.className = 'status error';
+            }
+            
+        } catch (error) {
+            console.error(error);
+            let msg = error.message;
+            if (msg.includes("execution reverted")) {
+                msg = "❌ A transação foi revertida. Possíveis causas:\n" +
+                      "• O contrato não está com a lógica completa\n" +
+                      "• Não há liquidez suficiente nos pools\n" +
+                      "• A arbitragem não é lucrativa no momento\n" +
+                      "• Você não é o owner do contrato\n\n" +
+                      "Verifique se o contrato está correto e tente novamente.";
+            } else if (msg.includes("insufficient funds")) {
+                msg = "❌ Saldo de BNB insuficiente para pagar o gas. Adicione pelo menos 0.01 BNB na carteira.";
+            } else if (msg.includes("user rejected")) {
+                msg = "❌ Transação rejeitada na carteira.";
+            } else if (msg.includes("network")) {
+                msg = "❌ Problema de rede. Verifique sua conexão com a internet.";
+            }
+            txStatusDiv.innerHTML = `❌ Erro: ${msg}`;
+            txStatusDiv.className = 'status error';
+        } finally {
+            executeBtn.disabled = false;
+            simulateBtn.disabled = false;
+        }
+    }
+    
+    // ============================================================
+    // EVENTOS E INICIALIZAÇÃO
+    // ============================================================
+    connectBtn.addEventListener('click', connectWallet);
+    simulateBtn.addEventListener('click', simulateProfit);
+    executeBtn.addEventListener('click', executeArbitrage);
+    
+    // Verificar se já está conectado ao carregar a página
+    if (typeof window.ethereum !== 'undefined' && window.ethereum.selectedAddress) {
+        connectWallet();
+    }
+    
+    // Exibir endereço do contrato no console
+    console.log("✅ Contrato executor:", YOUR_CONTRACT_ADDRESS);
+    console.log("📋 Pool Flash Loan (USDT/BUSD V3):", FLASH_SOURCE_V3);
+    console.log("📋 Pool Compra XPULS (V3):", XPULS_V3_POOL);
+    console.log("📋 Pool Venda XPULS (V2):", XPULS_V2_POOL);
 </script>
 </body>
 </html>
