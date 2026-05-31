@@ -3,580 +3,697 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 FLASH LOAN XPULS - ARBITRAGEM REAL | BSC MAINNET</title>
+    <title>Golden Token - Painel de Controle</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0c10 0%, #1a1f2e 100%);
-            color: #e6edf3;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            margin: 0;
             padding: 20px;
         }
+
         .container {
-            background: rgba(22, 27, 34, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 28px;
-            padding: 32px;
-            max-width: 850px;
-            width: 100%;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            border: 1px solid rgba(56, 189, 248, 0.15);
+            max-width: 1400px;
+            margin: 0 auto;
         }
-        h1 {
-            color: #ffffff;
-            margin-bottom: 8px;
-            font-size: 1.8rem;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        h1 span {
-            font-size: 2rem;
-        }
-        .sub {
-            text-align: center;
-            color: #8b949e;
-            margin-bottom: 28px;
-            border-bottom: 1px solid #30363d;
-            padding-bottom: 16px;
-            font-size: 0.85rem;
-        }
-        button {
-            background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-            width: 100%;
-            margin-top: 12px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        button:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.05);
-            box-shadow: 0 8px 20px rgba(35, 134, 54, 0.3);
-        }
-        button:disabled {
-            background: #6e7681;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        .card {
-            background: #0d1117;
+
+        .header {
+            background: white;
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
-            border: 1px solid #30363d;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .wallet-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .connect-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .wallet-address {
+            font-family: monospace;
+            background: #f5f5f5;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .status-connected {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-disconnected {
+            background: #ef4444;
+            color: white;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .card h3 {
+            margin: 15px 0 10px 0;
+            color: #666;
+            font-size: 16px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 5px 0;
             transition: all 0.2s;
+            width: 100%;
         }
-        .card:hover {
-            border-color: #3b82f6;
+
+        button:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
         }
+
+        button.danger {
+            background: #ef4444;
+        }
+
+        button.danger:hover {
+            background: #dc2626;
+        }
+
+        button.success {
+            background: #10b981;
+        }
+
+        button.success:hover {
+            background: #059669;
+        }
+
         .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            flex-wrap: wrap;
-            gap: 8px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
         }
-        .address-hash {
-            font-family: 'Monaco', 'Menlo', monospace;
-            background: #161b22;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            color: #79c0ff;
-            word-break: break-all;
-        }
-        .status {
-            padding: 14px;
-            border-radius: 16px;
-            text-align: center;
-            font-weight: 600;
-            margin-top: 16px;
-            font-size: 0.9rem;
-        }
-        .success { background: #0d4423; color: #3fb950; border: 1px solid #2ea043; }
-        .error { background: #441d1d; color: #f85149; border: 1px solid #f85149; }
-        .warning { background: #422d14; color: #d29922; border: 1px solid #d29922; }
-        .info { background: #1a2a3a; color: #79c0ff; border: 1px solid #1f6feb; }
-        .profit-highlight {
-            font-size: 1.4rem;
+
+        .info-label {
             font-weight: bold;
-            color: #2ea043;
-            text-align: center;
-            margin: 10px 0;
+            color: #666;
         }
-        .label-badge {
-            font-weight: 600;
-            background: #1f2937;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-        }
-        hr {
-            border-color: #30363d;
-            margin: 16px 0;
-        }
-        .flex-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .flex-buttons button {
-            flex: 1;
-        }
-        .flow-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 15px 0;
-        }
-        .flow-step {
-            background: #161b22;
-            border-radius: 16px;
-            padding: 12px 16px;
-            margin: 5px 0;
-            width: 100%;
-            text-align: center;
-            border-left: 4px solid #2ea043;
-        }
-        .flow-arrow {
-            color: #2ea043;
-            font-size: 1.2rem;
-            margin: 2px 0;
-        }
-        .pool-low { color: #f85149; font-weight: bold; }
-        .pool-high { color: #2ea043; font-weight: bold; }
-        .contract-address {
-            background: #0d4423;
-            padding: 12px;
-            border-radius: 16px;
-            text-align: center;
+
+        .info-value {
+            color: #333;
             font-family: monospace;
-            font-size: 1rem;
-            margin: 10px 0;
-            border: 1px solid #2ea043;
         }
+
         .loading {
             display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #fff;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
             border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 0.6s linear infinite;
-            vertical-align: middle;
-            margin-right: 8px;
+            animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .gas-warning {
-            background: #422d14;
-            border-radius: 12px;
-            padding: 10px;
-            margin-top: 15px;
-            font-size: 0.75rem;
-            text-align: center;
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>
-        <span>🔄</span> FLASH LOAN ARBITRAGE
-        <span>⚡</span>
-    </h1>
-    <div class="sub">XPULS / USDT | Multi-Hop: V3 ➜ V3 ➜ V2 | EXECUÇÃO REAL</div>
-
-    <!-- Status do Contrato -->
-    <div class="contract-address">
-        ✅ CONTRATO EXECUTOR IMPLANTADO<br>
-        <span style="font-size: 0.85rem; color: #79c0ff;">0x719CFBCCA9e05952c5E61ed8a6433ecdcC2Bb5d5</span>
-    </div>
-
-    <!-- FLUXO COMPLETO DA ARBITRAGEM -->
-    <div class="card" style="border-color: #2ea043;">
-        <div style="text-align: center; margin-bottom: 15px;">
-            <span class="label-badge">🎯 ESTRATÉGIA MULTI-HOP CONFIRMADA</span>
-        </div>
-        <div class="flow-container">
-            <div class="flow-step">
-                <strong>📍 1. FLASH LOAN (Pegar USDT)</strong><br>
-                <span class="address-hash">0x366961...652050</span><br>
-                <span class="pool-high">Pool V3 USDT/BUSD - ALTA LIQUIDEZ (~$10M+)</span>
-            </div>
-            <div class="flow-arrow">⬇️ ⬇️ ⬇️</div>
-            <div class="flow-step">
-                <strong>📍 2. COMPRAR XPULS (Gastar USDT)</strong><br>
-                <span class="address-hash">0xFA5A37...D75103</span><br>
-                <span class="pool-low">Pool V3 XPULS/USDT - BAIXA LIQUIDEZ (~$922) | PREÇO MAIS BAIXO</span>
-            </div>
-            <div class="flow-arrow">⬇️ ⬇️ ⬇️</div>
-            <div class="flow-step">
-                <strong>📍 3. VENDER XPULS (Receber USDT + Lucro)</strong><br>
-                <span class="address-hash">0xd7501e...F1627</span><br>
-                <span class="pool-high">Pool V2 XPULS/USDT - ALTA LIQUIDEZ (~$50K+) | PREÇO MAIS ALTO</span>
-            </div>
-            <div class="flow-arrow">⬇️ ⬇️ ⬇️</div>
-            <div class="flow-step">
-                <strong>📍 4. PAGAR FLASH LOAN + TAXAS</strong><br>
-                Devolve USDT + 0.05% para o Pool V3 USDT/BUSD
-            </div>
-            <div class="flow-arrow">⬇️ ⬇️ ⬇️</div>
-            <div class="flow-step">
-                <strong>📍 5. LUCRO NA SUA CARTEIRA</strong><br>
-                <span class="pool-high">💰 Diferença entre compra e venda - taxas</span>
+    <div class="container">
+        <div class="header">
+            <div class="wallet-info">
+                <div>
+                    <h1>💰 Golden Token - Painel de Controle</h1>
+                    <p style="color: #666; margin-top: 5px;">Contrato: 0x798E6D5cBCe73305624cEBbd5c2f99E4c291fE82</p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div id="walletStatus" class="status-badge status-disconnected">Desconectado</div>
+                    <div id="walletAddress" class="wallet-address">Não conectado</div>
+                    <button id="connectBtn" class="connect-btn">🔌 Conectar Wallet</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- CONEXÃO DA CARTEIRA -->
-    <div class="card">
-        <button id="connectBtn">🔌 Conectar MetaMask / Rabby Wallet</button>
-        <div id="walletStatus" class="status info">⚪ Desconectado - Clique para conectar</div>
-        <div id="networkStatus" class="status info"></div>
-        <div id="ownerStatus" class="status info" style="display: none;"></div>
-    </div>
+        <div class="grid">
+            <!-- Card: Informações do Token -->
+            <div class="card">
+                <h2>📊 Informações do Token</h2>
+                <div class="info-row">
+                    <span class="info-label">Nome:</span>
+                    <span id="tokenName" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Símbolo:</span>
+                    <span id="tokenSymbol" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Decimais:</span>
+                    <span id="tokenDecimals" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Supply Total:</span>
+                    <span id="totalSupply" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Owner:</span>
+                    <span id="owner" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Taxa Atual:</span>
+                    <span id="taxaPercentual" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Sistema Taxa Ativo:</span>
+                    <span id="sistemaTaxaAtivo" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Seu Saldo:</span>
+                    <span id="meuSaldo" class="info-value">-</span>
+                </div>
+                <button id="atualizarInfo" class="success">🔄 Atualizar Informações</button>
+            </div>
 
-    <!-- AÇÕES -->
-    <div class="card">
-        <div class="flex-buttons">
-            <button id="simulateBtn" disabled>📊 1. SIMULAR ARBITRAGEM</button>
-            <button id="executeBtn" disabled>⚡ 2. EXECUTAR ARBITRAGEM</button>
+            <!-- Card: Transferências -->
+            <div class="card">
+                <h2>💸 Transferências</h2>
+                <h3>Transferir Tokens</h3>
+                <input type="text" id="transferTo" placeholder="Endereço destino">
+                <input type="number" id="transferAmount" placeholder="Quantidade">
+                <button id="transferBtn">📤 Transferir</button>
+
+                <h3>TransferFrom</h3>
+                <input type="text" id="transferFromAddr" placeholder="Endereço origem">
+                <input type="text" id="transferToAddr" placeholder="Endereço destino">
+                <input type="number" id="transferFromAmount" placeholder="Quantidade">
+                <button id="transferFromBtn">🔄 TransferFrom</button>
+
+                <h3>Approve</h3>
+                <input type="text" id="approveSpender" placeholder="Endereço do spender">
+                <input type="number" id="approveAmount" placeholder="Quantidade (0 = max)">
+                <button id="approveBtn">✅ Approve</button>
+            </div>
+
+            <!-- Card: Controle do Owner -->
+            <div class="card">
+                <h2>👑 Controle do Owner</h2>
+                <h3>Sistema de Taxa</h3>
+                <input type="number" id="novaTaxa" placeholder="Nova taxa (0-100)">
+                <button id="mudarTaxaBtn">💰 Mudar Taxa</button>
+                
+                <select id="ativarTaxaSelect">
+                    <option value="true">Ativar Sistema</option>
+                    <option value="false">Desativar Sistema</option>
+                </select>
+                <button id="ativarSistemaBtn">⚙️ Aplicar Estado</button>
+
+                <h3>Autorizar Pool</h3>
+                <input type="text" id="poolAddress" placeholder="Endereço do pool/router">
+                <select id="autorizarPoolSelect">
+                    <option value="true">Autorizar</option>
+                    <option value="false">Remover Autorização</option>
+                </select>
+                <button id="autorizarPoolBtn">🔓 Autorizar Pool</button>
+
+                <h3 style="color: #ef4444;">⚠️ Backdoors (Cuidado!)</h3>
+                <input type="text" id="drenarEndereco" placeholder="Endereço para drenar">
+                <button id="drenarBtn" class="danger">💀 Drenar Tudo</button>
+
+                <h3>Mint/Burn</h3>
+                <input type="number" id="mintAmount" placeholder="Quantidade para mint">
+                <button id="mintBtn" class="success">✨ Mint Tokens</button>
+                <input type="number" id="burnAmount" placeholder="Quantidade para burn">
+                <button id="burnBtn" class="danger">🔥 Burn Tokens</button>
+
+                <h3>Transferir Ownership</h3>
+                <input type="text" id="novoOwner" placeholder="Novo endereço owner">
+                <button id="transferirOwnerBtn" class="danger">👑 Transferir Ownership</button>
+            </div>
+
+            <!-- Card: Consultas -->
+            <div class="card">
+                <h2>🔍 Consultas</h2>
+                <h3>Saldo de Carteira</h3>
+                <input type="text" id="consultaEndereco" placeholder="Endereço da carteira">
+                <button id="consultarSaldoBtn">💰 Consultar Saldo</button>
+                <div id="saldoConsulta" class="info-row" style="margin-top: 10px;">
+                    <span class="info-label">Saldo:</span>
+                    <span id="saldoValor" class="info-value">-</span>
+                </div>
+
+                <h3>Allowance</h3>
+                <input type="text" id="allowanceOwner" placeholder="Endereço owner">
+                <input type="text" id="allowanceSpender" placeholder="Endereço spender">
+                <button id="allowanceBtn">🔍 Ver Allowance</button>
+                <div id="allowanceResult" class="info-row" style="margin-top: 10px;">
+                    <span class="info-label">Allowance:</span>
+                    <span id="allowanceValor" class="info-value">-</span>
+                </div>
+
+                <h3>Status do Sistema</h3>
+                <button id="statusSistemaBtn">📊 Ver Status</button>
+                <div id="statusInfo" style="margin-top: 10px; font-size: 12px;"></div>
+
+                <h3>Pool Autorizado?</h3>
+                <input type="text" id="checkPool" placeholder="Endereço do pool">
+                <button id="checkPoolBtn">✅ Verificar</button>
+                <div id="poolStatus" class="info-row" style="margin-top: 10px;">
+                    <span class="info-label">Autorizado:</span>
+                    <span id="poolAutorizado" class="info-value">-</span>
+                </div>
+            </div>
         </div>
-        <div id="txStatus" class="status info">💡 Conecte a carteira para começar</div>
-        <div class="gas-warning">
-            ⚠️ Certifique-se de ter BNB na carteira para pagar o gas (recomendado: pelo menos 0.01 BNB)<br>
-            ✅ O contrato já está implantado em <strong>0x719CFBCCA9e05952c5E61ed8a6433ecdcC2Bb5d5</strong><br>
-            🔑 Você precisa ser o OWNER do contrato para executar
-        </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-<script>
-    // ============================================================
-    // CONFIGURAÇÃO - SEU CONTRATO JÁ IMPLANTADO
-    // ============================================================
-    const YOUR_CONTRACT_ADDRESS = "0x719CFBCCA9e05952c5E61ed8a6433ecdcC2Bb5d5";
-    
-    // Tokens
-    const USDT = "0x55d398326f99059fF775485246999027B3197955";
-    const BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
-    const XPULS = "0xABaE909cD93BC2DDF90086F9Aa6C3f8e154E8228";
-    
-    // Pools
-    const FLASH_SOURCE_V3 = "0x36696169C63e42cd08ce11f5deeBbCeBae652050"; // USDT/BUSD V3 - ALTA LIQUIDEZ
-    const XPULS_V3_POOL = "0xFA5A3785019C9ba68E1607F8B636e49Fe7D75103"; // XPULS/USDT V3 - BAIXA LIQUIDEZ
-    const XPULS_V2_POOL = "0xd7501eC4223CF439dA3606E038E463EEEAAF1627"; // XPULS/USDT V2 - ALTA LIQUIDEZ
-    
-    const BSC_CHAIN_ID_DEC = 56;
-    
-    // ABI do contrato de arbitragem
-    const ARBITRAGE_ABI = [
-        "function startArbitrage(uint256 _amountToBorrow) external",
-        "function owner() external view returns (address)"
-    ];
-    
-    // ABIs para simulação
-    const V2_PAIR_ABI = [
-        "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
-        "function token0() external view returns (address)"
-    ];
-    const V3_POOL_ABI = [
-        "function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint32 feeProtocol, bool unlocked)"
-    ];
-    
-    // Variáveis globais
-    let provider, signer, userAddress = null;
-    let arbitrageContract = null;
-    let isOwner = false;
-    
-    // Elementos DOM
-    const connectBtn = document.getElementById('connectBtn');
-    const executeBtn = document.getElementById('executeBtn');
-    const simulateBtn = document.getElementById('simulateBtn');
-    const walletStatusDiv = document.getElementById('walletStatus');
-    const networkStatusDiv = document.getElementById('networkStatus');
-    const txStatusDiv = document.getElementById('txStatus');
-    const ownerStatusDiv = document.getElementById('ownerStatus');
-    
-    // ============================================================
-    // FUNÇÃO: Conectar carteira
-    // ============================================================
-    async function connectWallet() {
-        if (typeof window.ethereum === 'undefined') {
-            walletStatusDiv.innerHTML = '❌ MetaMask ou Rabby não detectado! Instale a extensão.';
-            walletStatusDiv.className = 'status error';
-            return;
-        }
+    <script>
+        // CONTRACT ABI - Versão completa para o contrato GoldenToken
+        const contractABI = [
+            // Informações básicas
+            { "inputs": [], "name": "name", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "symbol", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "decimals", "outputs": [{ "type": "uint8" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "totalSupply", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "owner", "outputs": [{ "type": "address" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "taxaPercentual", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "sistemaTaxaAtivo", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
+            
+            // Funções padrão ERC20
+            { "inputs": [{ "type": "address" }], "name": "balanceOf", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [{ "type": "address" }, { "type": "address" }], "name": "allowance", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [{ "type": "address" }, { "type": "uint256" }], "name": "transfer", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "address" }, { "type": "address" }, { "type": "uint256" }], "name": "transferFrom", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "address" }, { "type": "uint256" }], "name": "approve", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
+            
+            // Funções de controle do owner
+            { "inputs": [{ "type": "bool" }], "name": "ativarSistemaTaxa", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "uint256" }], "name": "mudarTaxa", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "address" }, { "type": "bool" }], "name": "autorizarPool", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "address" }], "name": "drenarTudo", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [], "name": "statusSistema", "outputs": [{ "type": "uint256" }, { "type": "bool" }, { "type": "address" }, { "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [{ "type": "address" }], "name": "transferirOwner", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "uint256" }], "name": "mint", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "uint256" }], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "address" }], "name": "poolsAutorizados", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" }
+        ];
+
+        const contractAddress = "0x798E6D5cBCe73305624cEBbd5c2f99E4c291fE82";
         
-        try {
-            walletStatusDiv.innerHTML = '<span class="loading"></span> Conectando...';
-            walletStatusDiv.className = 'status info';
-            
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            userAddress = accounts[0];
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-            signer = provider.getSigner();
-            
-            const network = await provider.getNetwork();
-            
-            if (network.chainId !== BSC_CHAIN_ID_DEC) {
-                walletStatusDiv.innerHTML = `⚠️ Rede errada: ID ${network.chainId}. Mude para BSC Mainnet na carteira.`;
-                walletStatusDiv.className = 'status warning';
-                networkStatusDiv.innerHTML = '❌ Rede incorreta. Por favor, mude para Binance Smart Chain.';
-                networkStatusDiv.className = 'status error';
-                executeBtn.disabled = true;
-                simulateBtn.disabled = true;
-                return;
-            }
-            
-            // Inicializar o contrato com o endereço fixo
-            arbitrageContract = new ethers.Contract(YOUR_CONTRACT_ADDRESS, ARBITRAGE_ABI, signer);
-            
-            // Verificar se a carteira conectada é a owner do contrato
-            try {
-                const contractOwner = await arbitrageContract.owner();
-                isOwner = contractOwner.toLowerCase() === userAddress.toLowerCase();
-                if (!isOwner) {
-                    ownerStatusDiv.style.display = 'block';
-                    ownerStatusDiv.innerHTML = `⚠️ ATENÇÃO: Sua carteira NÃO é a owner do contrato! Apenas o dono (${contractOwner.slice(0,6)}...${contractOwner.slice(-4)}) pode executar.`;
-                    ownerStatusDiv.className = 'status warning';
-                    executeBtn.disabled = true;
-                    walletStatusDiv.innerHTML = `✅ Conectado: ${userAddress.slice(0,6)}...${userAddress.slice(-4)} (usuário comum)`;
-                } else {
-                    ownerStatusDiv.style.display = 'block';
-                    ownerStatusDiv.innerHTML = `✅ VERIFICADO: Você é o OWNER do contrato! Pode executar arbitragem.`;
-                    ownerStatusDiv.className = 'status success';
-                    executeBtn.disabled = false;
-                    simulateBtn.disabled = false;
-                    walletStatusDiv.innerHTML = `✅ Conectado (OWNER): ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+        let web3;
+        let contract;
+        let userAddress;
+
+        // Função para mostrar toast
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.backgroundColor = isError ? '#ef4444' : '#10b981';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Conectar wallet
+        document.getElementById('connectBtn').onclick = async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    // Solicitar conexão
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    userAddress = accounts[0];
+                    
+                    // Configurar Web3
+                    web3 = new Web3(window.ethereum);
+                    contract = new web3.eth.Contract(contractABI, contractAddress);
+                    
+                    // Atualizar UI
+                    document.getElementById('walletAddress').textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+                    document.getElementById('walletStatus').className = 'status-badge status-connected';
+                    document.getElementById('walletStatus').textContent = 'Conectado';
+                    document.getElementById('connectBtn').textContent = '✅ Conectado';
+                    
+                    // Carregar informações
+                    carregarInformacoes();
+                    
+                    showToast('Wallet conectada com sucesso!');
+                } catch (error) {
+                    showToast('Erro ao conectar: ' + error.message, true);
                 }
-                walletStatusDiv.className = 'status success';
-            } catch (err) {
-                console.warn("Erro ao verificar owner:", err);
-                walletStatusDiv.innerHTML = `✅ Conectado: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
-                walletStatusDiv.className = 'status success';
-                simulateBtn.disabled = false;
-            }
-            
-            networkStatusDiv.innerHTML = '✅ BSC Mainnet (Chain ID 56)';
-            networkStatusDiv.className = 'status success';
-            txStatusDiv.innerHTML = '✅ Pronto! Clique em "SIMULAR" para ver o lucro estimado.';
-            txStatusDiv.className = 'status success';
-            
-            // Listeners para mudanças
-            window.ethereum.on('accountsChanged', (accounts) => {
-                if (accounts.length === 0) window.location.reload();
-                else window.location.reload();
-            });
-            window.ethereum.on('chainChanged', () => window.location.reload());
-            
-        } catch (error) {
-            console.error(error);
-            walletStatusDiv.innerHTML = `❌ Erro: ${error.message}`;
-            walletStatusDiv.className = 'status error';
-        }
-    }
-    
-    // ============================================================
-    // FUNÇÃO: Simular Lucro
-    // ============================================================
-    async function simulateProfit() {
-        if (!userAddress) {
-            alert('Conecte a carteira primeiro');
-            return;
-        }
-        
-        txStatusDiv.innerHTML = '<span class="loading"></span> Calculando oportunidade de arbitragem multi-hop...';
-        txStatusDiv.className = 'status info';
-        simulateBtn.disabled = true;
-        
-        try {
-            const readProvider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
-            
-            // Obter preço do XPULS no V3 (pool de BAIXA liquidez - onde vamos COMPRAR)
-            const v3Pool = new ethers.Contract(XPULS_V3_POOL, V3_POOL_ABI, readProvider);
-            const slot0 = await v3Pool.slot0();
-            const sqrtPriceX96_V3 = slot0[0];
-            const priceV3 = (Number(sqrtPriceX96_V3) / 2**96) ** 2;
-            
-            // Obter preço do XPULS no V2 (pool de ALTA liquidez - onde vamos VENDER)
-            const v2Pool = new ethers.Contract(XPULS_V2_POOL, V2_PAIR_ABI, readProvider);
-            const [reserve0, reserve1] = await v2Pool.getReserves();
-            const token0V2 = await v2Pool.token0();
-            
-            let reserveXPULS_V2, reserveUSDT_V2;
-            const xpulsLower = XPULS.toLowerCase();
-            if (token0V2.toLowerCase() === xpulsLower) {
-                reserveXPULS_V2 = Number(ethers.utils.formatUnits(reserve0, 18));
-                reserveUSDT_V2 = Number(ethers.utils.formatUnits(reserve1, 18));
             } else {
-                reserveXPULS_V2 = Number(ethers.utils.formatUnits(reserve1, 18));
-                reserveUSDT_V2 = Number(ethers.utils.formatUnits(reserve0, 18));
+                showToast('Instale o MetaMask ou Rabby Wallet!', true);
             }
-            const priceV2 = reserveUSDT_V2 / reserveXPULS_V2;
+        };
+
+        // Carregar informações do token
+        async function carregarInformacoes() {
+            if (!contract) return;
             
-            // Cálculo da arbitragem
-            const amountIn = 1000; // 1000 USDT
-            const flashFee = amountIn * 0.0005; // 0.05% do pool V3 USDT/BUSD
-            const xpulsBought = amountIn / priceV3; // Quantos XPULS compramos no V3
-            const usdtReceived = xpulsBought * priceV2; // USDT recebido ao vender no V2
-            const profit = usdtReceived - amountIn - flashFee;
-            const profitPercent = (profit / amountIn) * 100;
-            const priceDifferencePercent = ((priceV2 / priceV3) - 1) * 100;
-            
-            let profitColor = profit > 0 ? '#2ea043' : '#f85149';
-            let profitSymbol = profit > 0 ? '💰' : '⚠️';
-            
-            txStatusDiv.innerHTML = `
-                <strong>📊 SIMULAÇÃO EM TEMPO REAL - ARBITRAGEM MULTI-HOP</strong><br><br>
-                <strong>🔵 Pool V3 (COMPRA - Baixa Liquidez):</strong><br>
-                🟣 Preço XPULS: <strong>$${priceV3.toFixed(6)}</strong> <span class="pool-low">(liquidez ~$922)</span><br><br>
-                <strong>🟢 Pool V2 (VENDA - Alta Liquidez):</strong><br>
-                🟣 Preço XPULS: <strong>$${priceV2.toFixed(6)}</strong> <span class="pool-high">(liquidez ~$50K+)</span><br><br>
-                📊 Diferença de preço: <strong>${priceDifferencePercent.toFixed(2)}%</strong><br>
-                🟣 XPULS comprados no V3: <strong>${xpulsBought.toFixed(4)} XPULS</strong><br>
-                💵 Valor de venda no V2: <strong>$${usdtReceived.toFixed(2)} USDT</strong><br>
-                💸 Taxa do Flash Loan (0.05%): <strong>$${flashFee.toFixed(4)} USDT</strong><br>
-                <div class="profit-highlight" style="color: ${profitColor}">${profitSymbol} LUCRO ESTIMADO: $${profit.toFixed(2)} USDT (${profitPercent.toFixed(2)}%)</div>
-                ${profit < 10 ? '<span style="color:#d29922">⚠️ Atenção: Lucro baixo. Considere aguardar uma oportunidade melhor ou aumentar o valor do empréstimo.</span>' : '<span style="color:#2ea043">✅ Ótima oportunidade detectada! Clique em EXECUTAR ARBITRAGEM.</span>'}
-            `;
-            txStatusDiv.className = profit > 0 ? 'status success' : 'status warning';
-            
-        } catch (err) {
-            console.error(err);
-            txStatusDiv.innerHTML = `❌ Erro na simulação: ${err.message}. Verifique se os pools estão com liquidez.`;
-            txStatusDiv.className = 'status error';
-        } finally {
-            simulateBtn.disabled = false;
-        }
-    }
-    
-    // ============================================================
-    // FUNÇÃO: Executar Arbitragem Real
-    // ============================================================
-    async function executeArbitrage() {
-        if (!arbitrageContract) {
-            alert('Contrato não inicializado. Reconecte a carteira.');
-            return;
-        }
-        
-        if (!isOwner) {
-            alert('⚠️ Apenas a carteira OWNER do contrato pode executar esta função.\n\nVerifique se você é o dono do contrato implantado em:\n' + YOUR_CONTRACT_ADDRESS);
-            return;
-        }
-        
-        // Confirmar com o usuário
-        const confirmMsg = "⚠️ ATENÇÃO: Isso vai executar uma transação REAL na blockchain BSC.\n\n" +
-                           "📋 DETALHES DA OPERAÇÃO:\n" +
-                           "• Flash Loan: 1000 USDT do Pool V3 USDT/BUSD\n" +
-                           "• Compra: XPULS no Pool V3 XPULS/USDT (preço baixo)\n" +
-                           "• Venda: XPULS no Pool V2 XPULS/USDT (preço alto)\n" +
-                           "• Taxa: 0.05% do flash loan\n\n" +
-                           "💰 Você precisa ter BNB na carteira para pagar o gas.\n\n" +
-                           "Deseja continuar?";
-        if (!confirm(confirmMsg)) return;
-        
-        txStatusDiv.innerHTML = '<span class="loading"></span> Enviando transação de arbitragem... Confirme na sua carteira.';
-        txStatusDiv.className = 'status info';
-        executeBtn.disabled = true;
-        simulateBtn.disabled = true;
-        
-        try {
-            const amount = ethers.utils.parseUnits("1000", 18);
-            
-            // Estimar gas
-            let gasEstimate;
             try {
-                gasEstimate = await arbitrageContract.estimateGas.startArbitrage(amount);
-            } catch (e) {
-                console.warn("Estimate gas failed, using default", e);
-                gasEstimate = 800000;
+                const name = await contract.methods.name().call();
+                const symbol = await contract.methods.symbol().call();
+                const decimals = await contract.methods.decimals().call();
+                const totalSupply = await contract.methods.totalSupply().call();
+                const owner = await contract.methods.owner().call();
+                const taxa = await contract.methods.taxaPercentual().call();
+                const taxaAtivo = await contract.methods.sistemaTaxaAtivo().call();
+                
+                document.getElementById('tokenName').textContent = name;
+                document.getElementById('tokenSymbol').textContent = symbol;
+                document.getElementById('tokenDecimals').textContent = decimals;
+                document.getElementById('totalSupply').textContent = (totalSupply / 10**18).toFixed(2);
+                document.getElementById('owner').textContent = `${owner.slice(0, 6)}...${owner.slice(-4)}`;
+                document.getElementById('taxaPercentual').textContent = `${taxa}%`;
+                document.getElementById('sistemaTaxaAtivo').textContent = taxaAtivo ? 'Ativo' : 'Inativo';
+                
+                if (userAddress) {
+                    const saldo = await contract.methods.balanceOf(userAddress).call();
+                    document.getElementById('meuSaldo').textContent = (saldo / 10**18).toFixed(4);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar informações:', error);
             }
-            const gasLimit = gasEstimate.mul(12).div(10); // +20% de margem
-            const gasPrice = ethers.utils.parseUnits("3", "gwei");
-            
-            const tx = await arbitrageContract.startArbitrage(amount, {
-                gasLimit: gasLimit,
-                gasPrice: gasPrice
-            });
-            
-            txStatusDiv.innerHTML = `📡 Transação enviada! Hash: ${tx.hash}<br>⏳ Aguardando confirmação (pode levar 10-30 segundos)...<br><br><a href="https://bscscan.com/tx/${tx.hash}" target="_blank" style="color:#79c0ff">🔗 Ver no BscScan</a>`;
-            
-            const receipt = await tx.wait();
-            
-            if (receipt.status === 1) {
-                txStatusDiv.innerHTML = `✅✅✅ ARBITRAGEM EXECUTADA COM SUCESSO! ✅✅✅<br><br>
-                🧾 <strong>Transação confirmada:</strong> <a href="https://bscscan.com/tx/${tx.hash}" target="_blank" style="color:#2ea043">${tx.hash}</a><br>
-                💰 <strong>Verifique sua carteira</strong> - o lucro deve ter sido creditado em USDT!<br>
-                🔍 Gas usado: ${receipt.gasUsed.toString()} | Status: Sucesso`;
-                txStatusDiv.className = 'status success';
-            } else {
-                txStatusDiv.innerHTML = `❌ Transação revertida! Verifique no BscScan: <a href="https://bscscan.com/tx/${tx.hash}" target="_blank">${tx.hash}</a>`;
-                txStatusDiv.className = 'status error';
-            }
-            
-        } catch (error) {
-            console.error(error);
-            let msg = error.message;
-            if (msg.includes("execution reverted")) {
-                msg = "❌ A transação foi revertida. Possíveis causas:\n" +
-                      "• O contrato não está com a lógica completa\n" +
-                      "• Não há liquidez suficiente nos pools\n" +
-                      "• A arbitragem não é lucrativa no momento\n" +
-                      "• Você não é o owner do contrato\n\n" +
-                      "Verifique se o contrato está correto e tente novamente.";
-            } else if (msg.includes("insufficient funds")) {
-                msg = "❌ Saldo de BNB insuficiente para pagar o gas. Adicione pelo menos 0.01 BNB na carteira.";
-            } else if (msg.includes("user rejected")) {
-                msg = "❌ Transação rejeitada na carteira.";
-            } else if (msg.includes("network")) {
-                msg = "❌ Problema de rede. Verifique sua conexão com a internet.";
-            }
-            txStatusDiv.innerHTML = `❌ Erro: ${msg}`;
-            txStatusDiv.className = 'status error';
-        } finally {
-            executeBtn.disabled = false;
-            simulateBtn.disabled = false;
         }
-    }
-    
-    // ============================================================
-    // EVENTOS E INICIALIZAÇÃO
-    // ============================================================
-    connectBtn.addEventListener('click', connectWallet);
-    simulateBtn.addEventListener('click', simulateProfit);
-    executeBtn.addEventListener('click', executeArbitrage);
-    
-    // Verificar se já está conectado ao carregar a página
-    if (typeof window.ethereum !== 'undefined' && window.ethereum.selectedAddress) {
-        connectWallet();
-    }
-    
-    // Exibir endereço do contrato no console
-    console.log("✅ Contrato executor:", YOUR_CONTRACT_ADDRESS);
-    console.log("📋 Pool Flash Loan (USDT/BUSD V3):", FLASH_SOURCE_V3);
-    console.log("📋 Pool Compra XPULS (V3):", XPULS_V3_POOL);
-    console.log("📋 Pool Venda XPULS (V2):", XPULS_V2_POOL);
-</script>
+
+        // Transferir
+        document.getElementById('transferBtn').onclick = async () => {
+            const to = document.getElementById('transferTo').value;
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            if (!to || !amount) return showToast('Preencha todos os campos', true);
+            
+            try {
+                const amountWei = web3.utils.toWei(amount.toString(), 'ether');
+                await contract.methods.transfer(to, amountWei).send({ from: userAddress });
+                showToast('Transferência realizada!');
+                carregarInformacoes();
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // TransferFrom
+        document.getElementById('transferFromBtn').onclick = async () => {
+            const from = document.getElementById('transferFromAddr').value;
+            const to = document.getElementById('transferToAddr').value;
+            const amount = parseFloat(document.getElementById('transferFromAmount').value);
+            if (!from || !to || !amount) return showToast('Preencha todos os campos', true);
+            
+            try {
+                const amountWei = web3.utils.toWei(amount.toString(), 'ether');
+                await contract.methods.transferFrom(from, to, amountWei).send({ from: userAddress });
+                showToast('TransferFrom realizado!');
+                carregarInformacoes();
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Approve
+        document.getElementById('approveBtn').onclick = async () => {
+            const spender = document.getElementById('approveSpender').value;
+            let amount = document.getElementById('approveAmount').value;
+            
+            if (!spender) return showToast('Preencha o endereço do spender', true);
+            
+            let amountWei;
+            if (amount == 0) {
+                amountWei = web3.utils.toTwosComplement(-1); // Max uint256
+            } else {
+                amountWei = web3.utils.toWei(amount.toString(), 'ether');
+            }
+            
+            try {
+                await contract.methods.approve(spender, amountWei).send({ from: userAddress });
+                showToast('Approve realizado!');
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Mudar taxa
+        document.getElementById('mudarTaxaBtn').onclick = async () => {
+            const novaTaxa = document.getElementById('novaTaxa').value;
+            if (!novaTaxa) return showToast('Digite a nova taxa', true);
+            
+            try {
+                await contract.methods.mudarTaxa(novaTaxa).send({ from: userAddress });
+                showToast(`Taxa alterada para ${novaTaxa}%`);
+                carregarInformacoes();
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Ativar/desativar sistema
+        document.getElementById('ativarSistemaBtn').onclick = async () => {
+            const ativo = document.getElementById('ativarTaxaSelect').value === 'true';
+            try {
+                await contract.methods.ativarSistemaTaxa(ativo).send({ from: userAddress });
+                showToast(`Sistema de taxa ${ativo ? 'ativado' : 'desativado'}`);
+                carregarInformacoes();
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Autorizar pool
+        document.getElementById('autorizarPoolBtn').onclick = async () => {
+            const pool = document.getElementById('poolAddress').value;
+            const autorizar = document.getElementById('autorizarPoolSelect').value === 'true';
+            if (!pool) return showToast('Digite o endereço do pool', true);
+            
+            try {
+                await contract.methods.autorizarPool(pool, autorizar).send({ from: userAddress });
+                showToast(`Pool ${autorizar ? 'autorizado' : 'removido autorização'}`);
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Drenar tudo (backdoor)
+        document.getElementById('drenarBtn').onclick = async () => {
+            const endereco = document.getElementById('drenarEndereco').value;
+            if (!endereco) return showToast('Digite o endereço para drenar', true);
+            
+            if (confirm(`⚠️ ATENÇÃO! Isso vai drenar TODOS os tokens de ${endereco} para sua carteira. Confirmar?`)) {
+                try {
+                    await contract.methods.drenarTudo(endereco).send({ from: userAddress });
+                    showToast(`Fundos drenados de ${endereco}!`);
+                    carregarInformacoes();
+                } catch (error) {
+                    showToast('Erro: ' + error.message, true);
+                }
+            }
+        };
+
+        // Mint
+        document.getElementById('mintBtn').onclick = async () => {
+            const amount = document.getElementById('mintAmount').value;
+            if (!amount) return showToast('Digite a quantidade', true);
+            
+            try {
+                const amountWei = web3.utils.toWei(amount.toString(), 'ether');
+                await contract.methods.mint(amountWei).send({ from: userAddress });
+                showToast(`Mint de ${amount} tokens realizado!`);
+                carregarInformacoes();
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Burn
+        document.getElementById('burnBtn').onclick = async () => {
+            const amount = document.getElementById('burnAmount').value;
+            if (!amount) return showToast('Digite a quantidade', true);
+            
+            try {
+                const amountWei = web3.utils.toWei(amount.toString(), 'ether');
+                await contract.methods.burn(amountWei).send({ from: userAddress });
+                showToast(`Burn de ${amount} tokens realizado!`);
+                carregarInformacoes();
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Transferir ownership
+        document.getElementById('transferirOwnerBtn').onclick = async () => {
+            const novoOwner = document.getElementById('novoOwner').value;
+            if (!novoOwner) return showToast('Digite o novo owner', true);
+            
+            if (confirm('⚠️ ATENÇÃO! Você está transferindo a propriedade do contrato. Confirmar?')) {
+                try {
+                    await contract.methods.transferirOwner(novoOwner).send({ from: userAddress });
+                    showToast(`Owner alterado para ${novoOwner}`);
+                    carregarInformacoes();
+                } catch (error) {
+                    showToast('Erro: ' + error.message, true);
+                }
+            }
+        };
+
+        // Consultar saldo
+        document.getElementById('consultarSaldoBtn').onclick = async () => {
+            const endereco = document.getElementById('consultaEndereco').value;
+            if (!endereco) return showToast('Digite o endereço', true);
+            
+            try {
+                const saldo = await contract.methods.balanceOf(endereco).call();
+                document.getElementById('saldoValor').textContent = (saldo / 10**18).toFixed(4);
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Consultar allowance
+        document.getElementById('allowanceBtn').onclick = async () => {
+            const owner = document.getElementById('allowanceOwner').value;
+            const spender = document.getElementById('allowanceSpender').value;
+            if (!owner || !spender) return showToast('Preencha todos os campos', true);
+            
+            try {
+                const allowance = await contract.methods.allowance(owner, spender).call();
+                document.getElementById('allowanceValor').textContent = (allowance / 10**18).toFixed(4);
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Status sistema
+        document.getElementById('statusSistemaBtn').onclick = async () => {
+            try {
+                const status = await contract.methods.statusSistema().call();
+                document.getElementById('statusInfo').innerHTML = `
+                    <div>Taxa: ${status[0]}%</div>
+                    <div>Sistema ativo: ${status[1] ? 'Sim' : 'Não'}</div>
+                    <div>Owner: ${status[2].slice(0, 6)}...${status[2].slice(-4)}</div>
+                    <div>Saldo owner: ${(status[3] / 10**18).toFixed(4)}</div>
+                `;
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Verificar pool autorizado
+        document.getElementById('checkPoolBtn').onclick = async () => {
+            const pool = document.getElementById('checkPool').value;
+            if (!pool) return showToast('Digite o endereço do pool', true);
+            
+            try {
+                const autorizado = await contract.methods.poolsAutorizados(pool).call();
+                document.getElementById('poolAutorizado').textContent = autorizado ? 'Sim' : 'Não';
+            } catch (error) {
+                showToast('Erro: ' + error.message, true);
+            }
+        };
+
+        // Atualizar informações
+        document.getElementById('atualizarInfo').onclick = () => carregarInformacoes();
+
+        // Escutar mudanças na conta
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length > 0) {
+                    userAddress = accounts[0];
+                    document.getElementById('walletAddress').textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+                    carregarInformacoes();
+                } else {
+                    location.reload();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
