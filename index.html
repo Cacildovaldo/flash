@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Controle - Golden Token</title>
+    <title>Painel de Controle - Golden Token (Rabby Compatible)</title>
     <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js" type="application/javascript"></script>
     <style>
         body {
@@ -62,8 +62,6 @@
         .btn-primary:hover { background-color: #2980b9; }
         .btn-success { background-color: #27ae60; color: white; }
         .btn-success:hover { background-color: #219150; }
-        .btn-danger { background-color: #e74c3c; color: white; }
-        .btn-danger:hover { background-color: #c0392b; }
         .btn-connect { width: 100%; margin-bottom: 20px; background-color: #8e44ad; color: white; }
         .log {
             background: #2c3e50;
@@ -71,9 +69,20 @@
             padding: 15px;
             border-radius: 5px;
             font-family: monospace;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
             margin-top: 20px;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: 1px solid #ffeeba;
         }
     </style>
 </head>
@@ -82,7 +91,11 @@
 <div class="container">
     <h1>Golden Token Admin</h1>
     
-    <button id="connectBtn" class="btn-connect">Conectar Carteira</button>
+    <div id="browserWarning" class="warning" style="display:none;">
+        <strong>Nota:</strong> Se você estiver abrindo este arquivo diretamente (file://), algumas carteiras como a Rabby podem bloquear a conexão por segurança. Tente usar um servidor local ou carregar em um ambiente web.
+    </div>
+
+    <button id="connectBtn" class="btn-connect">Conectar Carteira (Rabby/MetaMask)</button>
     
     <div id="adminPanel" style="display:none;">
         <div class="status-card">
@@ -139,7 +152,7 @@
         </div>
     </div>
 
-    <div id="log" class="log">Aguardando conexão...</div>
+    <div id="log" class="log">Aguardando inicialização...</div>
 </div>
 
 <script>
@@ -156,21 +169,57 @@
 
     let provider, signer, contract;
 
+    function addLog(msg) {
+        const logDiv = document.getElementById('log');
+        const time = new Date().toLocaleTimeString();
+        logDiv.innerHTML += `<div>[${time}] ${msg}</div>`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+        console.log(`[${time}] ${msg}`);
+    }
+
     async function init() {
-        if (typeof window.ethereum !== 'undefined') {
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-            document.getElementById('connectBtn').addEventListener('click', connectWallet);
-            addLog("Pronto para conectar.");
-        } else {
-            addLog("MetaMask não detectada!");
+        if (window.location.protocol === 'file:') {
+            document.getElementById('browserWarning').style.display = 'block';
         }
+
+        addLog("Checando provedores de carteira...");
+        
+        // Pequeno delay para garantir que a extensão injetou o objeto
+        setTimeout(() => {
+            if (window.ethereum) {
+                addLog("Provedor 'window.ethereum' detectado.");
+                if (window.ethereum.isRabby) addLog("Rabby Wallet detectada com sucesso!");
+                if (window.ethereum.isMetaMask) addLog("MetaMask detectada.");
+                
+                provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+                document.getElementById('connectBtn').addEventListener('click', connectWallet);
+                addLog("Pronto para conectar.");
+            } else {
+                addLog("Nenhum provedor (window.ethereum) encontrado. Verifique se sua carteira está desbloqueada.");
+            }
+        }, 500);
     }
 
     async function connectWallet() {
         try {
-            await provider.send("eth_requestAccounts", []);
+            addLog("Solicitando permissão para a carteira...");
+            // Algumas carteiras precisam de eth_requestAccounts
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            
+            if (accounts.length === 0) {
+                addLog("Nenhuma conta encontrada.");
+                return;
+            }
+
             signer = provider.getSigner();
             const address = await signer.getAddress();
+            const network = await provider.getNetwork();
+            
+            addLog(`Conectado à rede ID: ${network.chainId}`);
+            if (network.chainId !== 56) {
+                addLog("AVISO: Você não está na rede BSC (Chain ID 56). Mude na sua carteira!");
+            }
+
             contract = new ethers.Contract(contractAddress, abi, signer);
             
             document.getElementById('connectBtn').innerText = "Conectado: " + address.substring(0,6) + "...";
@@ -178,53 +227,53 @@
             addLog("Carteira conectada: " + address);
             refreshData();
         } catch (err) {
-            addLog("Erro ao conectar: " + err.message);
+            addLog("Erro na conexão: " + err.message);
+            if (err.code === 4001) addLog("Usuário rejeitou a conexão.");
         }
     }
 
     async function refreshData() {
         try {
+            addLog("Buscando dados do contrato...");
             const status = await contract.getStatus();
             document.getElementById('valTaxa').innerText = status.taxa.toString();
             document.getElementById('valStatus').innerText = status.ativa ? "LIGADA" : "DESLIGADA";
             document.getElementById('valOwner').innerText = status.dono;
             
-            const saldo = await contract.balanceOf(await signer.getAddress());
+            const address = await signer.getAddress();
+            const saldo = await contract.balanceOf(address);
             document.getElementById('valSaldo').innerText = ethers.utils.formatEther(saldo);
             
-            addLog("Dados atualizados.");
+            addLog("Dados atualizados com sucesso.");
         } catch (err) {
-            addLog("Erro ao buscar dados: " + err.message);
+            addLog("Erro ao ler contrato: " + err.message);
         }
     }
 
+    // Funções de Escrita (mesmas da versão anterior)
     async function updateTaxa() {
         const novaTaxa = document.getElementById('inputTaxa').value;
         if (!novaTaxa) return alert("Insira um valor");
         try {
-            addLog("Enviando transação: setTaxaPercentual...");
+            addLog("Enviando TX: Alterar Taxa...");
             const tx = await contract.setTaxaPercentual(novaTaxa);
             addLog("TX enviada: " + tx.hash);
             await tx.wait();
-            addLog("Sucesso!");
+            addLog("Confirmada!");
             refreshData();
-        } catch (err) {
-            addLog("Erro: " + err.message);
-        }
+        } catch (err) { addLog("Erro: " + err.message); }
     }
 
     async function updateStatus() {
         const ativa = document.getElementById('selectStatus').value === "true";
         try {
-            addLog("Enviando transação: setTaxaAtiva...");
+            addLog("Enviando TX: Alterar Status...");
             const tx = await contract.setTaxaAtiva(ativa);
             addLog("TX enviada: " + tx.hash);
             await tx.wait();
-            addLog("Sucesso!");
+            addLog("Confirmada!");
             refreshData();
-        } catch (err) {
-            addLog("Erro: " + err.message);
-        }
+        } catch (err) { addLog("Erro: " + err.message); }
     }
 
     async function updatePool() {
@@ -232,39 +281,29 @@
         const autorizado = document.getElementById('selectPoolAction').value === "true";
         if (!ethers.utils.isAddress(pool)) return alert("Endereço inválido");
         try {
-            addLog("Enviando transação: autorizarPool...");
+            addLog("Enviando TX: Autorizar Pool...");
             const tx = await contract.autorizarPool(pool, autorizado);
             addLog("TX enviada: " + tx.hash);
             await tx.wait();
-            addLog("Sucesso!");
+            addLog("Confirmada!");
             refreshData();
-        } catch (err) {
-            addLog("Erro: " + err.message);
-        }
+        } catch (err) { addLog("Erro: " + err.message); }
     }
 
     async function doMint() {
         const qtd = document.getElementById('inputMint').value;
         if (!qtd) return alert("Insira uma quantidade");
         try {
-            addLog("Enviando transação: mint...");
+            addLog("Enviando TX: Mint...");
             const tx = await contract.mint(qtd);
             addLog("TX enviada: " + tx.hash);
             await tx.wait();
-            addLog("Sucesso!");
+            addLog("Confirmada!");
             refreshData();
-        } catch (err) {
-            addLog("Erro: " + err.message);
-        }
+        } catch (err) { addLog("Erro: " + err.message); }
     }
 
-    function addLog(msg) {
-        const logDiv = document.getElementById('log');
-        logDiv.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-        logDiv.scrollTop = logDiv.scrollHeight;
-    }
-
-    init();
+    window.addEventListener('load', init);
 </script>
 
 </body>
