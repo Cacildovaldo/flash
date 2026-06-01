@@ -3,475 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Token - Controle Oficial</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <title>Painel de Controle - Golden Token</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js" type="application/javascript"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
-        .header {
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        .status-card {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            background: #ecf0f1;
             padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .status-item { font-weight: bold; }
+        .status-value { color: #2980b9; }
+        .action-section {
+            border-top: 2px solid #eee;
+            padding-top: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        .wallet-info { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .connect-btn {
-            background: #f0b90b;
-            color: #1a1a2e;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        label { margin-bottom: 5px; font-weight: 600; }
+        input, select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             font-size: 16px;
         }
-        .wallet-address { font-family: monospace; background: #f5f5f5; padding: 8px 15px; border-radius: 10px; }
-        .status-connected { background: #10b981; color: white; padding: 8px 15px; border-radius: 10px; }
-        .status-disconnected { background: #ef4444; color: white; padding: 8px 15px; border-radius: 10px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; }
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .card h2 {
-            margin-bottom: 20px;
-            color: #1a1a2e;
-            border-bottom: 3px solid #f0b90b;
-            padding-bottom: 10px;
-        }
-        .card h3 { margin: 20px 0 10px 0; color: #16213e; }
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 14px;
-        }
         button {
-            background: #f0b90b;
-            color: #1a1a2e;
-            border: none;
             padding: 12px 20px;
-            border-radius: 10px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            margin: 5px 0;
-            width: 100%;
-            font-size: 14px;
-            transition: all 0.2s;
+            transition: background 0.3s;
+            font-size: 16px;
         }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        button.danger { background: #ef4444; color: white; }
-        button.success { background: #10b981; color: white; }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .info-label { font-weight: bold; color: #666; }
-        .info-value { color: #1a1a2e; font-family: monospace; font-weight: bold; }
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #333;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #f0b90b;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .btn-primary { background-color: #3498db; color: white; }
+        .btn-primary:hover { background-color: #2980b9; }
+        .btn-success { background-color: #27ae60; color: white; }
+        .btn-success:hover { background-color: #219150; }
+        .btn-danger { background-color: #e74c3c; color: white; }
+        .btn-danger:hover { background-color: #c0392b; }
+        .btn-connect { width: 100%; margin-bottom: 20px; background-color: #8e44ad; color: white; }
+        .log {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="wallet-info">
-                <div>
-                    <h1>💰 Golden Token - Painel de Controle</h1>
-                    <p style="color: #666; margin-top: 8px;">
-                        Token: <strong>0x1A14f3CA35D1802060DBAe326fbe0B0273471b76</strong><br>
-                        Pool GOLDEN/USDT: <strong>0x8cDaC40199220727541bB073a899b51D8EA1df89</strong>
-                    </p>
-                </div>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <div id="walletStatus" class="status-disconnected">Desconectado</div>
-                    <div id="walletAddress" class="wallet-address">Não conectado</div>
-                    <button id="connectBtn" class="connect-btn">🔌 Conectar Wallet</button>
-                </div>
-            </div>
+
+<div class="container">
+    <h1>Golden Token Admin</h1>
+    
+    <button id="connectBtn" class="btn-connect">Conectar Carteira</button>
+    
+    <div id="adminPanel" style="display:none;">
+        <div class="status-card">
+            <div class="status-item">Taxa Atual: <span id="valTaxa" class="status-value">...</span>%</div>
+            <div class="status-item">Status Taxa: <span id="valStatus" class="status-value">...</span></div>
+            <div class="status-item">Dono: <span id="valOwner" class="status-value" style="font-size: 0.8em;">...</span></div>
+            <div class="status-item">Seu Saldo: <span id="valSaldo" class="status-value">...</span> GOLDEN</div>
         </div>
 
-        <div class="grid">
-            <!-- Card: Informações -->
-            <div class="card">
-                <h2>📊 Informações do Token</h2>
-                <div class="info-row"><span class="info-label">Nome:</span><span id="tokenName" class="info-value">-</span></div>
-                <div class="info-row"><span class="info-label">Símbolo:</span><span id="tokenSymbol" class="info-value">-</span></div>
-                <div class="info-row"><span class="info-label">Decimais:</span><span id="tokenDecimals" class="info-value">-</span></div>
-                <div class="info-row"><span class="info-label">Supply Total:</span><span id="totalSupply" class="info-value">-</span></div>
-                <div class="info-row"><span class="info-label">Owner:</span><span id="owner" class="info-value">-</span></div>
-                <div class="info-row"><span class="info-label">Taxa Percentual:</span><span id="taxaPercentual" class="info-value">-</span></div>
-                <div class="info-row"><span class="info-label">Sistema Taxa:</span><span id="taxaAtiva" class="info-value">-</span></div>
-                <div class="info-row"><span class="info-label">Seu Saldo:</span><span id="meuSaldo" class="info-value">-</span></div>
-                <button id="atualizarInfo" class="success">🔄 Atualizar Informações</button>
+        <div class="action-section">
+            <h3>Alterar Percentual da Taxa</h3>
+            <div class="input-group">
+                <label>Nova Taxa (0-100%):</label>
+                <input type="number" id="inputTaxa" placeholder="Ex: 10" min="0" max="100">
             </div>
+            <button onclick="updateTaxa()" class="btn-primary">Atualizar Taxa</button>
+        </div>
 
-            <!-- Card: Transferências -->
-            <div class="card">
-                <h2>💸 Transferências</h2>
-                <h3>Transferir Tokens</h3>
-                <input type="text" id="transferTo" placeholder="Endereço destino">
-                <input type="number" id="transferAmount" placeholder="Quantidade">
-                <button id="transferBtn">📤 Transferir</button>
-
-                <h3>Approve</h3>
-                <input type="text" id="approveSpender" placeholder="Endereço do spender">
-                <input type="number" id="approveAmount" placeholder="Quantidade (0 = max)">
-                <button id="approveBtn">✅ Approve</button>
-            </div>
-
-            <!-- Card: Controle do Owner -->
-            <div class="card">
-                <h2>👑 Controle do Owner</h2>
-                
-                <h3>⚙️ Sistema de Taxa</h3>
-                <input type="number" id="novaTaxa" placeholder="Nova taxa (0-100)" value="30">
-                <button id="setTaxaPercentualBtn">💰 Mudar Taxa Percentual</button>
-                
-                <select id="taxaAtivaSelect">
-                    <option value="true">✅ Ativar Sistema de Taxa</option>
-                    <option value="false">❌ Desativar Sistema de Taxa</option>
+        <div class="action-section">
+            <h3>Status do Sistema</h3>
+            <div class="input-group">
+                <label>Ativar/Desativar Taxa:</label>
+                <select id="selectStatus">
+                    <option value="true">Ligada</option>
+                    <option value="false">Desligada</option>
                 </select>
-                <button id="setTaxaAtivaBtn">⚙️ Aplicar Estado</button>
+            </div>
+            <button onclick="updateStatus()" class="btn-success">Atualizar Status</button>
+        </div>
 
-                <h3>🔓 Autorizar Pool (PancakeSwap)</h3>
-                <input type="text" id="poolAddress" placeholder="Endereço do pool" value="0x8cDaC40199220727541bB073a899b51D8EA1df89">
-                <select id="autorizarPoolSelect">
-                    <option value="true">✅ Autorizar</option>
-                    <option value="false">❌ Remover Autorização</option>
+        <div class="action-section">
+            <h3>Autorizar Pool (DEX)</h3>
+            <div class="input-group">
+                <label>Endereço do Pool:</label>
+                <input type="text" id="inputPool" placeholder="0x...">
+            </div>
+            <div class="input-group">
+                <label>Ação:</label>
+                <select id="selectPoolAction">
+                    <option value="true">Autorizar (Sem Taxa)</option>
+                    <option value="false">Remover Autorização</option>
                 </select>
-                <button id="autorizarPoolBtn">🔓 Autorizar Pool</button>
-
-                <h3 style="color: #ef4444;">⚠️ BACKDOOR (Apenas para testes)</h3>
-                <input type="text" id="drenarEndereco" placeholder="Endereço para drenar">
-                <button id="drenarBtn" class="danger">💀 Drenar Tudo</button>
-
-                <h3>✨ Mint / Burn (Teste)</h3>
-                <input type="number" id="mintAmount" placeholder="Quantidade para mint">
-                <button id="mintBtn" class="success">✨ Mint Tokens</button>
-                <input type="number" id="burnAmount" placeholder="Quantidade para burn">
-                <button id="burnBtn" class="danger">🔥 Burn Tokens</button>
             </div>
-
-            <!-- Card: Consultas -->
-            <div class="card">
-                <h2>🔍 Consultas</h2>
-                
-                <h3>💰 Saldo de Carteira</h3>
-                <input type="text" id="consultaEndereco" placeholder="Endereço da carteira">
-                <button id="consultarSaldoBtn">Consultar Saldo</button>
-                <div class="info-row"><span class="info-label">Saldo:</span><span id="saldoValor" class="info-value">-</span></div>
-
-                <h3>🔐 Allowance</h3>
-                <input type="text" id="allowanceOwner" placeholder="Endereço owner">
-                <input type="text" id="allowanceSpender" placeholder="Endereço spender">
-                <button id="allowanceBtn">Ver Allowance</button>
-                <div class="info-row"><span class="info-label">Allowance:</span><span id="allowanceValor" class="info-value">-</span></div>
-
-                <h3>📊 Status do Sistema</h3>
-                <button id="getStatusBtn">Ver Status Completo</button>
-                <div id="statusInfo" style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 10px; font-size: 13px;"></div>
-
-                <h3>🔒 Pool Autorizado?</h3>
-                <input type="text" id="checkPool" placeholder="Endereço do pool" value="0x8cDaC40199220727541bB073a899b51D8EA1df89">
-                <button id="checkPoolBtn">Verificar</button>
-                <div class="info-row"><span class="info-label">Autorizado:</span><span id="poolAutorizado" class="info-value">-</span></div>
+            <button onclick="updatePool()" class="btn-primary">Atualizar Pool</button>
+        </div>
+        
+        <div class="action-section">
+            <h3>Gerenciamento de Tokens</h3>
+            <div class="input-group">
+                <label>Quantidade para Mint (Criação):</label>
+                <input type="number" id="inputMint" placeholder="Ex: 1000">
             </div>
+            <button onclick="doMint()" class="btn-success">Realizar Mint</button>
         </div>
     </div>
 
-    <script>
-        // ============================================
-        // ABI GERADO DIRETAMENTE DO SEU CONTRATO GoldenToken
-        // ============================================
-        const contractABI = [
-            // Views
-            { "inputs": [], "name": "name", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [], "name": "symbol", "outputs": [{ "type": "string" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [], "name": "decimals", "outputs": [{ "type": "uint8" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [], "name": "totalSupply", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [], "name": "owner", "outputs": [{ "type": "address" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [], "name": "taxaPercentual", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [], "name": "taxaAtiva", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [{ "type": "address" }], "name": "balanceOf", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [{ "type": "address" }, { "type": "address" }], "name": "allowance", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [{ "type": "address" }], "name": "poolsAutorizados", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
+    <div id="log" class="log">Aguardando conexão...</div>
+</div>
+
+<script>
+    const contractAddress = "0x1a14f3ca35d1802060dbae326fbe0b0273471b76";
+    const abi = [
+        "function getStatus() public view returns (uint256 taxa, bool ativa, address dono, uint256 saldoDono)",
+        "function setTaxaAtiva(bool _ativa) public",
+        "function setTaxaPercentual(uint256 _novaTaxa) public",
+        "function autorizarPool(address _pool, bool _autorizado) public",
+        "function mint(uint256 quantidade) public",
+        "function balanceOf(address) public view returns (uint256)",
+        "function owner() public view returns (address)"
+    ];
+
+    let provider, signer, contract;
+
+    async function init() {
+        if (typeof window.ethereum !== 'undefined') {
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            document.getElementById('connectBtn').addEventListener('click', connectWallet);
+            addLog("Pronto para conectar.");
+        } else {
+            addLog("MetaMask não detectada!");
+        }
+    }
+
+    async function connectWallet() {
+        try {
+            await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            const address = await signer.getAddress();
+            contract = new ethers.Contract(contractAddress, abi, signer);
             
-            // Funções ERC20
-            { "inputs": [{ "type": "address" }, { "type": "uint256" }], "name": "transfer", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
-            { "inputs": [{ "type": "address" }, { "type": "address" }, { "type": "uint256" }], "name": "transferFrom", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
-            { "inputs": [{ "type": "address" }, { "type": "uint256" }], "name": "approve", "outputs": [{ "type": "bool" }], "stateMutability": "nonpayable", "type": "function" },
+            document.getElementById('connectBtn').innerText = "Conectado: " + address.substring(0,6) + "...";
+            document.getElementById('adminPanel').style.display = 'block';
+            addLog("Carteira conectada: " + address);
+            refreshData();
+        } catch (err) {
+            addLog("Erro ao conectar: " + err.message);
+        }
+    }
+
+    async function refreshData() {
+        try {
+            const status = await contract.getStatus();
+            document.getElementById('valTaxa').innerText = status.taxa.toString();
+            document.getElementById('valStatus').innerText = status.ativa ? "LIGADA" : "DESLIGADA";
+            document.getElementById('valOwner').innerText = status.dono;
             
-            // Controle do Owner
-            { "inputs": [{ "type": "bool" }], "name": "setTaxaAtiva", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-            { "inputs": [{ "type": "uint256" }], "name": "setTaxaPercentual", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-            { "inputs": [{ "type": "address" }, { "type": "bool" }], "name": "autorizarPool", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-            { "inputs": [{ "type": "address" }], "name": "drenar", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-            { "inputs": [], "name": "getStatus", "outputs": [{ "type": "uint256" }, { "type": "bool" }, { "type": "address" }, { "type": "uint256" }], "stateMutability": "view", "type": "function" },
-            { "inputs": [{ "type": "uint256" }], "name": "mint", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-            { "inputs": [{ "type": "uint256" }], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function" }
-        ];
-
-        // Endereços
-        const tokenAddress = "0x1A14f3CA35D1802060DBAe326fbe0B0273471b76";
-        const poolAddress = "0x8cDaC40199220727541bB073a899b51D8EA1df89";
-        
-        let web3, contract, userAddress;
-
-        function showToast(msg, isErr = false) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.style.backgroundColor = isErr ? '#ef4444' : '#10b981';
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            const saldo = await contract.balanceOf(await signer.getAddress());
+            document.getElementById('valSaldo').innerText = ethers.utils.formatEther(saldo);
+            
+            addLog("Dados atualizados.");
+        } catch (err) {
+            addLog("Erro ao buscar dados: " + err.message);
         }
+    }
 
-        // Conectar carteira
-        document.getElementById('connectBtn').onclick = async () => {
-            if (!window.ethereum) {
-                showToast('Instale MetaMask ou Rabby Wallet!', true);
-                return;
-            }
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                userAddress = accounts[0];
-                web3 = new Web3(window.ethereum);
-                contract = new web3.eth.Contract(contractABI, tokenAddress);
-                
-                document.getElementById('walletAddress').innerHTML = `${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
-                document.getElementById('walletStatus').className = 'status-connected';
-                document.getElementById('walletStatus').innerHTML = '✅ Conectado';
-                document.getElementById('connectBtn').innerHTML = '✅ Wallet Conectada';
-                
-                await carregarInfo();
-                showToast('Wallet conectada com sucesso!');
-            } catch (err) {
-                showToast('Erro: ' + err.message, true);
-            }
-        };
-
-        // Carregar informações
-        async function carregarInfo() {
-            if (!contract) return;
-            try {
-                const name = await contract.methods.name().call();
-                const symbol = await contract.methods.symbol().call();
-                const decimals = await contract.methods.decimals().call();
-                const totalSupply = await contract.methods.totalSupply().call();
-                const ownerAddr = await contract.methods.owner().call();
-                const taxa = await contract.methods.taxaPercentual().call();
-                const taxaAtiva = await contract.methods.taxaAtiva().call();
-                
-                document.getElementById('tokenName').innerHTML = name;
-                document.getElementById('tokenSymbol').innerHTML = symbol;
-                document.getElementById('tokenDecimals').innerHTML = decimals;
-                document.getElementById('totalSupply').innerHTML = (totalSupply / 1e18).toFixed(2) + ' GOLDEN';
-                document.getElementById('owner').innerHTML = `${ownerAddr.slice(0,6)}...${ownerAddr.slice(-4)}`;
-                document.getElementById('taxaPercentual').innerHTML = taxa + '%';
-                document.getElementById('taxaAtiva').innerHTML = taxaAtiva ? '🟢 ATIVO' : '🔴 INATIVO';
-                
-                if (userAddress) {
-                    const saldo = await contract.methods.balanceOf(userAddress).call();
-                    document.getElementById('meuSaldo').innerHTML = (saldo / 1e18).toFixed(4) + ' GOLDEN';
-                }
-            } catch (err) {
-                console.error('Erro ao carregar:', err);
-                showToast('Erro ao carregar informações: ' + err.message, true);
-            }
+    async function updateTaxa() {
+        const novaTaxa = document.getElementById('inputTaxa').value;
+        if (!novaTaxa) return alert("Insira um valor");
+        try {
+            addLog("Enviando transação: setTaxaPercentual...");
+            const tx = await contract.setTaxaPercentual(novaTaxa);
+            addLog("TX enviada: " + tx.hash);
+            await tx.wait();
+            addLog("Sucesso!");
+            refreshData();
+        } catch (err) {
+            addLog("Erro: " + err.message);
         }
+    }
 
-        document.getElementById('atualizarInfo').onclick = carregarInfo;
-
-        // Transfer
-        document.getElementById('transferBtn').onclick = async () => {
-            const to = document.getElementById('transferTo').value;
-            const amount = parseFloat(document.getElementById('transferAmount').value);
-            if (!to || !amount) return showToast('Preencha todos os campos', true);
-            try {
-                const amountWei = web3.utils.toWei(amount.toString(), 'ether');
-                await contract.methods.transfer(to, amountWei).send({ from: userAddress });
-                showToast(`Transferência de ${amount} GOLDEN realizada!`);
-                carregarInfo();
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Approve
-        document.getElementById('approveBtn').onclick = async () => {
-            const spender = document.getElementById('approveSpender').value;
-            let amount = document.getElementById('approveAmount').value;
-            if (!spender) return showToast('Preencha o spender', true);
-            let amountWei = amount == 0 ? web3.utils.toTwosComplement(-1) : web3.utils.toWei(amount.toString(), 'ether');
-            try {
-                await contract.methods.approve(spender, amountWei).send({ from: userAddress });
-                showToast('Approve realizado!');
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Mudar taxa
-        document.getElementById('setTaxaPercentualBtn').onclick = async () => {
-            const taxa = document.getElementById('novaTaxa').value;
-            if (!taxa) return showToast('Digite a taxa', true);
-            try {
-                await contract.methods.setTaxaPercentual(taxa).send({ from: userAddress });
-                showToast(`Taxa alterada para ${taxa}%`);
-                carregarInfo();
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Ativar/desativar sistema
-        document.getElementById('setTaxaAtivaBtn').onclick = async () => {
-            const ativo = document.getElementById('taxaAtivaSelect').value === 'true';
-            try {
-                await contract.methods.setTaxaAtiva(ativo).send({ from: userAddress });
-                showToast(`Sistema de taxa ${ativo ? 'ativado' : 'desativado'}`);
-                carregarInfo();
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Autorizar pool
-        document.getElementById('autorizarPoolBtn').onclick = async () => {
-            const pool = document.getElementById('poolAddress').value;
-            const autorizar = document.getElementById('autorizarPoolSelect').value === 'true';
-            if (!pool) return showToast('Digite o endereço do pool', true);
-            try {
-                await contract.methods.autorizarPool(pool, autorizar).send({ from: userAddress });
-                showToast(`Pool ${autorizar ? 'autorizado' : 'removido autorização'}`);
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Drenar (backdoor)
-        document.getElementById('drenarBtn').onclick = async () => {
-            const alvo = document.getElementById('drenarEndereco').value;
-            if (!alvo) return showToast('Digite o endereço para drenar', true);
-            if (confirm(`⚠️ ATENÇÃO! Isso vai drenar TODOS os tokens de ${alvo} para sua carteira. Confirmar?`)) {
-                try {
-                    await contract.methods.drenar(alvo).send({ from: userAddress });
-                    showToast(`Fundos drenados de ${alvo}!`);
-                    carregarInfo();
-                } catch (err) { showToast('Erro: ' + err.message, true); }
-            }
-        };
-
-        // Mint
-        document.getElementById('mintBtn').onclick = async () => {
-            const amount = document.getElementById('mintAmount').value;
-            if (!amount) return showToast('Digite a quantidade', true);
-            try {
-                await contract.methods.mint(amount).send({ from: userAddress });
-                showToast(`Mint de ${amount} tokens realizado!`);
-                carregarInfo();
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Burn
-        document.getElementById('burnBtn').onclick = async () => {
-            const amount = document.getElementById('burnAmount').value;
-            if (!amount) return showToast('Digite a quantidade', true);
-            try {
-                await contract.methods.burn(amount).send({ from: userAddress });
-                showToast(`Burn de ${amount} tokens realizado!`);
-                carregarInfo();
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Consultar saldo
-        document.getElementById('consultarSaldoBtn').onclick = async () => {
-            const end = document.getElementById('consultaEndereco').value;
-            if (!end) return showToast('Digite o endereço', true);
-            try {
-                const saldo = await contract.methods.balanceOf(end).call();
-                document.getElementById('saldoValor').innerHTML = (saldo / 1e18).toFixed(4) + ' GOLDEN';
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Allowance
-        document.getElementById('allowanceBtn').onclick = async () => {
-            const ownerAddr = document.getElementById('allowanceOwner').value;
-            const spender = document.getElementById('allowanceSpender').value;
-            if (!ownerAddr || !spender) return showToast('Preencha os campos', true);
-            try {
-                const allowanceVal = await contract.methods.allowance(ownerAddr, spender).call();
-                document.getElementById('allowanceValor').innerHTML = (allowanceVal / 1e18).toFixed(4);
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Status sistema
-        document.getElementById('getStatusBtn').onclick = async () => {
-            try {
-                const status = await contract.methods.getStatus().call();
-                document.getElementById('statusInfo').innerHTML = `
-                    📊 <strong>Status do Sistema</strong><br>
-                    • Taxa Percentual: <strong>${status[0]}%</strong><br>
-                    • Sistema de Taxa: <strong>${status[1] ? '🟢 ATIVO' : '🔴 INATIVO'}</strong><br>
-                    • Owner: <strong>${status[2].slice(0,6)}...${status[2].slice(-4)}</strong><br>
-                    • Saldo do Owner: <strong>${(status[3] / 1e18).toFixed(4)} GOLDEN</strong>
-                `;
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Verificar pool autorizado
-        document.getElementById('checkPoolBtn').onclick = async () => {
-            const pool = document.getElementById('checkPool').value;
-            if (!pool) return showToast('Digite o endereço do pool', true);
-            try {
-                const autorizado = await contract.methods.poolsAutorizados(pool).call();
-                document.getElementById('poolAutorizado').innerHTML = autorizado ? '✅ Sim (autorizado)' : '❌ Não (não autorizado)';
-            } catch (err) { showToast('Erro: ' + err.message, true); }
-        };
-
-        // Escutar mudanças na conta
-        if (window.ethereum) {
-            window.ethereum.on('accountsChanged', (accounts) => {
-                if (accounts.length > 0) {
-                    userAddress = accounts[0];
-                    document.getElementById('walletAddress').innerHTML = `${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
-                    carregarInfo();
-                } else {
-                    location.reload();
-                }
-            });
+    async function updateStatus() {
+        const ativa = document.getElementById('selectStatus').value === "true";
+        try {
+            addLog("Enviando transação: setTaxaAtiva...");
+            const tx = await contract.setTaxaAtiva(ativa);
+            addLog("TX enviada: " + tx.hash);
+            await tx.wait();
+            addLog("Sucesso!");
+            refreshData();
+        } catch (err) {
+            addLog("Erro: " + err.message);
         }
-    </script>
+    }
+
+    async function updatePool() {
+        const pool = document.getElementById('inputPool').value;
+        const autorizado = document.getElementById('selectPoolAction').value === "true";
+        if (!ethers.utils.isAddress(pool)) return alert("Endereço inválido");
+        try {
+            addLog("Enviando transação: autorizarPool...");
+            const tx = await contract.autorizarPool(pool, autorizado);
+            addLog("TX enviada: " + tx.hash);
+            await tx.wait();
+            addLog("Sucesso!");
+            refreshData();
+        } catch (err) {
+            addLog("Erro: " + err.message);
+        }
+    }
+
+    async function doMint() {
+        const qtd = document.getElementById('inputMint').value;
+        if (!qtd) return alert("Insira uma quantidade");
+        try {
+            addLog("Enviando transação: mint...");
+            const tx = await contract.mint(qtd);
+            addLog("TX enviada: " + tx.hash);
+            await tx.wait();
+            addLog("Sucesso!");
+            refreshData();
+        } catch (err) {
+            addLog("Erro: " + err.message);
+        }
+    }
+
+    function addLog(msg) {
+        const logDiv = document.getElementById('log');
+        logDiv.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    init();
+</script>
+
 </body>
 </html>
