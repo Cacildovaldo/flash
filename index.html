@@ -146,17 +146,30 @@
 
     <div class="card" style="grid-column:1/-1">
       <h2>Log</h2>
-      <div id="log"><div class="sys">Carregando contrato via RPC publica...</div></div>
+      <div id="log"><div class="sys">Iniciando...</div></div>
     </div>
   </div>
 </div>
 
 <script>
 const CONTRACT_ADDR = "0x345c654415AfDda8c388D5CfA3fc2374b263ea02";
-const BSC_RPC = "https://bsc-dataseed1.binance.org";
 const WBNB_TOKN = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+
+// Varias RPCs de fallback (se uma falhar, tenta a proxima)
+const RPC_LIST = [
+  "https://bsc-dataseed.binance.org",
+  "https://bsc-dataseed1.binance.org",
+  "https://bsc-dataseed2.binance.org",
+  "https://bsc-dataseed3.binance.org",
+  "https://bsc-dataseed4.binance.org",
+  "https://bsc.publicnode.com",
+  "https://binance.llamarpc.com",
+  "https://bsc-dataseed1.defibit.io",
+  "https://bsc-dataseed1.ninicoin.io"
+];
+
 const BSC_CHAIN = { chainId:"0x38", chainName:"BSC Mainnet", nativeCurrency:{name:"BNB",symbol:"BNB",decimals:18},
-  rpcUrls:[BSC_RPC], blockExplorerUrls:["https://bscscan.com"] };
+  rpcUrls:["https://bsc-dataseed.binance.org"], blockExplorerUrls:["https://bscscan.com"] };
 
 const ABI=[
   {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
@@ -196,30 +209,55 @@ const short=a=>a?a.slice(0,6)+"..."+a.slice(-4):"---";
 function log(m,c="sys"){const el=document.createElement("div");el.className=c;el.textContent=`[${new Date().toLocaleTimeString()}] ${m}`;$("log").appendChild(el);$("log").scrollTop=$("log").scrollHeight}
 
 function getInjected(){
-  if(window.rabby && window.rabby.isRabby){
-    log("Rabby Wallet detectada.","ok");
-    return window.rabby;
-  }
-  if(window.ethereum){
-    if(window.ethereum.isRabby) log("Rabby Wallet detectada.","ok");
-    else if(window.ethereum.isMetaMask) log("MetaMask detectada.","ok");
-    else log("Carteira EIP-1193 detectada.","ok");
-    return window.ethereum;
-  }
+  if(window.rabby && window.rabby.isRabby) return window.rabby;
+  if(window.ethereum) return window.ethereum;
   return null;
 }
 
 function chainOk(id){ return (id||"").toLowerCase()==="0x38"; }
 
+// ---------- LEITURA SO (com fallback de RPCs) ----------
+async function tryRpc(url){
+  const p = new ethers.providers.JsonRpcProvider(url);
+  // Faz um ping rapido
+  const block = await Promise.race([
+    p.getBlockNumber(),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")), 6000))
+  ]);
+  return { p, block };
+}
+
 async function loadContractRead(){
   $("contractAddr").textContent = CONTRACT_ADDR;
   $("bscLink").href = "https://bscscan.com/address/"+CONTRACT_ADDR;
+
+  let ok = false;
+  for(const url of RPC_LIST){
+    try{
+      log("Tentando RPC: "+url.replace("https://",""),"sys");
+      const { p, block } = await tryRpc(url);
+      readProvider = p;
+      contractRO = new ethers.Contract(CONTRACT_ADDR, ABI, readProvider);
+      $("net").textContent = "BSC / bloco "+block;
+      $("net").className = "badge ok";
+      log("Conectado na RPC "+url.replace("https://","")+" (bloco "+block+")","ok");
+      ok = true;
+      break;
+    }catch(e){
+      log("RPC falhou ("+url.replace("https://","")+"): "+e.message,"warn");
+    }
+  }
+  if(!ok){
+    $("net").textContent = "RPC indisponivel";
+    $("net").className = "badge no";
+    $("srcState").textContent = "erro RPC";
+    $("srcState").className = "badge no";
+    log("Nenhuma RPC respondeu. Verifique sua internet ou tente outra rede.","bad");
+    return;
+  }
+
+  // Le estado do contrato
   try{
-    readProvider = new ethers.providers.JsonRpcProvider(BSC_RPC);
-    contractRO = new ethers.Contract(CONTRACT_ADDR, ABI, readProvider);
-    const block = await readProvider.getBlockNumber();
-    $("net").textContent = "Rede BSC / bloco "+block;
-    $("net").className = "badge ok";
     const [owner, paused, slip, ra, sp, reserve] = await Promise.all([
       contractRO.owner(), contractRO.paused(), contractRO.slippageBps(),
       contractRO.routerA(), contractRO.sourcePair(), contractRO.getSourceWbnbReserve()]);
@@ -234,10 +272,16 @@ async function loadContractRead(){
     $("ctProfit").textContent = fmt(ctBal)+" WBNB";
     $("srcState").textContent = "ativo";
     $("srcState").className = "badge ok";
-    log("Contrato carregado (RPC publica). Owner: "+short(owner), "ok");
-  }catch(e){ $("srcState").textContent="erro"; log("Falha ao ler contrato: "+e.message,"bad"); }
+    log("Contrato lido. Owner: "+short(owner)+" | Pausado: "+(paused?"SIM":"nao"),"ok");
+  }catch(e){
+    $("srcState").textContent = "erro contrato";
+    $("srcState").className = "badge no";
+    log("RPC conectada, mas falhou ao ler o contrato: "+e.message,"bad");
+    log("Verifique se o endereco do contrato esta correto na BSC.","warn");
+  }
 }
 
+// ---------- TROCA DE REDE ----------
 async function ensureNetwork(eth){
   try{
     const id = await eth.request({method:"eth_chainId"});
@@ -245,13 +289,10 @@ async function ensureNetwork(eth){
     log("Trocando para BSC Mainnet (chainId 0x38)...","warn");
     try{
       await eth.request({method:"wallet_switchEthereumChain",params:[{chainId:"0x38"}]});
-      log("Rede alterada para BSC.","ok");
       return true;
     }catch(er){
-      if(er && (er.code===4902 || er.code===-32603 || String(er.message||"").toLowerCase().includes("unrecognized"))){
-        log("BSC nao cadastrada. Adicionando...","warn");
+      if(er && (er.code===4902 || er.code===-32603)){
         await eth.request({method:"wallet_addEthereumChain",params:[BSC_CHAIN]});
-        log("BSC adicionada e selecionada.","ok");
         return true;
       }
       if(er && er.code===4001){ log("Troca de rede rejeitada.","bad"); return false; }
@@ -260,63 +301,95 @@ async function ensureNetwork(eth){
   }catch(e){ log("Atencao rede: "+(e.message||e),"warn"); return false; }
 }
 
+// ---------- MONTA O PROVIDER/SIGNER ----------
+async function bindWallet(eth){
+  liveProvider = new ethers.providers.Web3Provider(eth, "any");
+  signer = liveProvider.getSigner();
+  account = await signer.getAddress();
+  contractSig = new ethers.Contract(CONTRACT_ADDR, ABI, signer);
+
+  $("addr").querySelector(".v").textContent = account;
+  $("btnConnect").textContent = "✅ Conectado: " + short(account) + " (trocar)";
+  $("btnConnect").disabled = false;
+  $("btnConnect").className = "ghost";
+
+  await refreshAll();
+}
+
+// ---------- CLIQUE NO BOTAO ----------
 async function connect(){
   const eth = getInjected();
   if(!eth){ log("Nenhuma carteira injetada. Instale a Rabby e recarregue.","bad"); return; }
   try{
     $("btnConnect").disabled = true;
-    $("btnConnect").textContent = "Aguardando aprovacao...";
+    $("btnConnect").textContent = "Abrindo carteira...";
     let accounts;
     try{ accounts = await eth.request({method:"eth_requestAccounts"}); }
     catch(e){
-      if(e && e.code===4001){ log("Conexao rejeitada na Rabby.","bad"); return; }
-      if(typeof eth.enable === "function") accounts = await eth.enable();
+      if(e && e.code===4001){ log("Conexao rejeitada na carteira.","bad"); }
+      else if(typeof eth.enable === "function"){ accounts = await eth.enable(); }
       else throw e;
+      if(!accounts){ $("btnConnect").disabled=false; $("btnConnect").textContent="Conectar Rabby / MetaMask"; return; }
     }
     if(!accounts || !accounts.length){ log("Nenhuma conta retornada.","bad"); return; }
     await ensureNetwork(eth);
-    liveProvider = new ethers.providers.Web3Provider(eth, "any");
-    signer = liveProvider.getSigner();
-    account = await signer.getAddress();
-
-    if(eth.removeAllListeners){
-      eth.removeAllListeners("accountsChanged");
-      eth.removeAllListeners("chainChanged");
-      eth.removeAllListeners("disconnect");
-    }
-    if(eth.on){
-      eth.on("accountsChanged",(accs)=>{
-        account = (accs && accs[0]) ? accs[0] : null;
-        if(account){
-          log("Conta alterada: "+short(account),"warn");
-          contractSig = new ethers.Contract(CONTRACT_ADDR, ABI, liveProvider.getSigner());
-        } else { log("Carteira desconectada.","warn"); }
-        refreshAll();
-      });
-      eth.on("chainChanged",(cid)=>{ log("Rede alterada: "+cid,"warn"); setTimeout(refreshAll,500); });
-      eth.on("disconnect",()=>{ account=null; signer=null; contractSig=null; log("Carteira desconectada.","warn"); refreshAll(); });
-    }
-
-    contractSig = new ethers.Contract(CONTRACT_ADDR, ABI, signer);
-    $("addr").querySelector(".v").textContent = account;
+    await bindWallet(eth);
     log("Carteira conectada: "+account,"ok");
-    refreshAll();
   }catch(e){
     log("Falha ao conectar: "+(e.message||e), "bad");
-  }finally{
     $("btnConnect").disabled=false;
     $("btnConnect").textContent="Conectar Rabby / MetaMask";
   }
 }
 
+// ---------- AUTO-DETECCAO (sem popup) ----------
 async function restoreIfConnected(){
   const eth = getInjected();
-  if(!eth) return;
+  if(!eth){ log("Carteira nao detectada. Instale a Rabby e recarregue.","warn"); return; }
+  log("Carteira detectada. Verificando sessao autorizada...","sys");
   try{
     const accs = await eth.request({method:"eth_accounts"});
-    if(accs && accs.length){ log("Sessao anterior detectada, reconectando...","sys"); await connect(); }
-    else log("Carteira pronta. Clique em 'Conectar' para autorizar.","sys");
-  }catch(e){ log("Nao foi possivel verificar sessao: "+(e.message||e),"warn"); }
+    if(accs && accs.length){
+      log("Sessao ativa encontrada: "+short(accs[0]),"ok");
+      await ensureNetwork(eth);
+      await bindWallet(eth);
+      log("Pronto. Carteira ja conectada sem precisar clicar.","ok");
+    } else {
+      log("Nenhuma sessao ativa. Clique em 'Conectar Rabby / MetaMask'.","warn");
+    }
+  }catch(e){ log("Erro ao verificar sessao: "+(e.message||e),"warn"); }
+}
+
+// ---------- EVENTOS DA CARTEIRA ----------
+function hookEvents(eth){
+  if(!eth || !eth.on) return;
+  eth.on("accountsChanged",(accs)=>{
+    account = (accs && accs[0]) ? accs[0] : null;
+    if(account){
+      log("Conta alterada: "+short(account),"warn");
+      contractSig = new ethers.Contract(CONTRACT_ADDR, ABI, liveProvider.getSigner());
+      $("addr").querySelector(".v").textContent = account;
+      $("btnConnect").textContent = "✅ Conectado: " + short(account) + " (trocar)";
+      $("btnConnect").disabled = false;
+      refreshAll();
+    } else {
+      log("Carteira desconectada.","warn");
+      $("addr").querySelector(".v").textContent = "---";
+      $("btnConnect").textContent = "Conectar Rabby / MetaMask";
+      $("btnConnect").className = "";
+      signer=null; contractSig=null; account=null;
+      refreshAll();
+    }
+  });
+  eth.on("chainChanged",(cid)=>{ log("Rede alterada para "+cid,"warn"); setTimeout(refreshAll,500); });
+  eth.on("disconnect",()=>{
+    log("Carteira desconectada.","warn");
+    $("addr").querySelector(".v").textContent = "---";
+    $("btnConnect").textContent = "Conectar Rabby / MetaMask";
+    $("btnConnect").className = "";
+    signer=null; contractSig=null; account=null;
+    refreshAll();
+  });
 }
 
 async function refreshAll(){
@@ -333,7 +406,7 @@ async function refreshAll(){
     $("wbnbBal").textContent = fmt(await wc.balanceOf(account))+" WBNB";
     const id = await liveProvider.getNetwork();
     $("chainId").textContent = chainOk("0x"+id.chainId.toString(16)) ? "BSC OK" : ("OUTRA ("+id.name+")");
-  }catch(e){}
+  }catch(e){ log("Erro ao atualizar saldos: "+e.message,"warn"); }
 }
 
 async function sym(tk){
@@ -342,6 +415,7 @@ async function sym(tk){
   return symCache[tk];
 }
 
+// ---------- OPERACOES ----------
 function parsePath(){
   const token=$("token").value.trim();
   let raw=$("sellPath").value.trim();
@@ -355,7 +429,7 @@ function parsePath(){
 }
 
 async function estimate(){
-  if(!contractRO){ log("Contrato ainda nao carregado.","bad"); return; }
+  if(!contractRO){ log("RPC do contrato nao carregada. Recarregue a pagina.","bad"); return; }
   const token=$("token").value.trim(), rtr=$("sellRouter").value.trim();
   const amt=ethers.utils.parseEther(String(Number($("amount").value)||0));
   const path=parsePath(); if(!path) return;
@@ -385,7 +459,7 @@ async function execute(){
     const cost=gp.mul(est);
     const bal=await liveProvider.getBalance(account);
     if(bal.lt(cost)){ log(`BNB insuficiente: precisa ~${fmt(cost)} BNB, tem ${fmt(bal)}.`,"bad"); return; }
-    log(`Executando startArb (gas ~${est.toString()})...`,"warn");
+    log(`Executando startArb...`,"warn");
     const tx=await contractSig.startArb(token,rtr,amt,path,{gasLimit:est.mul(3).div(2)});
     log("Tx enviada: "+tx.hash,"sys");
     const rc=await tx.wait();
@@ -394,7 +468,7 @@ async function execute(){
     if(ev){ const p=ev.args.profit; log("LUCRO REAL: +"+fmt(p)+" WBNB", p.gt(0)?"ok":"bad"); }
     refreshAll();
   }catch(e){
-    if(e && e.code===4001) log("Transacao rejeitada na Rabby.","bad");
+    if(e && e.code===4001) log("Transacao rejeitada na carteira.","bad");
     else log("Falha na execucao: "+(e.message||e),"bad");
   }
 }
@@ -408,11 +482,12 @@ async function doWithContract(fn,msg){
   if(!contractSig) { log("Carteira nao conectada.","bad"); return; }
   try{ const tx=await fn(); log(msg+" tx: "+tx.hash,"sys"); const r=await tx.wait(); log(msg+" confirmado.","ok"); refreshAll(); }
   catch(e){
-    if(e && e.code===4001) log(msg+": rejeitado na Rabby.","bad");
+    if(e && e.code===4001) log(msg+": rejeitado na carteira.","bad");
     else log(msg+" erro: "+(e.message||e),"bad");
   }
 }
 
+// ---------- INIT ----------
 window.addEventListener("load", async ()=>{
   $("btnConnect").onclick=connect;
   $("btnEstimate").onclick=estimate;
@@ -440,8 +515,16 @@ window.addEventListener("load", async ()=>{
     doWithContract(()=>contractSig.setBackRouter(r),"Setar Back Router");
   };
 
-  await loadContractRead();
+  const eth = getInjected();
+  if(eth) hookEvents(eth);
+
+  // 1) PRIMEIRO detecta a carteira (nao depende de RPC)
   await restoreIfConnected();
+  // 2) DEPOIS carrega o contrato (com fallback de RPCs)
+  await loadContractRead();
+
+  // 3) Reavalia estado apos RPC carregar
+  if(account) refreshAll();
 });
 </script>
 </body>
